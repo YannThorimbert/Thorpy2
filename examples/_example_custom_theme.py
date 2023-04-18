@@ -39,7 +39,7 @@ elements = [tp.Text("Hello, world.\nHere is some text."),
 grp = tp.TitleBox("Hello, world", children=elements)
 grp.center_on(screen)
 
-bck = pygame.image.load(tp.fn("bck.jpg")) #load some background pic for testing
+bck = pygame.image.load(tp.fn("data/bck.jpg")) #load some background pic for testing
 bck = pygame.transform.smoothscale(bck, (W,H))
 def before_gui(): #add here the things to do each frame before blitting gui elements
     screen.blit(bck, (0,0)) #blit background pic

@@ -23,7 +23,7 @@ pygame.init()
 
 W, H = 1200, 700
 screen = pygame.display.set_mode((W,H))
-bck = pygame.image.load(tp.fn("bck.jpg"))
+bck = pygame.image.load(tp.fn("data/bck.jpg"))
 bck = pygame.transform.smoothscale(bck, (W,H)) #load some background pic
 def before_gui(): #add here the things to do before blitting gui elements
     screen.blit(bck, (0,0)) #blit background pic

@@ -11,7 +11,7 @@ screen = pygame.display.set_mode((1200, 700))
 tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 
  #we use tp.fn only to refer to internal thorpy path ; use a normal filename !
-gif_filename = tp.fn("explosion.gif")
+gif_filename = tp.fn("data/explosion.gif")
 
 my_anim = tp.AnimatedGif(gif_filename, frame_mod=2) #frame_mod controls slowness of the anim
 

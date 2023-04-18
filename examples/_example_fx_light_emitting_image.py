@@ -10,11 +10,11 @@ W, H = 800,600
 screen = pygame.display.set_mode((W, H))
 
 #load some background pic for testing
-bck = pygame.image.load(tp.fn("bck.jpg")) 
+bck = pygame.image.load(tp.fn("data/bck.jpg")) 
 bck = pygame.transform.smoothscale(bck, (W,H))
 
 #load some pic to enlight
-my_img = pygame.image.load(tp.fn("my_img.png"))
+my_img = pygame.image.load(tp.fn("data/my_img.png"))
 my_img.set_colorkey(my_img.get_at((0,0)))
 
 #cache lights images - this can take some time

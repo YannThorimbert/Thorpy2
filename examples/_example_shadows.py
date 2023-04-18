@@ -13,7 +13,7 @@ text = tp.Text("Here we use a dummy, Paint-generated\nimage for demonstration. "
 text.set_max_text_width(400)
 
 #Pure image element(no text)
-my_img = pygame.image.load(tp.fn("my_img.png"))
+my_img = pygame.image.load(tp.fn("data/my_img.png"))
 my_img.set_colorkey(my_img.get_at((0,0)))
 
 cloud1 = tp.Image(my_img)

@@ -1791,7 +1791,7 @@ class Checkbox(ToggleButton):
         Button.generate_surfaces(self)
         #1. Resize check sign ###############################################
         from thorpy import fn
-        self.check_sign = pygame.image.load(fn("check.png"))
+        self.check_sign = pygame.image.load(fn("data/check.png"))
         r = self.check_sign.get_rect()
         if r.w > 2*self.check_sign.get_width():
             r = r.inflate((-self.rect.w//3, -self.rect.h//3))

@@ -11,7 +11,7 @@ W, H = 1200, 700
 screen = pygame.display.set_mode((W,H))
 tp.init(screen)
 
-my_img = pygame.image.load(tp.fn("my_img.png"))
+my_img = pygame.image.load(tp.fn("data/my_img.png"))
 my_img.set_colorkey(my_img.get_at((0,0)))
 e = tp.TextAndImageButton("My element", my_img,
                               reverse=False) #reverse=True switches img and txt (left<-->right)

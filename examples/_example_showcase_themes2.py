@@ -11,7 +11,7 @@ screen = pygame.display.set_mode((W, H))
 tp.set_default_font(("arialrounded", "arial", "calibri", "century"), 20)
 tp.init(screen, tp.theme_game2) #bind screen to gui elements and set theme
 
-bck = pygame.image.load(tp.fn("bck.jpg")) #load some background pic for testing
+bck = pygame.image.load(tp.fn("data/bck.jpg")) #load some background pic for testing
 bck = pygame.transform.smoothscale(bck, (W,H))
 
 def refresh():#some function that you call once per frame

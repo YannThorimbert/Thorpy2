@@ -12,7 +12,7 @@ tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 text = tp.Text("Here we use dummy, Paint-generated\nimages for demonstration.")
 
 #Pure image element(no text)
-my_img = pygame.image.load(tp.fn("my_img.png"))
+my_img = pygame.image.load(tp.fn("data/my_img.png"))
 my_img.set_colorkey(my_img.get_at((0,0)))
 pure_image = tp.Image(my_img)
 pure_image.set_size((20,20))

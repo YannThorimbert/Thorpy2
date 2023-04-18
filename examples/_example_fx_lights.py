@@ -10,7 +10,7 @@ W, H = 800,600
 screen = pygame.display.set_mode((W, H))
 
 #load some background pic for testing
-bck = pygame.image.load(tp.fn("bck.jpg")) 
+bck = pygame.image.load(tp.fn("data/bck.jpg")) 
 bck = pygame.transform.smoothscale(bck, (W,H))
 
 #particles parameters

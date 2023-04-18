@@ -9,7 +9,7 @@ W, H = 1200, 700
 screen = pygame.display.set_mode((W,H))
 tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 
-bck = pygame.image.load(tp.fn("bck.jpg")) #load some background pic for testing
+bck = pygame.image.load(tp.fn("data/bck.jpg")) #load some background pic for testing
 bck = pygame.transform.smoothscale(bck, (W,H))
 def before_gui(): #add here the things to do each frame before blitting gui elements
     screen.blit(bck, (0,0)) #blit background pic
