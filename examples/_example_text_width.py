@@ -13,8 +13,7 @@ bck = pygame.transform.smoothscale(bck, (W,H)) #load some background pic
 def before_gui(): #add here the things to do before blitting gui elements
     screen.blit(bck, (0,0)) #blit background pic
 
-tp.set_screen(screen) #bind screen to gui elements
-tp.themes.theme_classic() #specify style theme for gui elements
+tp.init(screen, tp.theme_classic) #bind screen to gui elements
 
 some_long_text = "Hello, world. This is a long text that I wrote for the demo. "*8
 

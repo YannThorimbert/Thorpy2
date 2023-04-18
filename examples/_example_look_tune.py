@@ -1,8 +1,9 @@
 
 
 """
-In this example, we let the user choose a font amongst the available system fonts.
+In this example, we tune the look of two buttons.
 """
+#tags: set_bck_color, set_font_color, set_style_attr, Button, set_size, look, tune, circle
 
 import pygame
 import thorpy

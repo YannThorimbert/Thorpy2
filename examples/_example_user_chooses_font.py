@@ -1,6 +1,7 @@
 """
 In this example, we let the user choose a font amongst the available system fonts.
 """
+#tags: set_style, set_font_name, set_value, DropDownListButton, fonts
 
 import pygame
 import thorpy as tp
