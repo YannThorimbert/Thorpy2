@@ -1,5 +1,5 @@
 """We show here how to add Thorpy elements to an existing code without any intrusive changes."""
-#tags: existing code, existing, loop, manual , events, events handling, update, draw, get_updater, integration, include
+#tags: get_updater, update, existing code, existing, loop, manual , events, events handling, update, draw, get_updater, integration, include
 
 import pygame, thorpy as tp
 

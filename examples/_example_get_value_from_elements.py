@@ -1,6 +1,6 @@
 """Elements like sliders, text input, colorpicker and so on store values.
 We show here how to interact with element's value."""
-#tags: get_value, set_value, get value, set value, interact, interaction
+#tags: interact, interaction
 
 
 import pygame, random

@@ -1,5 +1,5 @@
 """We show here how to build buttons around a loaded image."""
-#tags: image, ImageButton, image button
+#tags: image, ImageButton, image button, change_color_on_img
 
 
 import sys, pygame, thorpy as tp

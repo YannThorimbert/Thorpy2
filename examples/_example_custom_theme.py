@@ -1,5 +1,5 @@
 """In this example we show how to customize GUI style from a default theme."""
-#tags: style, styling, default, default style, set default style, mystyle, assign style, theme, customize theme, set_style_attr
+#tags: style, styling, default, default style, set default style, mystyle, assign style, theme, customize theme, set_style_attr, set_default_font
 import sys; sys.path.insert(0, "./")
 import pygame
 import thorpy as tp

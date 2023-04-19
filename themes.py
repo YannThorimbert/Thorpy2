@@ -656,8 +656,17 @@ def theme_game2():
     assign_styles()
 
 
-
 def set_style_attr(attr, value, states=None, exceptions_cls=None, only_to_cls=None):
+    """Set a given style attribute for a group of element classes.
+    ***Mandatory arguments***
+    <attr> : (str) the name of the attribute.
+    <value> : the value of the attribute.
+    ***Optional arguments***
+    <states> : either a string specifying the state concerned (e.g. 'hover') or 'all' for all states,
+    or a sequence of states (e.g. ['hover', 'pressed']).
+    <exception_cls> : a sequence of classes that are NOT concerned by the modification.
+    <only_to_cls> : a sequence of classes to which retrain the application of the modification.
+    """
     if states is None or states == "all":
         states = ["normal", "pressed", "hover", "locked"]
     elif isinstance(states, str):

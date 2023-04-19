@@ -1,5 +1,5 @@
 """We show here how to generate and binds a shadow to an element."""
-#tags: shadow, shadows, shadowgen, shadow generator, generate_shadow, generate shadow
+#tags: shadow, shadows, shadowgen, shadow generator, generate_shadow, generate shadow, set_draggable
 
 import sys, pygame, thorpy as tp
 

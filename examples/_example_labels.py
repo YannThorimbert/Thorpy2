@@ -1,9 +1,10 @@
 """
 We show here how to labelize elements in an easy way.
 NB : you can always access the labeled element as my_label.element.
-Also, my_label.get_value() and my_label.set_value() are wrapping the actual labelled element.
+Also, my_label.get_value() and my_label.set_value() are wrapping the actual labelled element,
+so you can call them from the label.
 """
-#tags: label, text, wrap, Labelled
+#tags: label, text, wrap, Labelled, SwitchButtonWithText
 
 import pygame, random
 import thorpy as tp

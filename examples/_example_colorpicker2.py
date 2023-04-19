@@ -1,4 +1,5 @@
 """Here is shown fine tuning of ColorPicker's appearance and behaviour"""
+#tags: colorpicker, color, picker, RGB, ColorPickerRGB, ColorPickerPredefined
 
 import pygame, thorpy as tp
 

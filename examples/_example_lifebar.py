@@ -1,5 +1,5 @@
 """We show here how to use a bar whose level indicates the amount of something."""
-#labels: lifebar, loading bar, load bar, level bar, progress bar, progredd, loading, life
+#tags: Lifebar, loading bar, load bar, level bar, progress bar, progredd, loading, life
 
 
 import pygame, thorpy as tp

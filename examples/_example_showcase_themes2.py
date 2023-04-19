@@ -1,4 +1,5 @@
-
+"""This code instantiates the most common types of elements one needs when building a GUI. It also
+allows the user to browse the default themes."""
 #tags: showcase, Button, SliderWithText, Text, Checkbox, Radio, DropDownListButton, Labelled, ToggleButton, SwitchButtonWithText, SwitchButton, TitleBox, Group
 
 import pygame
@@ -46,8 +47,6 @@ def get_group(group_name):
                                check, toggle, radio, switch])
     left_panel = tp.Group([tp.Button("Button "+str(i)) for i in range(12)], "grid")
     title_box = tp.Group([left_panel, right_panel], "h")
-    # title_box = tp.TitleBox(group_name, [left_panel, right_panel], sort_immediately=False)
-    # title_box.sort_children("h")
     return title_box
 
 tp.set_waiting_bar("Building elements...")

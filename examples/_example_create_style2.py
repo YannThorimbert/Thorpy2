@@ -1,6 +1,6 @@
 
 """We show here how to extend a Style class to create a custom one and use it for a given element only."""
-#tags: style, styling, default, default style, set default style, mystyle, assign style, set_style_attr
+#tags: style, styling, default, default style, set default style, mystyle, assign style, set_style_attr, generate_images
 
 import pygame, math, thorpy as tp
 

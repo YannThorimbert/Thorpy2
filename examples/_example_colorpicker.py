@@ -1,6 +1,6 @@
 """We show here 3 methods to let the user select a RGB color.
 See example colorpicker fine tuning for fine tuning options."""
-#tags: colorpicker, color, picker, RGB, ColorPickerRGB, ColorPickerPredefined, LabelledColorPicker
+#tags: colorpicker, color, picker, RGB, ColorPickerRGB, ColorPickerPredefined, LabelledColorPicker, Group
 
 import pygame, thorpy as tp
 

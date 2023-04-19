@@ -1,5 +1,5 @@
 """We show here how to use a WaitingBar to indicate to the user he has to wait."""
-#labels: wait, waiting bar, loading, loading bar, bar, progress bar
+#tags: wait, waiting bar, loading, loading bar, bar, progress bar, set_waiting_bar, WaitingBar, refresh_waiting_bar
 
 
 import pygame, thorpy as tp

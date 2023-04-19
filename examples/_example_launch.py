@@ -7,7 +7,7 @@ Here are the 3 ways such a new element can be integrated :
     2) blocking (i.e. the others elements are frozen but are shown, until the new element is closed)
     3) non-blocking (i.e. the new element is integrated to the current menu and will be removed when closed)
 """
-#tags: pop, alert, pop alert, launch, launch menu, launch alert, pop up, pop-up, launch_nonblocking, launch_alone, launch_and_lock_others
+#tags: pop, alert, set_draggable, pop alert, launch, launch menu, launch alert, pop up, pop-up, launch_nonblocking, launch_alone, launch_and_lock_others
 
 import math
 import pygame
@@ -25,7 +25,7 @@ my_button.center_on(screen)
 my_box = tp.Alert("Some random menu", "Some random text.\nYep...")
 my_box.set_topleft(50,50) #choose some absolute location
 #customize a bit my_box, so that the gui refresh involves some job in background
-my_box.draggable_x, my_box.draggable_y = True, True
+my_box.set_draggable()
 my_box.generate_shadow(fast=False)
 
 def blit_before_gui(): #add here the things to do each frame before blitting gui elements

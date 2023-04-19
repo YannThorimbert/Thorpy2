@@ -14,7 +14,7 @@ Text properties that are modified at the element level :
 To mix font families or font sizes, you should rather consider to wrap your elements into a parent
 that sorts its elements horizontally.
 """
-#tags: set_font_rich_text_tag, rich text, rich, text, color text, color, text style, text styling, align
+#tags: set_font_rich_text_tag, rich text, rich, text, color text, color, text style, text styling, align, set_font_auto_multilines_width, set_style_attr
 
 import pygame
 import thorpy as tp
@@ -28,8 +28,7 @@ bck = pygame.transform.smoothscale(bck, (W,H)) #load some background pic
 def before_gui(): #add here the things to do before blitting gui elements
     screen.blit(bck, (0,0)) #blit background pic
 
-tp.set_screen(screen) #bind screen to gui elements
-tp.themes.theme_classic() #specify style theme for gui elements
+tp.init(screen, tp.theme_classic)
 
 some_long_text = """Hello, world.
 This is a #RGB(255,0,0)rich# text that should #RGB(0,0,255)automatically be cut# in several lines.

@@ -1,4 +1,5 @@
-
+"""We show here how to set up TkDialog gor file or folder browsing."""
+#tags: TkDialog, file, files, filenames, folder, directory
 
 import pygame
 import thorpy as tp

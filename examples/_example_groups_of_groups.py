@@ -18,7 +18,7 @@ such as tp.Box.
 
 For details about how to sort elements, see the examples devoted to sorting.
 """
-#tags: group, sorting, store elements, parent, children, invisible, order, order elements, Box, group of groups
+#tags: group, set_topleft, sort_children, stick_to, sorting, store elements, parent, children, invisible, order, order elements, Box, group of groups
 
 
 import pygame, random
@@ -28,8 +28,7 @@ pygame.init()
 
 W, H = 1200, 700
 screen = pygame.display.set_mode((W,H))
-tp.set_screen(screen) #bind screen to gui elements
-tp.themes.theme_classic() #specify style theme for gui elements
+tp.init(screen, tp.theme_classic)
 
 buttons1 = [tp.Button("Group1-"+str(i)) for i in range(10)]
 #give random pos for each button, since we did not sort them so far

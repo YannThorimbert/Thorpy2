@@ -4,7 +4,7 @@
 <b>By 'element' we mean any UI element, widget or component</b> of any type
 (e.g. buttons, text input, sliders, etc).<br><br>
 
-<b>You can read-access an element's rect with : <code>my_element.rect</code>.</b>
+<b>You can read-access an element's rect with : my_element.rect.</b>
 Regarding modifications, there are methods for manipulating position an size of the elements (see below),
 it is your responsibility not to modify the rect directly.<br><br>
 
@@ -91,17 +91,17 @@ class Element:
         self.being_dragged = False
         self.cannot_drag_outside = True
         self.cannot_draw_outside = False
-        self._at_click = None
+        # self._at_click = None
         self._at_click_params = {}
-        self.at_unclick = None
+        # self.at_unclick = None
         self.at_unclick_params = {}
-        self.at_hover = None
+        # self.at_hover = None
         self.at_hover_params = {}
-        self.at_unhover = None
+        # self.at_unhover = None
         self.at_unhover_params = {}
-        self.at_drag = None
+        # self.at_drag = None
         self.at_drag_params = {}
-        self.at_cancel = None
+        # self.at_cancel = None
         self.action = self.default_at_unclick
         self.hand_cursor = self.__class__.hand_cursor
 ##        self._at_click_outside = None
@@ -125,7 +125,43 @@ class Element:
     # def center(self):
     #     return self.rect.center
 
-    
+    #--- Events handling ---#
+
+    def at_unclick(self, **params):
+        """Function called each time the element is unclicked by the mouse.
+        IMPORTANT: in most cases, this is what you want to redefine as the common user 'click',
+        e.g. my_button.at_unclick = my_function_to_launch.<br>
+        The parameters passed can be sat as my_button.at_unclick_params = {...}."""
+        pass
+
+    def at_hover(self, **params):
+        """Function called each time the element starts to be hovered by the mouse.
+        The parameters passed can be sat as my_button.at_hover_params = {...}."""
+        pass
+
+    def at_unhover(self, **params):
+        """Function called each time the element stops to be hovered by the mouse.
+        The parameters passed can be sat as my_button.at_unhover_params = {...}."""
+        pass
+
+    def at_drag(self, dx, dy, **params):
+        """Function called each time the element is dragged by the mouse.
+        The parameters passed can be sat as my_button.at_drag_params = {...}.
+        <dx> : the mouse_rel along x-axis (you gan cive any value if you dont treat it).
+        <dy> : the mouse_rel along x-axis (you gan cive any value if you dont treat it)."""
+        pass
+
+    def at_cancel(self, **params):
+        """Function called each time the element is cancelled (deactivated for many elements)."""
+        pass
+
+    def _at_click(self, **params):
+        """Function called each time the element is clicked by the mouse.
+        IMPORTANT: in most cases, this is NOT what you want to redefine as the common user 'click'.
+        We strongly advise you not to redefine this function, as usual behaviour of buttons is to react to
+        unclick rather than click events, which can result in incompatible events handling between elements.
+        The parameters passed can be sat as my_button._at_click_params = {...}."""
+        pass
 
     #--- Styling ---#
 
@@ -648,8 +684,8 @@ class Element:
                             self.i_frame = 0
                             self.state = "pressed"
                             if self._at_click:
-                                self.draw()
-                                pygame.display.update(self.rect)
+                                # self.draw()
+                                # pygame.display.update(self.rect)
                                 self._at_click(**self._at_click_params)
                             self.default_at_click()
                         if not children_dragged:

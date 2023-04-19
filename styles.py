@@ -222,7 +222,7 @@ class BaseStyle:
         return lines
 
     def autocut_text(self, text, max_w, sep=" ", newline_symbol="\n"):
-        """Return a list of strings with one line per element in order to make line length
+        """_Return a list of strings with one line per element in order to make line length
         not exceed <max_w>."""
         lines = []
         current_line = ""
@@ -248,7 +248,7 @@ class BaseStyle:
         return lines
 
     def autocut_rich_text(self, rich_text, max_w, sep=" ", newline_symbol="\n"):
-        """Return rich lines with line breaks inserted in order to make line length
+        """_Return rich lines with line breaks inserted in order to make line length
         not exceed <max_w>."""
         lines = []  #[  [(txt, color), (txt,color), ...],  [(txt, color), (txt,color), ...]]
         current_line = []
@@ -745,7 +745,7 @@ class TitleBoxClassicStyle(ClassicStyle):
         self.rtext = None
 
     def generate_images(self, text, arrow=False):
-        """<text> is the title of the titlebox"""
+        """_<text> is the title of the titlebox"""
         assert not arrow
         r_text, lines = self.get_text_rect_and_lines(text)
         margins = (r_text.h+self.frame_margin,)*2
@@ -854,7 +854,7 @@ class OscillatingTextStyle(TextStyle):
         self.frame_mod = 2
 
     def generate_images(self, text, arrow=False):
-        """Here, we generate the frames of the bright text.
+        """_Here, we generate the frames of the bright text.
         We simply generate the images as a 'standard' Text,
         except we slightly adjust the color properties for each frame."""
         surfaces = []

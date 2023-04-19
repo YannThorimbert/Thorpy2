@@ -1,5 +1,5 @@
 """We show here several methods to impose a maximum text width to an element."""
-#tags: text width, text, max text width, font_auto_multilines_width, set_max_text_width, set_size
+#tags: text width, text, max text width, font_auto_multilines_width, set_max_text_width, set_size, set_style_attr, set_size, set_text
 
 import pygame
 import thorpy as tp
@@ -24,9 +24,8 @@ some_long_text = some_long_text.replace("\n", " ")
 
 #Method 1 : set the max width for all the elements sharing the same style.
 #   Choose this method if you want this behaviour to be also applied to other objects
-##for style in tp.Button.iter_styles():
-##    style.font_auto_multilines_width = 200
-##my_button = tp.Button(some_long_text)
+# tp.set_style_attr("font_auto_multilines_width", 200)
+# my_button = tp.Button(some_long_text)
 
 #Method 2: refresh the element's surfaces with new max width
 #   Choose this method if you think performance is not an issue (most probable)

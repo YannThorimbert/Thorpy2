@@ -1,7 +1,7 @@
 """
 In this example, we let the user choose a font amongst the available system fonts.
 """
-#tags: set_style, set_font_name, set_value, DropDownListButton, fonts
+#tags: set_style, set_font_name, set_value, DropDownListButton, fonts, set_font_size
 
 import pygame
 import thorpy as tp
@@ -12,6 +12,7 @@ screen = pygame.display.set_mode((1200, 700))
 
 tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 
+tp.set_waiting_bar("Loading all your system fonts...")
 
 fonts = sorted(pygame.font.get_fonts())
 buttons = []
@@ -19,6 +20,8 @@ style = tp.styles.SimpleStyle()
 style_hover = style.copy()
 style_hover.bck_color = (100,100,255)
 for font_name in fonts:
+    tp.refresh_waiting_bar()
+    tp.refresh_all_elements_style
     button = tp.Button(text=font_name, style_normal=style, all_styles_as_normal=True,
                            generate_surfaces=False)
     button.set_style(style_hover, "hover", refresh=False)

@@ -1,4 +1,5 @@
-
+"""This code instantiates the most common types of elements one needs when building a GUI. It also
+allows the user to browse some of the default themes. See the showcase number 2 to check all the default themes."""
 #tags: showcase, Button, SliderWithText, Text, Checkbox, Radio, DropDownListButton, Labelled, ToggleButton, SwitchButtonWithText, SwitchButton, TitleBox, Group
 
 import sys; sys.path.insert(0, "./")
@@ -12,7 +13,6 @@ pygame.key.set_repeat(300,50)
 W,H = 1920, 780 #Full HD
 screen = pygame.display.set_mode((W,H))
 tp.set_default_font("arial", 20)
-# tp.set_screen(screen)
 
 tp.init(screen)
 
@@ -60,7 +60,6 @@ def get_group(group_name, box_cls="box"):
 tp.theme_round2()
 classic = get_group("Round2")
 
-# tp.theme_game1()
 tp.themes.theme_game2()
 game = get_group("Game2")
 
@@ -70,7 +69,6 @@ simple = get_group("Simple")
 tp.theme_human()
 human = get_group("Human")
 
-# tp.theme_text()
 tp.theme_text_dark()
 text = get_group("Dark text")
 

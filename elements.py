@@ -8,7 +8,9 @@ covered in the examples.<br><br>
 Getters and setters functions of all the elements are not covered when they are obvious
 (e.g) get_value for TextInput returns a string containing the inserted input.<br><br>
 
-See the most useful methods of any elements (e.g. set_size, move, etc) in the docs of Canonical element.<br><br>
+Styling of the elements is extensively covered in the examples, as well as in the docs for themes.<br><br>
+
+See the most useful methods of any elements (e.g. set_size, move, etc) in the docs for common elements methods.<br><br>
 """
 import os, sys, inspect
 import pygame
@@ -381,30 +383,32 @@ class Box(Element):
             button_size = (int(self.styles["normal"].font.get_height() * 0.8),) * 2
         button_text = {"h":("left","right"), "v":("up","down")}
         deltas = {"h":(-1,0), "v":(0,-1)}
-        b1 = ArrowButton(button_text[mode][0],button_size)
-        b2 = ArrowButton(button_text[mode][1],button_size)
+        # b1 = ArrowButton(button_text[mode][0],button_size)
+        # b2 = ArrowButton(button_text[mode][1],button_size)
+        # if thickness is None:
+        #     thickness = max(b1.rect.size) + 5
         if thickness is None:
-            thickness = max(b1.rect.size) + 5
+            thickness = 10
         s = Slider(mode, length, thickness, dragger_length=length//4, dragger_thick_factor=0.9)
-        b1._at_click = self.at_scroll
-        b1._at_click_params = {"dx": deltas[mode][0], "dy": deltas[mode][1], "dragger": s.dragger,
-                                "force":True}
-        b2._at_click = self.at_scroll
-        b2._at_click_params = {"dx": -deltas[mode][0], "dy": -deltas[mode][1], "dragger": s.dragger,
-                               "force":True}
+        # b1._at_click = self.at_scroll
+        # b1._at_click_params = {"dx": deltas[mode][0], "dy": deltas[mode][1], "dragger": s.dragger,
+        #                         "force":True}
+        # b2._at_click = self.at_scroll
+        # b2._at_click_params = {"dx": -deltas[mode][0], "dy": -deltas[mode][1], "dragger": s.dragger,
+        #                        "force":True}
         #slider
         s.set_relative_value(0.5)
         s.rect = s.get_rect()
         s.ignore_for_sorting = False
         s.dragger.at_drag = self.at_scroll
-        s.add_child(b1)
-        s.add_child(b2)
-        if mode == "h":
-            b1.set_center(s.rect.left - b1.rect.w / 2, s.rect.centery)
-            b2.set_center(s.rect.right + b1.rect.w / 2, s.rect.centery)
-        else:
-            b1.set_center(s.rect.centerx, s.rect.top-b1.rect.h/2)
-            b2.set_center(s.rect.centerx, s.rect.bottom+b1.rect.h/2)
+        # s.add_child(b1)
+        # s.add_child(b2)
+        # if mode == "h":
+        #     b1.set_center(s.rect.left - b1.rect.w / 2, s.rect.centery)
+        #     b2.set_center(s.rect.right + b1.rect.w / 2, s.rect.centery)
+        # else:
+        #     b1.set_center(s.rect.centerx, s.rect.top-b1.rect.h/2)
+        #     b2.set_center(s.rect.centerx, s.rect.bottom+b1.rect.h/2)
         s.set_relative_value(0.05)
         max_to_move = delta - length
         sbox_margins = (4,4)
@@ -424,7 +428,8 @@ class Box(Element):
         sbox.add_scrollbar_if_needed = False
 ##        sbox.englobe_children(margins=(3,3), adapt_parent=False)
         sbox.rect.center = s.rect.center
-        rect = s.rect.unionall([b1,b2])
+        # rect = s.rect.unionall([b1,b2])
+        rect = s.rect
         sbox.set_size(rect.inflate(*sbox_margins).size, adapt_parent=False)
         sbox.ignore_for_sorting = True
         self.add_child(sbox)
@@ -1631,15 +1636,18 @@ class TogglablesPool(Element):
     <label> : string displayed on the left side of the switches.
     <choices> : sequence of strings.
     <initial_value> : text of the initial value chosen.
+    <togglable_type> : (str) either 'toggle', 'radio' or 'checkbox'.
     """
 
-    def __init__(self, label, choices, initial_value):
+    def __init__(self, label, choices, initial_value, togglable_type="toggle"):
         assert initial_value in choices
         self.label = _LabelButton(label)
         e_choices = []
+        self.togglable_type = togglable_type
         def update_pool(tog):
+            print("update")
             count = 0
-            for e in e_choices:
+            for e in self.togglables:
                 if not(e is tog):
                     e.set_value(False)
                 count += e.get_value()
@@ -1647,23 +1655,45 @@ class TogglablesPool(Element):
             if self.at_unclick:
                 self.at_unclick()
         for c in choices:
-            tog = ToggleButton(c)
-            tog._at_click = update_pool
-            tog._at_click_params = {"tog":tog}
+            if togglable_type == "toggle":
+                tog = ToggleButton(c)
+                tog._at_click = update_pool
+                tog._at_click_params = {"tog":tog}
+            elif togglable_type == "radio":
+                tog = Labelled(c, Radio())
+            elif togglable_type == "checkbox":
+                tog = Labelled(c, Checkbox())
+            else:
+                raise ValueError("You should indicate either 'toggle', 'radio' or 'checkbox'.")
+            if togglable_type != "toggle":
+                tog.element._at_click = update_pool
+                tog.label._at_click = update_pool
+                tog.element._at_click_params = {"tog":tog}
+                tog.label._at_click_params = {"tog":tog}
             e_choices.append(tog)
             if c == initial_value:
                 tog.set_value(True)
         self.togglables = e_choices
+        if togglable_type == "toggle":
+            sort_mode = "h"
+        else:
+            sort_mode = "v"
+            e_choices = [Box(e_choices)]
         super().__init__(children=[self.label] + e_choices)
-        self.sort_children("h", margins=(5,0), gap=5, nx="auto", ny="auto", align="center")
+        self.sort_children(sort_mode, margins=(5,0), gap=5, nx="auto", ny="auto", align="center")
         self.copy_normal_state(True)
     
     def get_value(self):
         """Returns the text of the chosen element."""
-        for e in self.togglables:
-            if e.get_value():
-                return e.text
-            
+        if self.togglable_type == "toggle":
+            for e in self.togglables:
+                if e.get_value():
+                    return e.text
+        else:
+            for e in self.togglables:
+                if e.get_value():
+                    return e.label.text
+                
     def get_choice_button(self, text):
         """Returns the choice element corresponding to the text given as argument."""
         for e in self.togglables:
@@ -2462,22 +2492,27 @@ class DropDownList(Box):
 
 class Lifebar(Group):
     """Lifebar or loading bar that displays how much is left of a given quantity between 0% and 100%.
-    Hence, the value is a float in [0,1].
+    Hence, the value of a Lifebar is always a float between 0. and 1.
     ***Mandatory arguments***
     <text> : string to display on the bar.
     <length> : length of the bar in pixels.
     <bck_color> : background color of the bar.
     ***Optional arguments***
-    <height> : height of the bar in pixels
+    <height> : height of the bar in pixels.
     <initial_value> : initial value between 0 and 1.
     <font_color> : font_color in RGB format.
+    <auto_adapt_length> : (bool) if True and the specified length is too short for the text,
+    then the length is adjusted to fit the text.
     """
 
-    def __init__(self, text, length, bck_color, height=None, initial_value=1., font_color=None):
+    def __init__(self, text, length, bck_color, height=None, initial_value=1., font_color=None,
+                 auto_adapt_length=True):
         self.life_text = Text(text, font_color=font_color)
         #
-        style_frame = styles.FrameStyle() #TODO ecrire wrappers pour customiser les trucs ci-dessous et set_size
-        self.e_frame = DeadButton("",style_frame)
+        style_frame = styles.FrameStyle() #TODO write wrappers to customize children
+        self.e_frame = DeadButton("", style_frame)
+        if auto_adapt_length and self.life_text.rect.w > length - 5:
+            length = self.life_text.rect.w + 5
         self.e_frame.set_size((length, height))
         #
         style_rect = styles.SimpleStyle()
@@ -2549,13 +2584,16 @@ class WaitingBar(Lifebar):
     <height> : the height of the bar (thickness).
     <font_color> : 3-tuple (RGB) indicating the color of the text to show, if any. If None,
     the default font_color will be used.
+    <auto_adapt_length> : (bool) if True and the specified length is too short for the text,
+    then the length is adjusted to fit the text.
     """
 
-    def __init__(self, text, length=200, rect_color=None, speed=1., rel_width=0.2, height=None, font_color=None):
+    def __init__(self, text, length=200, rect_color=None, speed=1., rel_width=0.2,
+                 height=None, font_color=None, auto_adapt_length=True):
         self.speed = speed
         if rect_color is None:
             rect_color = graphics.get_main_color(Button.style_normal.bck_color)
-        super().__init__(text, length, rect_color, height, rel_width, font_color)
+        super().__init__(text, length, rect_color, height, rel_width, font_color, auto_adapt_length)
         self.remove_child(self.e_rect)
         self.e_frame.add_child(self.e_rect)
         self.e_rect.cannot_draw_outside = True

@@ -1,4 +1,5 @@
 """We show here many different ways to customize sliders behaviour."""
+#tags: slider, SliderWithText, Group
 
 import pygame, thorpy as tp
 

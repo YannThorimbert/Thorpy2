@@ -3,7 +3,7 @@ We show here how to group elements inside a common parent.
 In the first example, the parent is an invisible element.
 In the second example, the parent is an instance of thorpy.Box.
 """
-#tags: group, sorting, store elements, parent, children, invisible, order, order elements, Box
+#tags: group, sorting, store elements, parent, children, invisible, order, order elements, Box, sort_children
 
 
 import pygame, random

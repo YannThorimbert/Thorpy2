@@ -1,5 +1,5 @@
 """We show here how to set up a drop down list (list of predefined choices that the user can click)"""
-#tags: DropDownListButton, DropDownList, choices, drop down, drop down list, list menu, list
+#tags: DropDownListButton, DropDownList, choices, drop down, drop down list, list menu, list, Labelled
 
 import pygame, thorpy as tp
 

@@ -1,6 +1,7 @@
 """
-We show here how to interact with element's value
+We show here how to instanciate an element that displays the framerate of your app.
 """
+#tags: FPS, ShowFPS, get_updater
 
 import pygame, random
 import thorpy as tp
