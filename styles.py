@@ -132,6 +132,15 @@ class BaseStyle:
         self.r_text = None
         self.text_lines = None
 
+    def autoset_has_second_draw(self):
+        color = graphics.get_main_color(self.bck_color)
+        print("autoset", color)
+        if len(color) == 4 and color[-1] < 255:
+            self.has_second_draw = True
+        else:
+            self.has_second_draw = False
+        
+
     def set_font_antialias(self, value):
         self.font_antialias = value
         self.refresh_font()
@@ -539,6 +548,7 @@ class RoundStyle(BaseStyle):
 
 
     def generate_images(self, text, arrow=False):
+        # self.autoset_has_second_draw()
         infl = (self.margins[0]*2, self.margins[1]*2)
         if arrow:
             s_text, r_text = self.set_arrow(arrow, color=self.font_color)

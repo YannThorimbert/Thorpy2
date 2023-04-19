@@ -331,42 +331,42 @@ def capture_screen(surface, rect=None):
     return surface.copy().subsurface(rect).convert()
 
 
-# def draw_gradient_along_path(surface, path, gradient):
-#     """Draw a 1 D color gradient along a path.
-#     ***Mandatory arguments***
-#     <surface> : pygame Surface on which to draw.
-#     <path> : sequence of (x,y) coordinates.
-#     <gradient> : Thorpy gradient_color value."""
-#     import math
-#     #we do not want radial gradients !
-#     assert gradient[-1] == "h" or gradient[-1] =="v" or not(isinstance(gradient[-1], str))
-#     all_colors, orientation = process_gradient_color(gradient)
-#     if is_color_gradient(gradient):
-#         all_colors = [tuple(int(c) for c in col) for col in all_colors]
-#     else:
-#         pygame.draw.aalines(surface, all_colors, True, path)
-#         return
-#     i = 1
-#     tot_length = 0.
-#     for x,y in path[1:]:
-#         prevx, prevy = path[i-1]
-#         tot_length += math.hypot(x-prevx, y-prevy)
-#         i += 1
-#     print("Total length", tot_length)
-#     i = 1
-#     colors = [all_colors[0]]
-#     d = 0
-#     for x,y in path[1:]:
-#         prevx, prevy = path[i-1]
-#         d += math.hypot(x-prevx, y-prevy)
-#         fractional_d = d / tot_length
-#         print("INTERTP", all_colors, fractional_d)
-#         end_color = interpolate_ncolors(all_colors, fractional_d)
-#         # pygame.draw.aalines(surface, (255,)*3, True, path)
-#         draw_gradient_line(surface, colors[-1], end_color, (prevx,prevx), (x,y))
-#         colors.append(end_color)
-#         i += 1
-#     draw_gradient_line(surface, colors[-1], colors[0], path[-1], path[0])
+def draw_gradient_along_path(surface, path, gradient):
+    """Draw a 1 D color gradient along a path.
+    ***Mandatory arguments***
+    <surface> : pygame Surface on which to draw.
+    <path> : sequence of (x,y) coordinates.
+    <gradient> : Thorpy gradient_color value."""
+    import math
+    #we do not want radial gradients !
+    assert gradient[-1] == "h" or gradient[-1] =="v" or not(isinstance(gradient[-1], str))
+    all_colors, orientation = process_gradient_color(gradient)
+    if is_color_gradient(gradient):
+        all_colors = [tuple(int(c) for c in col) for col in all_colors]
+    else:
+        pygame.draw.aalines(surface, all_colors, True, path)
+        return
+    i = 1
+    tot_length = 0.
+    for x,y in path[1:]:
+        prevx, prevy = path[i-1]
+        tot_length += math.hypot(x-prevx, y-prevy)
+        i += 1
+    print("Total length", tot_length)
+    i = 1
+    colors = [all_colors[0]]
+    d = 0
+    for x,y in path[1:]:
+        prevx, prevy = path[i-1]
+        d += math.hypot(x-prevx, y-prevy)
+        fractional_d = d / tot_length
+        print("INTERTP", all_colors, fractional_d)
+        end_color = interpolate_ncolors(all_colors, fractional_d)
+        # pygame.draw.aalines(surface, (255,)*3, True, path)
+        draw_gradient_line(surface, colors[-1], end_color, (prevx,prevx), (x,y))
+        colors.append(end_color)
+        i += 1
+    draw_gradient_line(surface, colors[-1], colors[0], path[-1], path[0])
     
 def draw_gradient_line(surface, col1, col2, p1, p2):
     """Draw a line between two points using a color gradient.
@@ -570,7 +570,7 @@ def smoothed_circle(radius):
     pygame.draw.circle(circle, (0,0,0), (radius,radius), radius)
     return circle
 
-# @cache
+@cache
 def smoothed_round_rect(n_smooth, color, size, radius, force_radius):
     orig_size = size
     size = (size[0]*n_smooth, size[1]*n_smooth)
