@@ -125,43 +125,7 @@ class Element:
     # def center(self):
     #     return self.rect.center
 
-    #--- Events handling ---#
-
-    def at_unclick(self, **params):
-        """Function called each time the element is unclicked by the mouse.
-        IMPORTANT: in most cases, this is what you want to redefine as the common user 'click',
-        e.g. my_button.at_unclick = my_function_to_launch.<br>
-        The parameters passed can be sat as my_button.at_unclick_params = {...}."""
-        pass
-
-    def at_hover(self, **params):
-        """Function called each time the element starts to be hovered by the mouse.
-        The parameters passed can be sat as my_button.at_hover_params = {...}."""
-        pass
-
-    def at_unhover(self, **params):
-        """Function called each time the element stops to be hovered by the mouse.
-        The parameters passed can be sat as my_button.at_unhover_params = {...}."""
-        pass
-
-    def at_drag(self, dx, dy, **params):
-        """Function called each time the element is dragged by the mouse.
-        The parameters passed can be sat as my_button.at_drag_params = {...}.
-        <dx> : the mouse_rel along x-axis (you gan cive any value if you dont treat it).
-        <dy> : the mouse_rel along x-axis (you gan cive any value if you dont treat it)."""
-        pass
-
-    def at_cancel(self, **params):
-        """Function called each time the element is cancelled (deactivated for many elements)."""
-        pass
-
-    def _at_click(self, **params):
-        """Function called each time the element is clicked by the mouse.
-        IMPORTANT: in most cases, this is NOT what you want to redefine as the common user 'click'.
-        We strongly advise you not to redefine this function, as usual behaviour of buttons is to react to
-        unclick rather than click events, which can result in incompatible events handling between elements.
-        The parameters passed can be sat as my_button._at_click_params = {...}."""
-        pass
+    
 
     #--- Styling ---#
 
@@ -556,53 +520,7 @@ class Element:
             self.sort_children(*self.last_sorted)
             self.set_center(*self.rect.center)
 
-    "#--- Behaviour ---#"
-
-    #convenience function for users
-    def get_current_state(self):
-        """Return the current state (string) of the element."""
-        return self.state
     
-    def set_invisible(self, value):
-        """Set the element as invisible.
-        <value> : if False, the element is visible, otherwise it is invisible."""
-        if not value:
-            self.state = "normal"
-        else:
-            self.state = "unactive"
-
-    def set_locked(self, value):
-        """Set the current state from 'locked' to 'normal' or from 'normal' to 'locked'.
-        <value> : (bool) if True, the new state will be 'locked', wheras if False, the new state
-        will be 'normal'. Also adapt the children states.
-        """
-        if value:
-            self.state = "locked"
-        else:
-            self.state = "normal"
-        for c in self.get_all_descendants():
-            c.state = self.state
-
-    def set_draggable(self, x_axis=True, y_axis=True, cannot_drag_outside=True, cannot_draw_outside=True,
-                        adapt_cursor_style=True):
-        """Set whether the element can be dragged by the user. If you set your element as draggable,
-            keep in mind that whenever you change the size of the parent element it resets the original position
-            of the draggable element. If you want to always keep the position of the element, make sure you set to
-            False the adapt_parent argument of methods that modify the appearance of the parent and any of its children,
-            e.g : some_sister_element.set_text("This is a new text", adapt_parent=False).
-        ***Optional arguments***
-        <x_axis> : (bool) determines whether the element can be dragger on x-axis.
-        <y_axis> : (bool) determines whether the element can be dragger on y-axis.
-        <cannot_drag_outside> : (bool) if True, the element cannot be dragged outside of its parent.
-        <cannot_draw_outside> : (bool) if True, the element cannot be drawn outside of its parent.
-        <adapt_cursor_style> : (bool) if True, mouse cursor will appear as a hand when hovering the element.
-        """
-        self.draggable_x = x_axis
-        self.draggable_y = y_axis
-        self.cannot_drag_outside = cannot_drag_outside
-        self.cannot_draw_outside = cannot_draw_outside
-        if adapt_cursor_style and (self.draggable_x or self.draggable_y):
-            self.hand_cursor = True
 
     def drag_if_needed(self, mouse_delta):
         # mp = pygame.mouse.get_pos()
@@ -1152,3 +1070,87 @@ class Element:
     def do_nothing(self):
         pass
 
+    #--- Events handling and states behaviour ---#
+
+    def at_unclick(self, **params):
+        """Function called each time the element is unclicked by the mouse.
+        IMPORTANT: in most cases, this is what you want to redefine as the common user 'click',
+        e.g. my_button.at_unclick = my_function_to_launch.<br>
+        The parameters passed can be sat as my_button.at_unclick_params = {...}."""
+        pass
+
+    def at_hover(self, **params):
+        """Function called each time the element starts to be hovered by the mouse.
+        The parameters passed can be sat as my_button.at_hover_params = {...}."""
+        pass
+
+    def at_unhover(self, **params):
+        """Function called each time the element stops to be hovered by the mouse.
+        The parameters passed can be sat as my_button.at_unhover_params = {...}."""
+        pass
+
+    def at_drag(self, dx, dy, **params):
+        """Function called each time the element is dragged by the mouse.
+        The parameters passed can be sat as my_button.at_drag_params = {...}.
+        <dx> : the mouse_rel along x-axis (it is mandatory that your function accepts it as first argument).
+        <dy> : the mouse_rel along x-axis (it is mandatory that your function accepts it as first argument)."""
+        pass
+
+    def at_cancel(self, **params):
+        """Function called each time the element is cancelled (deactivated for many elements)."""
+        pass
+
+    def _at_click(self, **params):
+        """Function called each time the element is clicked by the mouse.
+        IMPORTANT: in most cases, this is NOT what you want to redefine as the common user 'click'.
+        We strongly advise you not to redefine this function, as usual behaviour of buttons is to react to
+        unclick rather than click events, which can result in incompatible events handling between elements.
+        The parameters passed can be sat as my_button._at_click_params = {...}."""
+        pass
+
+
+    #convenience function for users
+    def get_current_state(self):
+        """Return the current state (string) of the element."""
+        return self.state
+    
+    def set_invisible(self, value):
+        """Set the element as invisible.
+        <value> : if False, the element is visible, otherwise it is invisible."""
+        if not value:
+            self.state = "normal"
+        else:
+            self.state = "unactive"
+
+    def set_locked(self, value):
+        """Set the current state from 'locked' to 'normal' or from 'normal' to 'locked'.
+        <value> : (bool) if True, the new state will be 'locked', wheras if False, the new state
+        will be 'normal'. Also adapt the children states.
+        """
+        if value:
+            self.state = "locked"
+        else:
+            self.state = "normal"
+        for c in self.get_all_descendants():
+            c.state = self.state
+
+    def set_draggable(self, x_axis=True, y_axis=True, cannot_drag_outside=True, cannot_draw_outside=True,
+                        adapt_cursor_style=True):
+        """Set whether the element can be dragged by the user. If you set your element as draggable,
+            keep in mind that whenever you change the size of the parent element it resets the original position
+            of the draggable element. If you want to always keep the position of the element, make sure you set to
+            False the adapt_parent argument of methods that modify the appearance of the parent and any of its children,
+            e.g : some_sister_element.set_text("This is a new text", adapt_parent=False).
+        ***Optional arguments***
+        <x_axis> : (bool) determines whether the element can be dragger on x-axis.
+        <y_axis> : (bool) determines whether the element can be dragger on y-axis.
+        <cannot_drag_outside> : (bool) if True, the element cannot be dragged outside of its parent.
+        <cannot_draw_outside> : (bool) if True, the element cannot be drawn outside of its parent.
+        <adapt_cursor_style> : (bool) if True, mouse cursor will appear as a hand when hovering the element.
+        """
+        self.draggable_x = x_axis
+        self.draggable_y = y_axis
+        self.cannot_drag_outside = cannot_drag_outside
+        self.cannot_draw_outside = cannot_draw_outside
+        if adapt_cursor_style and (self.draggable_x or self.draggable_y):
+            self.hand_cursor = True
