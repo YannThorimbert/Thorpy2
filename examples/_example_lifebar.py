@@ -10,7 +10,11 @@ screen = pygame.display.set_mode((1200, 700))
 tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 
 my_color = ((255,100,100), (150,30,30), "v") #light gray to dark gray vertical gradient
-fuel = tp.Lifebar("Fuel (click to refuel)", 400, my_color, font_color=(200,)*3)
+fuel = tp.Lifebar("Fuel (click to refuel)",
+                  length=400,
+                  bck_color=my_color,
+                  font_color=(200,)*3,
+                  auto_show_percentage=False) #try setting it to True
 fuel.center_on(screen)
 
 #we define below a way to refuel the bar
@@ -22,8 +26,7 @@ fuel.children[-1].hand_cursor = True
 def before_gui(): #add here the things to do each frame before blitting gui elements
     screen.fill((200,)*3)
     current = fuel.get_value()
-    new_val = max(0., current-0.001)
-    fuel.set_value(new_val)
+    fuel.set_value(current-0.01)
 tp.call_before_gui(before_gui) #tells thorpy to call before_gui() before drawing gui.
 
 #For the sake of brevity, the main loop is replaced here by a shorter but blackbox-like method

@@ -16,14 +16,14 @@ from .canonical import arrow_cursor, hand_cursor
 from .elements import Alert, AlertWithChoices, ArrowButton, Box, Button, DropDownList, Image, Line
 from .elements import Slider, SliderWithText, Text, TextInput, TitleBox, ToggleButton, Helper
 from .elements import Checkbox, Radio, SwitchButton, SwitchButtonWithText, DropDownListButton
-from .elements import ColorPicker, ColorPickerRGB, ColorPickerPredefined, ImageButton
+from .elements import ColorPicker, ColorPickerRGB, ColorPickerPredefined, ImageButton, HeterogeneousTexts
 from .elements import TextAndImageButton, Lifebar, DeadButton, AnimatedGif, WaitingBar
 from .elements import TogglablesPool, Labelled, LabelledColorPicker, Group, ShowFPS, TkDialog
 
 #Import styling functions
 from .themes import theme_classic, theme_human, theme_round, theme_simple, theme_text, theme_game2
 from .themes import theme_round_gradient, theme_round2
-from .themes import theme_text_dark, theme_game1, set_style_attr, refresh_all_elements_style
+from .themes import theme_text_dark, theme_game1, set_style_attr, refresh_all_elements_style, get_theme_bck_color, get_theme_main_bck_color
 from .styles import get_default_font, set_default_font, get_text_size, get_text_height
 
 

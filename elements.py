@@ -174,9 +174,9 @@ class Group(Element):
     ***Mandatory arguments***
     <elements> : children of the group.
     ***Optional arguments***
-    <mode> : "v", "h", "grid" or None. Let None if you do not want to sort elements.
+    <mode> : "v", "h", "grid" or None. Specify None if you do not want to sort elements.
     <margins> : 2-tuple of integers for x- and y-margins (in pixels)
-    <margins> : integer value for the spacing between elements (in pixels)
+    <gap> : integer value for the spacing between elements (in pixels)
     <nx> : number of columns if grid mode is used, or 'auto'
     <ny> : number of lines if grid mode is used, or 'auto'
     <align> : alignement of the choices in the list. Either 'center' (for both vertical and horizontal mode) or 'left', 'right' (for horizontal mode) or 'top', 'bottom' (for vertical mode)
@@ -653,6 +653,11 @@ class AlertWithChoices(TitleBox):
         if params is None:
             params = {}
         button.at_unclick_params = params
+
+    def get_value(self):
+        """Return the choice made by the user, after the alert with choices has been launched !
+        The value is None if user has not chosen yet or if the alert has been cancelled by the user."""
+        return self.choice
 
 
 
@@ -2496,17 +2501,25 @@ class Lifebar(Group):
     ***Mandatory arguments***
     <text> : string to display on the bar.
     <length> : length of the bar in pixels.
-    <bck_color> : background color of the bar.
     ***Optional arguments***
+    <bck_color> : background color of the bar. By default, it takes the current theme bck color for Button.
     <height> : height of the bar in pixels.
     <initial_value> : initial value between 0 and 1.
     <font_color> : font_color in RGB format.
     <auto_adapt_length> : (bool) if True and the specified length is too short for the text,
     then the length is adjusted to fit the text.
+    <auto_show_percentage> : (bool) if True, then the text is replaced by a text
+    indicating the current percentage of the bar.
     """
 
-    def __init__(self, text, length, bck_color, height=None, initial_value=1., font_color=None,
-                 auto_adapt_length=True):
+    def __init__(self, text, length, bck_color=None, height=None, initial_value=1., font_color=None,
+                 auto_adapt_length=True, auto_show_percentage=None):
+        from .themes import get_theme_main_bck_color
+        if bck_color is None:
+            bck_color = get_theme_main_bck_color()
+        self.auto_show_percentage = auto_show_percentage
+        if self.auto_show_percentage:
+            text = str(int(initial_value * 100)) + "%"
         self.life_text = Text(text, font_color=font_color)
         #
         style_frame = styles.FrameStyle() #TODO write wrappers to customize children
@@ -2526,17 +2539,29 @@ class Lifebar(Group):
         self.max_length = length
         super().__init__([self.e_frame, self.e_rect, self.life_text, ], None)
         self.englobe_children()
+        self.value = initial_value
         if initial_value != 1.:
             self.set_value(initial_value)
 
+    def auto_text_refresh(self):
+        text = self.get_str_value_times() + "%"
+        self.life_text.set_text(text, adapt_parent=False)
+        self.life_text.center_on(self.e_frame)
+
     def set_value(self, value):
+        """The value of a lifebar must be greater than zero. It will automatically be set to zero if you put greater value."""
+        value = 0 if value < 0 else value
+        self.value = value
         x = self.e_rect.rect.x
         size = value*self.max_length
         self.e_rect.set_size((size, None), False, False)
         self.e_rect.set_topleft(x, self.e_rect.rect.y)
+        if self.auto_show_percentage:
+            self.auto_text_refresh()
 
     def get_value(self):
-        return self.e_rect.get_current_width() / self.max_length
+        return self.value
+        # return self.e_rect.get_current_width() / self.max_length
     
     def get_str_value_times(self, factor=100, rounding=-1):
         """Return the value of the bar times a given factor. By default, the factor is 100 so that
@@ -2568,6 +2593,8 @@ class Lifebar(Group):
     #     self.e_rect.refresh_surfaces()
     #     #
     #     self.life_text.center_on(self.e_rect)
+
+
     
 class WaitingBar(Lifebar):
     """Auto-animated element indicating to the user he has to wait
@@ -2719,6 +2746,42 @@ class TkDialog(Labelled):
     
     def get_value(self):
         return self.tk_dialog_value.get_value()
+
+
+class HeterogeneousTexts(Group):
+    """Group of text elements with different styles.
+    ***Mandatory arguments***
+    <texts> : a sequence on the form [(text, properties), ...], where the properties are
+    given as a dictionnary, e.g. {"size":12, "name":"arial", "color":(255,0,0)}.
+    ***Optional arguments***
+    <mode> : "v", "h", "grid" or None. Specify None if you do not want to sort elements.
+    <margins> : 2-tuple of integers for x- and y-margins (in pixels)
+    <gap> : integer value for the spacing between elements (in pixels)
+    <nx> : number of columns if grid mode is used, or 'auto'
+    <ny> : number of lines if grid mode is used, or 'auto'
+    <align> : alignement of the choices in the list. Either 'center' (for both vertical and horizontal mode) or 'left', 'right' (for horizontal mode) or 'top', 'bottom' (for vertical mode)
+    """
+
+    def __init__(self, texts, mode="h", margins=(5, 0), gap=0, nx="auto", ny="auto", align="auto"):
+        elements = []
+        if align == "auto":
+            if mode == "h":
+                align = "bottom"
+            elif mode == "v":
+                align = "left"
+            else:
+                align = "center"
+        for text, properties in texts:
+            e = Text(text, generate_surfaces=False)
+            e.set_style_attr("margins", (0,0), refresh=False)
+            for property_name, value in properties.items():
+                e.set_style_attr("font_"+property_name, value, refresh=False)
+            e.generate_surfaces()
+            elements.append(e)
+        super().__init__(elements, mode, margins, gap, nx, ny, align)
+
+
+
 
 
 #Elements classes starting with underscore are not meant to be used by end-user code. They are wrappers for style behaviour.

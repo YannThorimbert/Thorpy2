@@ -18,6 +18,7 @@ from . import sorting
 from . import shadows
 from . import parameters as p
 from . import loops
+from . import graphics
 import warnings
 
 arrow_cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_ARROW)
@@ -140,6 +141,17 @@ class Element:
         <apply_to_children> : (bool) apply the same change to children elements.
         """
         self.set_style_attr("bck_color", color, states, copy_style, refresh, apply_to_children)
+
+    def get_bck_color(self):
+        """Returns self's background color if there is a style attached to this element."""
+        return self.get_style("normal").bck_color
+    
+
+    def get_main_bck_color(self):
+        """Returns self's main background color if there is a style attached to this element.
+        The difference with get_bck_color is that the latter can return gradient color, whereas
+        get_main_bck_color necessarily returns either a single RGB tuple, a single RGBA tuple or None."""
+        graphics.get_main_color(self.get_bck_color())
 
     def set_font_color(self, color, states="all", copy_style=True, refresh=True, apply_to_children=False):
         """Set the font color of the element (depending on how its style handles it).

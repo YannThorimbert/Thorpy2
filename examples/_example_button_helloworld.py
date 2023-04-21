@@ -1,4 +1,4 @@
-"""Minimalistic example : we declare a button and put in the center of the screen."""
+"""Minimalistic example : a button is declared and displayed in the center of the screen."""
 #tags: button, hello world, helloworld, center, centering, click, simple, get_updater, center_on, init, call_before_gui
 
 import pygame

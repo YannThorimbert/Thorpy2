@@ -701,3 +701,13 @@ def refresh_all_elements_style(root=None):
     for e in root.get_all_descendants():
         refresh_all_states_style(e)
 
+def get_theme_bck_color():
+    """Returns current Button theme color."""
+    return Button.style_normal.bck_color
+
+def get_theme_main_bck_color():
+    """Returns current Button theme color.
+    The difference with get_theme_bck_color is that the latter can return gradient color, whereas
+    get_theme_main_bck_color necessarily returns either a single RGB tuple, a single RGBA tuple or None."""
+    return graphics.get_main_color(Button.style_normal.bck_color)
+
