@@ -114,6 +114,7 @@ class BaseStyle:
     bck_color = (220,)*3
     shadowgen = None
     offset = (0,0)
+    radius = 0
     # draw_in_2_times = False
 
     def __init__(self): #en chantier, a tester sur example thorpy
@@ -459,6 +460,7 @@ class BaseStyle:
         c.shadowgen = self.shadowgen #copy shadowgen too ?
         c.offset = self.offset
         c.has_second_draw = self.has_second_draw
+        c.radius = self.radius
         return c
 
 
@@ -599,7 +601,6 @@ class RoundStyle(BaseStyle):
 
     def copy(self):
         c = BaseStyle.copy(self)
-        c.radius = self.radius
         c.force_radius = self.force_radius
         c.n_smooth = self.n_smooth
         c.border_color = self.border_color
@@ -676,7 +677,6 @@ class ClassicStyle(BaseStyle):
     light_factor = 1.3
     light_offset = 80
     pressed_text_delta = "auto"
-    radius = 0
 
     def __init__(self):
         BaseStyle.__init__(self)
@@ -820,7 +820,6 @@ class TitleBoxSimpleStyle(TitleBoxClassicStyle):
 
     def copy(self):
         c = TitleBoxClassicStyle.copy(self)
-        c.radius = self.radius
         c.force_radius = self.force_radius
         c.n_smooth = self.n_smooth
         return c

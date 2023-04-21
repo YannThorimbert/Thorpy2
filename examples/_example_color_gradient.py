@@ -1,6 +1,6 @@
 """We show here how to utilise color gradient graphics from Thorpy.
 """
-#tags: color, color gradient, color transition, color_rect, gradient
+#tags: color, color gradient, fx, color transition, color_rect, gradient
 
 import math
 import pygame

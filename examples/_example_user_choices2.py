@@ -1,5 +1,5 @@
 """We show here how to let the user choose among different textual options."""
-#tags: AlertWithChoices, launch_alone
+#tags: AlertWithChoices, events handling, launch_alone
 
 import pygame, thorpy as tp
 

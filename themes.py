@@ -1,12 +1,8 @@
-from email.mime import base
-from numpy import isin
-import pygame
-from pyparsing import col
 from . import styles
 from .elements import Box, TitleBox, Button, Text, Line, assign_styles, DropDownList, ImageButton
 from .elements import TextInput, Slider, Image, Helper, Checkbox, Radio, SwitchButton, ToggleButton
 from .elements import DeadButton, _DropDownButton, _LabelButton, _DraggerButton, _SliderBar, _ColorFrameForColorPicker
-from .elements import ColorPicker, ColorPickerRGB, SwitchButtonWithText
+from .elements import ColorPicker, ColorPickerRGB, SwitchButtonWithText, _ButtonColor
 from .graphics import darken, enlighten, change_alpha
 from thorpy import graphics
 from .shadows import propose_shadowgen
@@ -25,6 +21,19 @@ def apply_default_colorpickers():
     _ColorFrameForColorPicker.style_normal = styles.RoundStyle()
     ColorPicker.style_normal = Button.style_normal.copy()
     ColorPickerRGB.style_normal = Button.style_normal.copy()
+    #
+    _ButtonColor.style_normal = Button.style_normal.copy()
+    _ButtonColor.style_hover = Button.style_hover.copy()
+    _ButtonColor.style_pressed = Button.style_pressed.copy()
+    _ButtonColor.style_locked = Button.style_locked.copy()
+    set_style_attr("radius", min(0.2, _ButtonColor.style_normal.radius), "all", only_to_cls=[_ButtonColor])
+    
+# def correct_buttoncolor_radius():
+    # _ButtonColor.style_normal = Button.style_normal.copy()
+    # _ButtonColor.style_hover = Button.style_hover.copy()
+    # _ButtonColor.style_pressed = Button.style_pressed.copy()
+    # _ButtonColor.style_locked = Button.style_locked.copy()
+    # set_style_attr("radius", min(0.2, _ButtonColor.style_normal.radius), "all", only_to_cls=[_ButtonColor])
 
 def apply_default_image_style():
     Image.style_normal = styles.ImageStyle()
@@ -223,6 +232,7 @@ def theme_classic():
     apply_default_checkbox(styles.ClassicStyle)
     apply_default_radio(styles.CircleStyle)
     apply_default_switch()
+    apply_default_colorpickers()
     #end
     assign_styles()
 
@@ -291,6 +301,8 @@ def theme_round_gradient(colors=((254,218,117), (250,126,30), (214,41,118), (79,
                    "pressed", only_to_cls=[Button, ToggleButton, SwitchButton])
     _DropDownButton.style_hover.font_color = graphics.get_main_color(colors)
     _DropDownButton.style_hover.bck_color = (0,)*4
+    apply_default_colorpickers()
+    
 
 def theme_round2(colors=((209,79,153), (255, 86, 105), "h")):
     theme_round(base_color=colors)
@@ -315,6 +327,8 @@ def theme_round2(colors=((209,79,153), (255, 86, 105), "h")):
     Box.style_locked.bck_color = Box.style_normal.bck_color
     apply_default_radio(styles.CircleStyle, bck_color=(200,)*3, colorkey=(0,0,0))
     DropDownList.style_normal.bck_color = Button.style_pressed.bck_color
+    apply_default_colorpickers()
+    # correct_buttoncolor_radius()
 
 def theme_human(color=None):
     # Button.style_normal.has_second_draw = False
@@ -329,6 +343,7 @@ def theme_human(color=None):
     Button.style_pressed.bck_color = (color[1], color[0], color[-1])
     for s in Line.iter_styles():
         s.bck_color = graphics.get_main_color(s.bck_color)
+    apply_default_colorpickers()
 
 def theme_simple():
     p.current_theme = "simple"
@@ -374,6 +389,7 @@ def theme_simple():
     SwitchButton.style_hover.border_color = (0,0,255)
     SwitchButton.style_hover.border_thickness = 1
     SwitchButton.style_pressed = SwitchButton.style_hover.copy()
+    apply_default_colorpickers()
     #
     assign_styles()
 
@@ -419,6 +435,7 @@ def theme_text():
     apply_default_radio(styles.CircleStyle)
     apply_default_switch()
     SwitchButton.style_normal.bck_color = (255,)*3
+    apply_default_colorpickers()
     #
     assign_styles()
 
@@ -474,6 +491,7 @@ def theme_text_dark():
     apply_default_checkbox(styles.SimpleStyle)
     apply_default_radio(styles.CircleStyle, bck_color=(200,)*3, colorkey=(0,0,0))
     apply_default_switch()
+    apply_default_colorpickers()
     #
     assign_styles()
 

@@ -6,7 +6,7 @@ buttons along with the actual text input.
 
 Just comment out the numerous customization parameters to try different options.
 """
-#tags:  text input, TextInput, type text, text insertion, text inserter
+#tags:  text input, TextInput, type text, text insertion, events handling, text inserter
 
 import pygame
 import thorpy as tp

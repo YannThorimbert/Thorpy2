@@ -18,7 +18,7 @@ such as tp.Box.
 
 For details about how to sort elements, see the examples devoted to sorting.
 """
-#tags: group, set_topleft, sort_children, stick_to, sorting, store elements, parent, children, invisible, order, order elements, Box, group of groups
+#tags: group, set_topleft, grouping & positioning, sort_children, stick_to, sorting, store elements, parent, children, invisible, order, order elements, Box, group of groups
 
 
 import pygame, random

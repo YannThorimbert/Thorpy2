@@ -1,5 +1,5 @@
 """We show here how to define the behaviour of a button when it is clicked, dragged and hovered by the user."""
-#tags: at_unclick, at_hover, at_unhover, at_drag, at_cancel, set_draggable
+#tags: at_unclick, events handling, at_hover, at_unhover, at_drag, at_cancel, set_draggable
 
 import pygame
 import thorpy as tp

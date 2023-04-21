@@ -43,7 +43,7 @@ def get_group(group_name, box_cls="box"):
     check = tp.Labelled("Checkbox:",tp.Checkbox(True))
     radio = tp.Labelled("Radio:",tp.Radio(True))
     text_input = tp.Labelled("Text input:",tp.TextInput("", "Type text here"))
-    slider = tp.SliderWithText("Value:", 10, 80, 30, "h", 100, edit=True) #slider is labelled by default
+    slider = tp.SliderWithText("Value:", 10, 80, 30, 100, edit=True) #slider is labelled by default
     toggle = tp.ToggleButton("Toggle button", value=False)
     switch = tp.SwitchButtonWithText("Switch:", ("Foo","Bar")) #switch is labelled by default
     

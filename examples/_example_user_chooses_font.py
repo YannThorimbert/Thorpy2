@@ -1,7 +1,7 @@
 """
 In this example, we let the user choose a font amongst the available system fonts.
 """
-#tags: set_style, set_font_name, set_value, DropDownListButton, fonts, set_font_size
+#tags: set_style, events handling, set_font_name, set_value, DropDownListButton, fonts, set_font_size
 
 import pygame
 import thorpy as tp
@@ -34,7 +34,7 @@ ddl = tp.DropDownListButton(buttons,
                                 launch_nonblocking=True)
 choose_font = tp.Labelled("Choose a font ("+str(len(fonts))+" fonts detected)", ddl )
 choose_font.set_value(tp.get_default_font())
-font_size = tp.SliderWithText("Font size", 8, 30, 20, "h", 100)
+font_size = tp.SliderWithText("Font size", 8, 30, 20, 100)
 text = tp.Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
 text.set_max_text_width(400)
 text.set_font_color((150,)*3)

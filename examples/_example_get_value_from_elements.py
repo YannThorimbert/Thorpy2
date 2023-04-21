@@ -1,6 +1,6 @@
 """Elements like sliders, text input, colorpicker and so on store values.
 We show here how to interact with element's value."""
-#tags: interact, interaction, get_value, set_value
+#tags: interact, interaction, get_value, events handling, set_value
 
 import pygame
 import thorpy as tp
@@ -17,7 +17,7 @@ title = tp.Text("Initial title")
 title.set_font_size(40)
 title.stick_to(screen, "top", "top")
 text_input = tp.Labelled("Screen's title:",tp.TextInput("", title.get_value()))
-slider = tp.SliderWithText("Title offset:", -100, 100, 0, "h", 200, edit=True) #slider is labelled by default
+slider = tp.SliderWithText("Title offset:", -100, 100, 0, 200, edit=True) #slider is labelled by default
 
 def refresh():#some function that you call once per frame
     if check.get_value(): #user wants black background

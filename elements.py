@@ -974,9 +974,9 @@ class SliderWithText(Element):
     <min_value> : minimum value of the slider.
     <max_value> : maximum value of the slider.
     <initial_value> : initial value of the slider (must be in the range you chose)
-    <mode> : either 'h' (horitontal) or 'v' (vertical).
     <length> : length of the slider bar along the axis defined by the mode.
     ***Optional arguments***
+    <mode> : either 'h' (horitontal) or 'v' (vertical).
     <show_value_on_right_side> : (bool) dynamically display (or not) the current value on the right side of the slider.
     <round_decimal> : (bool) used to round the result (e.g. round_decimals=2 will give results with 2 decimals). By default it is set to -1 ; in this case the result is an integer.
     <show_value_on_cursor> : (bool) used to display the value on the slider's dragger. This is experimental for now and
@@ -990,7 +990,7 @@ class SliderWithText(Element):
 
     
 
-    def __init__(self, text, min_value, max_value, initial_value, mode, length, edit=True, thickness=5,
+    def __init__(self, text, min_value, max_value, initial_value, length, mode="h",  edit=True, thickness=5,
                     show_value_on_right_side=True, round_decimals=-1, show_value_on_cursor=False,
                     dragger_size=None, set_when_click=True):
         self.min_value = min_value
@@ -1605,7 +1605,7 @@ class LabelledColorPicker(Labelled):
         img = pygame.Surface(color_size)
         img.fill(element.get_value())
         imgb = ImageButton("",img,no_copy=True)
-        button_col = Button("")
+        button_col = _ButtonColor("")
         button_col.add_child(imgb)
         button_col.englobe_children()
         super().__init__(label, button_col)
@@ -2799,4 +2799,7 @@ class _SliderBar(Line):
     ...
 
 class _ColorFrameForColorPicker(DeadButton):
+    ...
+
+class _ButtonColor(Button):
     ...

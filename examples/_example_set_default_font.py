@@ -1,5 +1,5 @@
 """We show here how to apply a given font as the default one"""
-#tags: set_default_font, font, fontname, fontnames, fonts, list of fonts, default font, set_font_name, set_font_size
+#tags: set_default_font, advanced styling, events handling, font, fontname, fontnames, fonts, list of fonts, default font, set_font_name, set_font_size
 
 import pygame, thorpy as tp
 

@@ -1,5 +1,5 @@
 """We show here how to set up a drop down list (list of predefined choices that the user can click)"""
-#tags: DropDownListButton, DropDownList, choices, drop down, drop down list, list menu, list, Labelled
+#tags: DropDownListButton, events handling, DropDownList, choices, drop down, drop down list, list menu, list, Labelled
 
 import pygame, thorpy as tp
 
@@ -32,6 +32,8 @@ ddl3 = tp.DropDownListButton(("Beginner", "Intermediate", "Expert", "Pro"),
                                 generate_shadow=(True, "auto"))#[0] : does generate shadow ? [1] : fast method or accurate method ? you can set [1] = "auto"
 
 ddl3_labelled = tp.Labelled("Third example", ddl3)
+
+#to get the value of any my_ddl, just call my_ddl.get_value()
 
 group = tp.Box([ddl1_labelled, ddl2_labelled, ddl3_labelled])
 group.get_updater().launch()

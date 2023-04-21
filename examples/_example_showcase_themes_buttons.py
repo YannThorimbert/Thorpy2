@@ -1,6 +1,6 @@
 """This code instantiates the most common types of elements one needs when building a GUI. It also
 allows the user to browse some of the default themes. See the showcase number 2 to check all the default themes."""
-#tags: showcase, Button, SliderWithText, Text, Checkbox, Radio, DropDownListButton, Labelled, ToggleButton, SwitchButtonWithText, SwitchButton, TitleBox, Group
+#tags: showcase, Button, grouping & positioning, SliderWithText, Text, Checkbox, Radio, DropDownListButton, Labelled, ToggleButton, SwitchButtonWithText, SwitchButton, TitleBox, Group
 
 import sys; sys.path.insert(0, "./")
 import pygame

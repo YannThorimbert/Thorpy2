@@ -16,14 +16,14 @@ slider1 = tp.Slider(mode="h", length=200,
                         set_when_click=True) #whether user can click a point in the slider range
 
 # Sliders with text and more options
-slider3 = tp.SliderWithText("How old are you ?", 18, 77, 25, "h", 200)
+slider3 = tp.SliderWithText("How old are you ?", 18, 77, 25, 200)
 slider4 = tp.SliderWithText("How many games should we play ?",
                                 1, 10, 3, #min, max and initial values
-                                "h", 50, #mode and length
+                                50, "h", #length and orientation
                                 dragger_size=(10,20),
                                 show_value_on_right_side=True,
                                 edit=True) #allow to edit value as a text
-slider5 = tp.SliderWithText("Fine tune some number\n(from -2 to 2)", -2, 2, 1.5, "h", 200,
+slider5 = tp.SliderWithText("Fine tune some number\n(from -2 to 2)", -2, 2, 1.5, 200,
                                 round_decimals=3) #by default, 2 decimals
                                 
 

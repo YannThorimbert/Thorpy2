@@ -1,7 +1,7 @@
 """We load here an animated gif (explosion.gif) and play it on screen.
 First version is repeating (loop).
 Second version launch once. We also show how to launch it again."""
-#tags: gif, animated gif, animated, animation, animatedgif, image, explosion
+#tags: gif, animated gif, fx, animated, animation, animatedgif, image, explosion
 
 import sys, pygame, thorpy as tp
 

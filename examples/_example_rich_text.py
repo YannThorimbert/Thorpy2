@@ -14,7 +14,7 @@ Text properties that are modified at the element level :
 To mix font families or font sizes, you should rather consider to wrap your elements into a parent
 that sorts its elements horizontally.
 """
-#tags: set_font_rich_text_tag, rich text, rich, text, color text, color, text style, text styling, align, set_font_auto_multilines_width, set_style_attr
+#tags: set_font_rich_text_tag, advanced styling, rich text, rich, text, color text, color, text style, text styling, align, set_font_auto_multilines_width, set_style_attr
 
 import pygame
 import thorpy as tp

@@ -1,5 +1,5 @@
 """We show here several methods to impose a maximum text width to an element."""
-#tags: text width, text, max text width, font_auto_multilines_width, set_max_text_width, set_size, set_style_attr, set_size, set_text
+#tags: text width, text, max text width, font_auto_multilines_width, advanced styling, set_max_text_width, set_size, set_style_attr, set_size, set_text
 
 import pygame
 import thorpy as tp

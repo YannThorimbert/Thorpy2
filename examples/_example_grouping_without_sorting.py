@@ -2,7 +2,7 @@
 We show here how to group elements inside a common parent without
 changing the way the elements are arranged.
 """
-#tags: group, sorting, store elements, parent, children, invisible, order, order elements, Box, stick_to
+#tags: group, sorting, grouping & positioning, store elements, parent, children, invisible, order, order elements, Box, stick_to
 
 
 import pygame, random

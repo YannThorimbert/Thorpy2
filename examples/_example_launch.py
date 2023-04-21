@@ -7,7 +7,7 @@ Here are the 3 ways such a new element can be integrated :
     2) blocking (i.e. the others elements are frozen but are shown, until the new element is closed)
     3) non-blocking (i.e. the new element is integrated to the current menu and will be removed when closed)
 """
-#tags: pop, alert, set_draggable, pop alert, launch, launch menu, launch alert, pop up, pop-up, launch_nonblocking, launch_alone, launch_and_lock_others
+#tags: pop, events handling, alert, set_draggable, pop alert, launch, launch menu, launch alert, pop up, pop-up, launch_nonblocking, launch_alone, launch_and_lock_others
 
 import math
 import pygame

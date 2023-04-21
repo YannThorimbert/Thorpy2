@@ -1,5 +1,5 @@
 """We show here how to declare heterogeneous text, i.e. text with mixed font styles."""
-#tags: font, font styles, HeterogeneousTexts
+#tags: font, font styles, HeterogeneousTexts, advanced styling,
 
 import pygame
 import thorpy as tp

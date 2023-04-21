@@ -1,5 +1,5 @@
 """Quick alert pop up example"""
-#tags: alert, popup, pop up, pop-up, launch, launch_alone
+#tags: alert, popup, pop up, pop-up, launch, launch_alone, events handling
 
 import pygame, thorpy as tp
 

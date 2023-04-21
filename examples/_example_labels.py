@@ -4,7 +4,7 @@ NB : you can always access the labeled element as my_label.element.
 Also, my_label.get_value() and my_label.set_value() are wrapping the actual labelled element,
 so you can call them from the label.
 """
-#tags: label, text, wrap, Labelled, SwitchButtonWithText
+#tags: label, text, wrap, grouping & positioning, Labelled, SwitchButtonWithText
 
 import pygame, random
 import thorpy as tp
@@ -19,7 +19,7 @@ def refresh():
 check = tp.Labelled("Checkbox:",tp.Checkbox(True))
 radio = tp.Labelled("Radio:",tp.Radio(True))
 text_input = tp.Labelled("Text input:",tp.TextInput("", "Type text here"))
-slider = tp.SliderWithText("Value:", 10, 80, 30, "h", 100, edit=True) #slider is labelled by default
+slider = tp.SliderWithText("Value:", 10, 80, 30, 100, edit=True) #slider is labelled by default
 switch = tp.SwitchButtonWithText("Switch:", ("Foo","Bar")) #switch is labelled by default
 ddl = tp.Labelled("DropDownList",tp.DropDownListButton(("Beginner", "Intermediate", "Expert", "Pro"), bck_func=refresh))
 

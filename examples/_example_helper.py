@@ -1,6 +1,6 @@
 """We show here how to set up a helper (or hint) that is displayed to the user when an element is hovered
 for a given amount of time"""
-#tags: help, hint, display help, display hint, trigger help, launch help, helper
+#tags: help, hint, events handling, display help, display hint, trigger help, launch help, helper
 
 import pygame, thorpy as tp
 

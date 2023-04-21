@@ -1,5 +1,5 @@
 """In this example we show how to customize GUI style from a default theme."""
-#tags: style, styling, default, default style, set default style, mystyle, assign style, theme, customize theme, set_style_attr, set_default_font
+#tags: style, styling, advanced styling, default, default style, set default style, mystyle, assign style, theme, customize theme, set_style_attr, set_default_font
 import sys; sys.path.insert(0, "./")
 import pygame
 import thorpy as tp
@@ -9,7 +9,7 @@ pygame.init()
 W, H = 1200, 700
 screen = pygame.display.set_mode((W,H))
 
-tp.set_default_font("PressStart2P-Regular.ttf", 15) #must come before init
+tp.set_default_font(["PressStart2P-Regular.ttf", "arial"], 20) #must come before init
 tp.init(screen, tp.theme_human) #here we start from 'human' theme as starting point
 
 #set elements radius to 40% of their own height, except for boxes
@@ -33,7 +33,7 @@ tp.TitleBox.style_normal.right_line = False
 elements = [tp.Text("Hello, world.\nHere is some text."),
             tp.Button("Test"),
             tp.Box([tp.Button("Button"+str(i)) for i in range(5)]),
-            tp.Box([tp.SliderWithText("Choose value", 20, 120, 50, "h", length=120, dragger_size=(20,20))])]
+            tp.Box([tp.SliderWithText("Choose value", 20, 120, 50, length=120, dragger_size=(20,20))])]
 
 
 grp = tp.TitleBox("Hello, world", children=elements)

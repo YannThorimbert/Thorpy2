@@ -26,7 +26,7 @@ max_fps = 120
 
 fps = tp.ShowFPS(clock, pre="FPS:")
 help_text = """Indicate below the number of new rectangles to blit each frame (to put pressure on FPS)"""
-n = tp.SliderWithText("Number of rects", 0, 800, 0, "h", 400)
+n = tp.SliderWithText("Number of rects", 0, 800, 0, 400)
 descr = tp.Text(help_text, max_width=1000)
 box = tp.TitleBox("Show FPS example", [fps, descr, n])
 box.center_on(screen)

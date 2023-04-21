@@ -2,7 +2,7 @@
 We show here how to set up a pool of Togglables (on/off) elements, in such a way that
 only once at a time is in the state 'on'. This can be seen as a system of tabs.
 """
-#tags: TogglablesPool, ToggleButton, Togglable, radio, checkbox
+#tags: TogglablesPool, grouping & positioning, events handling, ToggleButton, Togglable, radio, checkbox
 
 import pygame
 import thorpy as tp

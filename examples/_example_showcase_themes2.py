@@ -1,6 +1,6 @@
 """This code instantiates the most common types of elements one needs when building a GUI. It also
 allows the user to browse the default themes."""
-#tags: showcase, Button, SliderWithText, Text, Checkbox, Radio, DropDownListButton, Labelled, ToggleButton, SwitchButtonWithText, SwitchButton, TitleBox, Group
+#tags: showcase, Button, grouping & positioning, SliderWithText, Text, Checkbox, Radio, DropDownListButton, Labelled, ToggleButton, SwitchButtonWithText, SwitchButton, TitleBox, Group
 
 import pygame
 import thorpy as tp
@@ -32,7 +32,7 @@ tp.call_before_gui(refresh) #tells thorpy to call refresh() before drawing gui.
 
 def get_group(group_name):
     button = tp.Button("Standard button")
-    slider = tp.SliderWithText("Value :", 10, 80, 30, "h", 100)
+    slider = tp.SliderWithText("Value :", 10, 80, 30, 100)
     text2 = tp.Text(tp.gametools.lorem_ipsum(3))
     text2.set_font_auto_multilines_width(W//4)
     ddlb = tp.DropDownListButton(("Camel", "Cat", "Dog", "Goat"))
@@ -40,8 +40,7 @@ def get_group(group_name):
     check = tp.Labelled("Checkbox:",tp.Checkbox(True))
     radio = tp.Labelled("Radio:",tp.Radio(True))
     text_input = tp.Labelled("Text input:",tp.TextInput("", "Type text here"))
-    slider = tp.SliderWithText("Value:", 10, 80, 30, "h", 100, edit=True) #slider is labelled by default
-    # toggle = tp.ToggleButton("Toggle button", value=False)
+    slider = tp.SliderWithText("Value:", 10, 80, 30, 100, edit=True) #slider is labelled by default
     toggle = tp.TogglablesPool("TogglablesPool", ("Beginner", "Intermediate", "Advanced"), "Beginner")
     switch = tp.SwitchButtonWithText("Switch:", ("Foo","Bar")) #switch is labelled by default
     colorpicker =  tp.LabelledColorPicker("Colorpicker:", tp.ColorPicker())

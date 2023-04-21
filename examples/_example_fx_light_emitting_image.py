@@ -1,5 +1,5 @@
 """We show here how to make an object emit light"""
-#tags: light, light emitter, light emission, lighting, emit light, oscillating light, oscillating, generate_oscillating_lights, image
+#tags: light, fx, light emitter, light emission, lighting, emit light, oscillating light, oscillating, generate_oscillating_lights, image
 import sys; sys.path.insert(0, "./")
 import pygame, sys, thorpy as tp
 

@@ -3,7 +3,7 @@ We show here how to declare and use a basic Box or TitleBox.
 A box is an element that is used to display other elements (children elements).
 A TitleBox has a title whereas a Box doesn't.
 """
-#tags: box, title box, titlebox, sorting, children
+#tags: box, title box, grouping & positioning, titlebox, sorting, children
 
 import pygame
 import thorpy as tp

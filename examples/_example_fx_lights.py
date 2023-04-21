@@ -1,5 +1,5 @@
 """Inspired by FluffyPotatoe's example on youtube, but improved blurry lights"""
-#tags: light, light emitter, light emission, lighting, emit light, particle, particles, oscillating light, oscillating, generate_oscillating_lights, image
+#tags: light, fx, light emitter, light emission, lighting, emit light, particle, particles, oscillating light, oscillating, generate_oscillating_lights, image
 
 
 import pygame, sys, random

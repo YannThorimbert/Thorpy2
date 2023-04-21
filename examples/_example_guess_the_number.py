@@ -1,5 +1,5 @@
 """Minigame example using some thorpy elements and coupling them with user input."""
-#tags: minigame, game, guess the number, SliderWithText, Button, sort_children, Group, Box, set_text, at_unclick, AlertWithChoices, launch_alone
+#tags: minigame, events handling, grouping & positioning, game, guess the number, SliderWithText, Button, sort_children, Group, Box, set_text, at_unclick, AlertWithChoices, launch_alone
 
 import pygame, random
 import thorpy as tp
@@ -15,7 +15,7 @@ tp.set_default_font(("arialrounded", "arial", "calibri", "century"), font_size=2
 tp.init(screen, tp.theme_round2) #bind screen to gui elements and set theme
 
 # *** Declare UI elements ***
-guess_slider = tp.SliderWithText("Choose a number", 1, 100, 50, "h", 300, dragger_size=(50,20))
+guess_slider = tp.SliderWithText("Choose a number", 1, 100, 50, 300, dragger_size=(50,20))
 try_guess_button = tp.Button("This is my guess")
 hint_text = tp.Text("Guess a number between 1 and 100!", font_size=30, font_color=(255,)*3)
 attempts_text = tp.HeterogeneousTexts([("Remaining attempts: ", {"size":30, "color":(255,)*3}),
