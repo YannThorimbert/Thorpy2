@@ -5,12 +5,13 @@ import pygame, thorpy as tp
 
 pygame.init()
 
+
+
+screen = pygame.display.set_mode((1200, 700))
 #You can pass a sequence of desired fonts. The first one matching the avalaible
 # fonts for user will be chosen.
 tp.set_default_font(("arialrounded", "arial", "calibri", "century"), 
                     font_size=20) 
-
-screen = pygame.display.set_mode((1200, 700))
 tp.init(screen, tp.theme_human) #must come after set_default_font
 
 my_button = tp.Button("First button")

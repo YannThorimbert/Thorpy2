@@ -21,7 +21,7 @@ hint_text = tp.Text("Guess a number between 1 and 100!", font_size=30, font_colo
 attempts_text = tp.HeterogeneousTexts([("Remaining attempts: ", {"size":30, "color":(255,)*3}),
                                        ("5/5", {"color":(255,0,0), "size":30})])
 
-# *** Set elements location on screen ***
+# *** Grouping elements ***
 group1 = tp.Group([guess_slider, try_guess_button])
 group1.sort_children("h")
 group1.center_on(screen)

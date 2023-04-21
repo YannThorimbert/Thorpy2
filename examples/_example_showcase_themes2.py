@@ -41,9 +41,11 @@ def get_group(group_name):
     radio = tp.Labelled("Radio:",tp.Radio(True))
     text_input = tp.Labelled("Text input:",tp.TextInput("", "Type text here"))
     slider = tp.SliderWithText("Value:", 10, 80, 30, "h", 100, edit=True) #slider is labelled by default
-    toggle = tp.ToggleButton("Toggle button", value=False)
+    # toggle = tp.ToggleButton("Toggle button", value=False)
+    toggle = tp.TogglablesPool("TogglablesPool", ("Beginner", "Intermediate", "Advanced"), "Beginner")
     switch = tp.SwitchButtonWithText("Switch:", ("Foo","Bar")) #switch is labelled by default
-    right_panel = tp.Box([button, text_input, slider, text2, dropdownlist, 
+    colorpicker =  tp.LabelledColorPicker("Colorpicker:", tp.ColorPicker())
+    right_panel = tp.Box([button, text_input, slider, text2, dropdownlist, colorpicker,
                                check, toggle, radio, switch])
     left_panel = tp.Group([tp.Button("Button "+str(i)) for i in range(12)], "grid")
     title_box = tp.Group([left_panel, right_panel], "h")

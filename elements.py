@@ -1238,20 +1238,21 @@ class ColorPicker(Element):
         elif mode == "red":
             col_frame = ((0,0,255), (0,0,0), (0,255,0), (0,0,0), "q")
 
-
-        self.colorframe = Button("",generate_surfaces=False)
+        # self.colorframe = Button("",generate_surfaces=False)
+        self.colorframe = _ColorFrameForColorPicker("",generate_surfaces=False)
         self.colorframe.copy_normal_state(True)
         self.colorframe.set_style_attr("radius", 1, refresh=False)
         self.colorframe.set_bck_color(col_frame, refresh=False)
         self.colorframe.set_size((length,height))
         self.colorframe._at_click = self.click_frame
 
-        self.colorelement = Button("", generate_surfaces=False)
+        # self.colorelement = Button("", generate_surfaces=False)
+        self.colorelement = _ColorFrameForColorPicker("", generate_surfaces=False)
         self.colorelement.copy_normal_state(True)
         self.colorelement.set_style_attr("radius", 3, refresh=False)
         self.colorelement.set_size(colorframe_size)
 
-        self.visor = Button("", generate_surfaces=False)
+        self.visor = _ColorFrameForColorPicker("", generate_surfaces=False)
         self.visor.copy_normal_state(True)
         self.visor.set_bck_color((255,255,255,127),refresh=False)
         self.visor.set_size((10,10))
@@ -1594,7 +1595,7 @@ class LabelledColorPicker(Labelled):
     """
 
     def __init__(self, label, element, ok="Ok", cancel="Cancel",
-                 color_size=(20,20), launch_mode="launch_nonblocking"):
+                 color_size=(20,20), launch_mode="launch_alone"):
         if isinstance(element, ColorPickerPredefined):
             validation_choices = (cancel,)
         else:
@@ -2795,4 +2796,7 @@ class _DraggerButton(Button):
     ...
 
 class _SliderBar(Line):
+    ...
+
+class _ColorFrameForColorPicker(DeadButton):
     ...

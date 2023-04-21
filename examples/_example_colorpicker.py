@@ -16,7 +16,6 @@ e3 = tp.LabelledColorPicker("Discrete set", tp.ColorPickerPredefined(auto_cols_s
 my_colors = [(255,0,0), (255,100,100), (255,200,200), (0,0,255), (0,255,0)]
 e4 = tp.LabelledColorPicker("Predefined", tp.ColorPickerPredefined(my_colors, mode="h")) 
 
-
 group = tp.Group([e1,e2,e3,e4])
 
 def before_gui(): #add here the things to do each frame before blitting gui elements

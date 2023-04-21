@@ -5,7 +5,7 @@ from pyparsing import col
 from . import styles
 from .elements import Box, TitleBox, Button, Text, Line, assign_styles, DropDownList, ImageButton
 from .elements import TextInput, Slider, Image, Helper, Checkbox, Radio, SwitchButton, ToggleButton
-from .elements import DeadButton, _DropDownButton, _LabelButton, _DraggerButton, _SliderBar
+from .elements import DeadButton, _DropDownButton, _LabelButton, _DraggerButton, _SliderBar, _ColorFrameForColorPicker
 from .elements import ColorPicker, ColorPickerRGB, SwitchButtonWithText
 from .graphics import darken, enlighten, change_alpha
 from thorpy import graphics
@@ -22,6 +22,7 @@ all_classes = [Box, TitleBox, Button, Text, Line, DropDownList,
 all_themes = "classic", "round", "human", "simple", "text", "text_dark", "game1", "game2", "round_gradient", "round2"
 
 def apply_default_colorpickers():
+    _ColorFrameForColorPicker.style_normal = styles.RoundStyle()
     ColorPicker.style_normal = Button.style_normal.copy()
     ColorPickerRGB.style_normal = Button.style_normal.copy()
 
@@ -547,6 +548,7 @@ def theme_game1(base_style=None,
     #Sliders
     # apply_default_slider(base_style, (220,)*3) 
     apply_default_slider(base_style, Button.style_hover.bck_color)
+    _SliderBar.style_normal = styles.RoundStyle()
     _SliderBar.style_normal.bck_color = enlighten(Button.style_hover.bck_color)
     # apply_variation(_SliderBar)
     #Images

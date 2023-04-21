@@ -6,8 +6,9 @@ import pygame, math, thorpy as tp
 
 pygame.init()
 
-tp.set_default_font("arialrounded", 15)
+
 screen = pygame.display.set_mode((1200, 700))
+tp.set_default_font("arialrounded", 15)
 tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 
 

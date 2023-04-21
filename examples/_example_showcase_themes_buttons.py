@@ -11,7 +11,6 @@ pygame.init()
 W,H = 1920, 780 #Full HD
 screen = pygame.display.set_mode((W,H))
 tp.set_default_font("arial", 20)
-
 tp.init(screen)
 
 bck = pygame.image.load(tp.fn("data/bck.jpg")) #load some background pic for testing
