@@ -13,6 +13,8 @@ in the file canonical.py for the Element class, and maybe redefined for the spec
 of your element in elements.py. <br><br>
 
 """
+
+MY_TODO = 0
 import pygame
 from . import sorting
 from . import shadows
@@ -287,6 +289,7 @@ class Element:
         """
         self.rect.x += dx
         self.rect.y += dy
+        if self.id == 49 and (dx!= 0 or dy!=0): print("Move",dx,dy,self.rect)
         for e in self.children:
             e.move(dx,dy)
 
@@ -429,6 +432,13 @@ class Element:
         if self.state != "unactive": #self.styles[self.state]: #e.g. ghost has no style
             self.generate_surfaces()
         self.rect.center = center
+        if self.id == 49:
+            print("***Resized",self.rect, size, self.it)
+            global MY_TODO
+            MY_TODO += 1
+            if MY_TODO > 4:
+                assert False
+            # TODO: pourquoi set_size appelé tant de fois pour box, durant les update ?
         if adapt_parent and self.parent:
             self.parent.resort()
 

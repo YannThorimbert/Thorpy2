@@ -9,6 +9,7 @@ from . import sound
 from . import shadows
 from .shadows import Shadow
 from . import gametools
+from .monitoring import Monitor
 
 from .canonical import arrow_cursor, hand_cursor
 
@@ -71,7 +72,10 @@ def refresh_waiting_bar():
     """Function to call each time the waiting bar has to be updated and drawn to the screen."""
     parameters.refresh_waiting_bar()
 
-pause = loops.pause
+def pause():
+    """Pauses the application until user press a key."""
+    loops.pause()
+
 get_current_loop = loops.get_current_loop
 quit_current_loop = loops.quit_current_loop
 quit_all_loops = loops.quit_all_loops

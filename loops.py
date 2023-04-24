@@ -2,10 +2,11 @@ import pygame
 
 from . import parameters as p
 
-def pause(debug_msg="Pause thorpy"):
+def pause(debug_msg="Thorpy pause - press a key to continue"):
     print(debug_msg)
     clock = pygame.time.Clock()
     while True:
+        clock.tick(60)
         for e in pygame.event.get():
             if e.type == pygame.KEYDOWN or e.type == pygame.MOUSEBUTTONDOWN:
                 return

@@ -267,7 +267,7 @@ class Box(Element):
             self.generate_surfaces()
         if sort_immediately:
             self.sort_children()
-            self.center_on(p.screen)
+            # self.center_on(p.screen)
 
     def set_resizable(self, x, y, clip_children=True):
         """Set the box resizable by the user by dragging the corner and/or the borders.
@@ -424,7 +424,7 @@ class Box(Element):
                             self.rect.top+s.dragger.rect.h + sbox_margins[1])
             space_allowed = s.rect.h
             self.scrollbar_y_factor = int(max_to_move / space_allowed) + 1
-        sbox = Box([s],False)
+        sbox = Box([s],sort_immediately=False)
         sbox.add_scrollbar_if_needed = False
 ##        sbox.englobe_children(margins=(3,3), adapt_parent=False)
         sbox.rect.center = s.rect.center
@@ -1125,11 +1125,11 @@ class SliderWithText(Element):
             if self.edit:
                 if text != self.value_text.get_value():
                     self.value_text.value = text
-                    self.sort_children(self.mode, gap=10)
+                    # self.sort_children(self.mode, gap=10)
             else:
                 if text != self.value_text.text:
                     self.value_text.set_text(text)
-                    self.sort_children(self.mode, gap=10)
+                    # self.sort_children(self.mode, gap=10)
         return dragged
     
 
@@ -2067,8 +2067,8 @@ class ImageButton(Button):
 
 
 class AnimatedGif(Image):
-    """Animated gif that can be used as a GUI element taking all standard element states
-    (normal, hover, pressed, locked) and actions.
+    """Animation that can be used as a GUI element taking all standard element states
+    (normal, hover, pressed, locked) and actions. 
     ***Mandatory arguments***
     <filename> : filename of a gif file. The frames will automatically be extracted to form pygames surfaces.
     You can also directly provide a sequence of pygame surfaces that are all of the same size.

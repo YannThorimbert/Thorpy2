@@ -494,9 +494,8 @@ def extract_frames(src, out_folder=None, size_factor=(1., 1.)):
             break
     return imgs
 
-def draw_arrow(screen, start_coord, end_coord):
+def draw_arrow(screen, start_coord, end_coord, arrow_color):
     """Draws an arrow on the screen from start_coord to end_coord, pointing towards end_coord."""
-    arrow_color = (255,255,0)
     angle = math.atan2(end_coord[1] - start_coord[1], end_coord[0] - start_coord[0])
     # Draw the arrow line
     pygame.draw.aaline(screen, arrow_color, start_coord, end_coord)
