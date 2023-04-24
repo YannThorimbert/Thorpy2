@@ -9,7 +9,6 @@ pygame.init()
 screen = pygame.display.set_mode((1200, 700))
 tp.init(screen, tp.theme_simple) #bind screen to gui elements and set theme
 
-#TODO invalid for game1
 e1 = tp.LabelledColorPicker("Google-like", tp.ColorPicker())
 e2 = tp.LabelledColorPicker("RGB style", tp.ColorPickerRGB())
 e3 = tp.LabelledColorPicker("Discrete set", tp.ColorPickerPredefined(auto_cols_steps=4))

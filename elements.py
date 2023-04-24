@@ -768,7 +768,7 @@ class TextInput(Button):
             self.showing_cursor = not(self.showing_cursor)
         return dragged
 
-    def can_add(self): #TODO: utiliser size !
+    def can_add(self): #TODO: use size !
         style = self.get_current_style()
         if self.placeholder and not(self.value):
             if self.placeholder_color is None:
