@@ -28,7 +28,7 @@ from .themes import theme_text_dark, theme_game1, set_style_attr, refresh_all_el
 from .styles import get_default_font, set_default_font, get_text_size, get_text_height
 
 
-__version__ = "2.0.3"
+__version__ = "2.0.4"
 
 def set_screen(screen):
     """Set the default surface display for all elements that will be created after this call."""

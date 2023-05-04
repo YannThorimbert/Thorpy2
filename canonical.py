@@ -366,6 +366,8 @@ class Element:
             rect = p.screen.get_rect()
         elif not isinstance(what, pygame.Rect): #works both for surfaces and elements.
             rect = what.get_rect()
+        else:
+            rect = what
         self.set_center(*rect.center)
 
     def stick_to(self, other, self_side, other_side, delta=(0,0), move_x=True, move_y=True):
