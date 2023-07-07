@@ -1129,13 +1129,17 @@ class Element:
         """Return the current state (string) of the element."""
         return self.state
     
-    def set_invisible(self, value):
+    def set_invisible(self, value, recursive=False):
         """Set the element as invisible.
-        <value> : if False, the element is visible, otherwise it is invisible."""
+        <value> : if False, the element is visible, otherwise it is invisible.
+        <recursive> : if True, recursively call this on the children elements."""
         if not value:
             self.state = "normal"
         else:
             self.state = "unactive"
+        if recursive:
+            for e in self.get_children():
+                e.set_invisible(value, recursive)
 
     def set_locked(self, value):
         """Set the current state from 'locked' to 'normal' or from 'normal' to 'locked'.

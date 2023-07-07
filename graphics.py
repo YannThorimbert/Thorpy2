@@ -251,11 +251,13 @@ def get_blurred(surf, radius=2, color_format="RGBA"):
     <color_format> : an accepted color format by PIL."""
     img = pygame_surf_to_pil_img(surf, color_format)
     img = img.filter(ImageFilter.GaussianBlur(radius))
+    img = pil_img_to_pygame_surf(img, color_format)
     return img
 
 def get_shadow(surf, radius=2, black=255, color_format="RGBA", alpha_factor=255,
                decay_mode="exponential", color=(0,0,0)):
-    """_prefer the Shadow class if possible"""
+    """_prefer the Shadow class if possible
+    <black> : gray value below which the pixel is considered as opaque."""
     img = get_black_white(surf, black, color_format)
     img = img.filter(ImageFilter.GaussianBlur(radius))
     img = pil_img_to_pygame_surf(img, color_format)
@@ -659,6 +661,96 @@ def round_rect_aa(color, size, radius, force_radius=False, n_smooth=1.5):
     return surface
 
 
+def draw_pixel_border_ip(surface, border_color, color_empty=None):
+    """This function is very slow and intended to be used once and for all before any loop,
+    most suitably on small sprites. The function uses the defined colorkey as <color_empty> by default."""
+    if not color_empty:
+        color_empty = surface.get_colorkey()
+    if not color_empty:
+        raise Exception("You must provide <color_empty> or a surface with non-None colorkey")
+    w,h = surface.get_size()
+    def draw_pix_if_needed(x,y):
+        color = surface.get_at((x,y))
+        if color != color_empty:
+            gfx.pixel(surface, x, y, border_color) #this or surface.set_at() ?
+            return True
+    for x in range(w): #columns from top to bottom
+        for y in range(h):
+            if draw_pix_if_needed(x,y):
+                break
+    for y in range(h): #lines 
+        for x in range(w): #from left to right
+            if draw_pix_if_needed(x,y):
+                break
+        for x in range(w-1, -1, -1): #from right to left
+            if draw_pix_if_needed(x,y):
+                break
+
+
+def illuminate_border_ip(surface, light_color, orientation, depth, intensity=0.5, color_empty=None):
+    """This function is very slow and intended to be used once and for all before any loop,
+    most suitably on small sprites. The function uses the defined colorkey as <color_empty> by default."""
+    if not color_empty:
+        color_empty = surface.get_colorkey()
+    if not color_empty:
+        raise Exception("You must provide <color_empty> or a surface with non-None colorkey")
+    intensity = 1. - intensity
+    w,h = surface.get_size()
+    def draw_pix_if_needed(x,y):
+        color = surface.get_at((x,y))
+        if color != color_empty:
+            border_color = interpolate_2colors(color[0:len(light_color)], light_color, intensity)
+            gfx.pixel(surface, x, y, border_color) #this or surface.set_at() ?
+            return True
+    if "top" in orientation:
+        for x in range(w): #columns from top to bottom
+            for y in range(h):
+                if draw_pix_if_needed(x,y):
+                    break
+    for y in range(h): #lines 
+        if "left" in orientation:
+            n = 0
+            for x in range(w): #from left to right
+                if draw_pix_if_needed(x,y):
+                    n += 1
+                    if n >= depth:
+                        break
+        if "right" in orientation:
+            n = 0
+            for x in range(w-1, -1, -1): #from right to left
+                if draw_pix_if_needed(x,y):
+                    n += 1
+                    if n >= depth:
+                        break
+
+def scale_image_with_constraint(img, w, h, mode, smooth=True):
+    """Return an image that is scaled so that it fits or fill, without deformation nor cropping,
+    inside a rect of a given size.
+    ***Mandatory arguments***
+    <img> : a Pygame Surface
+    <w>: final width
+    <h>: final height
+    ***Optional arguments***
+    <mode> : (str) either 'fill' or 'fit'.
+    <smooth> : (bool) if True, uses pygame's smoothscale, otherwise uses pygame's scale function."""
+    if smooth:
+        scale_func = pygame.transform.smoothscale
+    else:
+        scale_func = pygame.transform.scale
+    iw, ih = img.get_size()
+    scale_w = w/iw
+    scale_h = h/ih
+    if mode == "fill":
+        if scale_w < scale_h:
+            new_size = int(scale_h*iw), h
+        else:
+            new_size = w, int(scale_w*ih)
+    else:
+        if scale_w > scale_h:
+            new_size = int(scale_h*iw), h
+        else:
+            new_size = w, int(scale_w*ih)
+    return scale_func(img, new_size)
 
 # def draw_aa(color, func, rect, params):
 #     """_Generic function"""

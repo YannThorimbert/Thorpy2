@@ -2675,10 +2675,11 @@ class ShowFPS(Text):
         self.clock = clock
         text = self.pre + str(60) + self.post
         super().__init__(text, font_size, font_color, style_normal, generate_surfaces, only_normal, None)
+        self.adapt_parent = False
 
     def update(self, mouse_delta):
         text = self.pre + str(round(self.clock.get_fps())) + self.post
-        self.set_text(text)
+        self.set_text(text, adapt_parent=self.adapt_parent)
         return super().update(mouse_delta)
 
 class TkDialog(Labelled):
@@ -2714,6 +2715,7 @@ class TkDialog(Labelled):
             self.tk_dialog = fd.asksaveasfilename
         if cls_text is None:
             cls_text = Text
+        self.initial_value = initial_value
         self.tk_dialog_value = cls_text(initial_value)
         self.tk_dialog_value.hand_cursor = True
         self.basename = basename

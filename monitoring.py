@@ -1,69 +1,58 @@
 import time
 class Monitor:
 
-    def get_n_iterations(self, letter):
-        return len(getattr(self,letter))
+    def __init__(self):
+        self.last_start = {}
+        self.n_called = {}
+        self.tot_time = {}
+        self.ended_ok = {}
 
-    def append(self, name):
-        if not hasattr(self, name):
-            setattr(self, name, [time.perf_counter()])
-        else:
-            getattr(self,name).append(time.perf_counter())
+    def main_loop(self):
+        k = "_main_loop_"
+        if k in self.last_start:
+            self.tot_time[k] += time.perf_counter() - self.last_start[k]
+            self.n_called[k] += 1
+        else: #start of first loop
+            self.n_called[k] = 0
+            self.tot_time[k] = 0.
+        self.last_start[k] = time.perf_counter()
+
+    def start(self, symb):
+        if not symb in self.tot_time:
+            self.n_called[symb] = 0
+            self.tot_time[symb] = 0.
+        ok = self.ended_ok.get(symb, None)
+        assert ok != False #ok must be either None (not set so far) or True
+        self.ended_ok[symb] = False #for current iter
+        self.last_start[symb] = time.perf_counter()
+
+    def end(self, symb):
+        assert symb in self.ended_ok
+        assert self.ended_ok[symb] is False
+        self.ended_ok[symb] = True
+        self.tot_time[symb] += time.perf_counter() - self.last_start[symb]
+        self.n_called[symb] += 1
+
+    def show(self, reference_symb="_main_loop_"):
+        fps = round(self.n_called.get(reference_symb) / self.tot_time.get(reference_symb))
+        print("========== Monitoring statistics relative to", reference_symb, " : avg FPS =", fps, " ==========")
+        L = max([len(symb) for symb in self.tot_time])
+        print(f"{'markers (n times)':<{L+10}} {'| time':<{10}} {'| percentage':<{10}}")
+        print("#"*(L+30))
+        tot_time = self.tot_time[reference_symb]
+        for symb in self.tot_time:
+            t = self.tot_time[symb]
+            col_a = " ".join([str(s) for s in [symb, "(", self.n_called[symb], "X)"]])
+            col_b = " ".join([str(s) for s in ["|", round(t,2), "s"] ])
+            col_c = " ".join([str(s) for s in ["|", round(t/tot_time * 100,1), "%"]])
+            print(f"{col_a:<{L+10}} {col_b:<{10}} {col_c:<{10}}")
+        print("***")
+        print(list(self.tot_time.keys()))
+        print()
 
     def reset(self):
-        for letter in "abcdefghijklmnopqrstuvwxyz":
-                if hasattr(self,letter):
-                    setattr(self, letter, [])
+        self.last_start.clear()
+        self.n_called.clear()
+        self.tot_time.clear()
+        self.ended_ok.clear()
 
-    def autocomplete(self):
-        lengths = []
-        lengths_dict = {}
-        all_letters = self.list_letters()
-        for letter in all_letters:
-            n = len(getattr(self,letter))
-            lengths.append(n)
-            lengths_dict[letter] = n
-        L = max(lengths)
-        for i in range(1,len(all_letters)):
-            letter = all_letters[i]
-            letter_prev = all_letters[i-1]
-            n = lengths_dict[letter]
-            if n < L:
-                for i in range(n, L):
-                    time_prev_letter = getattr(self, letter_prev)[i]
-                    getattr(self,letter).append(time_prev_letter)
-
-    def list_letters(self):
-        letters = []
-        for letter in "abcdefghijklmnopqrstuvwxyz":
-            if hasattr(self,letter):
-                letters.append(letter)
-        return letters
-
-    def show(self, letters=None, rnd=None):
-        if not letters:
-            letters = self.list_letters()
-        n_lett = len(letters)
-        tot = [0.]*n_lett
-        L = len(getattr(self,letters[0]))
-        print("Stats over", L, "iterations:")
-        for i in range(1,n_lett):
-            for k in range(L): #k is the iteration
-                letter_i = getattr(self,letters[i])
-                letter_j = getattr(self,letters[i-1])
-                if len(letter_i) <= k:
-                    raise Exception("Letter "+str(letters[i])+" not called each frame")
-                if len(letter_j) <= k:
-                    raise Exception("Letter "+str(letters[i-1])+" not called each frame")
-                diff = letter_i[k] - letter_j[k]
-                tot[i] += diff
-        for k in range(1,L): #z->a_previous_iteration
-            diff = getattr(self,letters[0])[k] - getattr(self,letters[n_lett-1])[k-1]
-            tot[0] += diff
-        for i in list(range(1,len(tot)))+[0]: #we want z->a displayed at the end
-            if rnd is None:
-                n = tot[i]
-            else:
-                n = round(tot[i], rnd)
-            p = round(100*n/sum(tot))
-            print(letters[i-1]+"->"+letters[i]+": "+str(round(n,6))+" ("+str(p)+"%)")
