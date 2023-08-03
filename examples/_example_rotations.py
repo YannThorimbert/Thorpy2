@@ -1,5 +1,6 @@
 """
-We show here how to rotate elements.
+We show here how to rotate elements. Rotations are an experimental feature for the moment.
+As for now, shadows are not rotated ! Be cautious when using rotations.
 """
 #tags: rotate, rotation, advanced styling
 
