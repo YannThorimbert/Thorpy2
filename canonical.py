@@ -359,11 +359,13 @@ class Element:
 
     def center_on(self, what):
         """Centers the element on another, or on a pygame Surface or Rect.
-        <what> : either a pygame Rect, a pygame Surface or a thorpy element.
+        <what> : either a pygame Rect, a 2-tuple, a pygame Surface or a thorpy element.
         It is also possible to specify what = 'screen' as a shortcut for screen's rect.
         """
         if isinstance(what, str):
             rect = p.screen.get_rect()
+        elif isinstance(what, tuple):
+            rect = pygame.Rect(what, (0,0))
         elif not isinstance(what, pygame.Rect): #works both for surfaces and elements.
             rect = what.get_rect()
         else:
@@ -388,6 +390,7 @@ class Element:
         x0,y0 = sorting.get_side_center(self.rect, self_side)
         x1,y1 = sorting.get_side_center(other, other_side)
         self.move((x1-x0+delta[0])*move_x, (y1-y0+delta[1])*move_y)
+
 
     def englobe_children(self, margins=(5,5), adapt_parent=True, size_limit=(float("inf"), float("inf"))):
         """Resizes the element so that its size englobes that of its children.
@@ -435,19 +438,53 @@ class Element:
         if adapt_parent and self.parent:
             self.parent.resort()
 
-    def rotate(self, angle, states="all"):
-        """Rotate the images of the element.
+    def rotate(self, angle, also_children=True, states="all", reactivate_surface_copy=True):
+        """Rotate the images of the element. Experimental, be cautious !
+        In most cases, only angles that are multiple of 90 degrees will yield fancy results.
+        Important note: as for now, element's shadows are not rotated. 
         ***Mandatory arguments***
         <angle> : the angle of rotation in degrees.
-        <states> : the states affected (either a list of strings or a specific state name or 'all')"""
+        ***Optional arguments***
+        <also_children> : if True, recursively rotates the children elements (for grouping rotation).
+        <states> : the states affected (either a list of strings or a specific state name or 'all')
+        <reactivate_surface_copy> : if needed, reactivate surface copy (for memory savings) if True.
+        """
+        if also_children:
+            self.rotate_recursive(angle, states, reactivate_surface_copy)
+            return
+        ################################################################
+        deactivated_copy = False
+        if self.has_copied_normal_state:
+            self.copy_normal_state(False)
+            self.refresh_surfaces()
+            deactivated_copy = True
+        second_draw_reactivations = {}
+        # Actual function ##############################################
         states = self.get_states_names(states)
         for state in states:
+            style = self.get_style(state)
+            if style:
+                if style.has_second_draw:
+                    self.set_style_attr("has_second_draw",False,refresh=True)
+                    second_draw_reactivations[style] = True
             for i in range(len(self.surfaces[state])):
                 surface = self.surfaces[state][i]
                 new_surface = pygame.transform.rotate(surface, angle)
                 self.surfaces[state][i] = new_surface
-                print("rotating", state, new_surface.get_rect())
+        ################################################################
         self.rect = self.get_rect()
+        if deactivated_copy and reactivate_surface_copy:
+            self.copy_normal_state(True)
+        for state in second_draw_reactivations.keys():
+            self.set_style_attr("has_second_draw",True,refresh=False)
+
+
+    def rotate_recursive(self, angle, states, reactivate_surface_copy):
+        positions = [c.rect.center for c in self.get_all_descendants()]
+        new_positions = rotate_points(positions, positions[0], angle)
+        for i,c in enumerate(self.get_all_descendants()):
+            c.rotate(angle, False, states)
+            c.set_center(*new_positions[i])
 
     def get_current_width(self):
         """Returns the width of the element using its current state."""
@@ -701,7 +738,7 @@ class Element:
         self.state = "locked"
         return states
     
-    def get_children_rect(self, margins):
+    def get_children_rect(self, margins=(0,0)):
         r = self.children[0].rect.unionall([e.rect for e in self.children if not e.ignore_for_sorting])
         r.inflate_ip((margins[0]*2, margins[1]*2))
         return r
@@ -982,6 +1019,8 @@ class Element:
         else:
             self.refresh_surfaces = self.refresh_surfaces_build
 
+    def has_copied_normal_state(self):
+        return self.refresh_surfaces is self.refresh_surfaces_copy
 
     def generate_shadow(self, fast="auto", shadowgen=None, states="all", uniform=False):
         """Generates a shadow and binds it to the element. This function is not meant to be called within the app loop, but only at initialization.
@@ -1016,7 +1055,7 @@ class Element:
     def add_child(self, element, i=-1):
         """Add a child to the element.
         ***Mandatory arguments***
-        <element> : the children element to add.
+        <element> : the child element to add.
         ***Optional arguments***
         <i> : (integer) where in the list of children the new one should be added.
         By default -1 : it goes to the end.
@@ -1026,6 +1065,14 @@ class Element:
             self.children.append(element)
         else:
             self.children.insert(i, element)
+
+    def add_children(self, elements):
+        """Add children to the element.
+        ***Mandatory arguments***
+        <elements> : (list) the children elements to add.
+        """
+        for e in elements:
+            self.add_child(e)
 
     def remove_child(self, element):
         """Remove a child to the element.
@@ -1062,7 +1109,7 @@ class Element:
             return self
     
     def get_all_descendants(self):
-        """Returns all the descendants of the elements,
+        """Returns all the descendants of the elements, including self,
         i.e. its children, the children of its children and so on."""
         d = [self]
         for e in self.children:
@@ -1173,3 +1220,25 @@ class Element:
         self.cannot_draw_outside = cannot_draw_outside
         if adapt_cursor_style and (self.draggable_x or self.draggable_y):
             self.hand_cursor = True
+
+
+import math
+
+def rotate_points(points, center, angle):
+    angle = math.radians(angle)  # convert degrees to radians
+    cos_val = math.cos(angle)
+    sin_val = math.sin(angle)
+    cx, cy = center
+    rotated_points = []
+    for (x, y) in points:
+        # Translate point back to origin:
+        x -= cx
+        y -= cy
+        # Rotate point
+        x_new = (x * cos_val) - (y * sin_val)
+        y_new = (x * sin_val) + (y * cos_val)
+        # Translate point back:
+        x = x_new + cx
+        y = y_new + cy
+        rotated_points.append((x, y))
+    return rotated_points

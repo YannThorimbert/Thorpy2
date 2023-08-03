@@ -19,6 +19,7 @@ from . import parameters as p
 from .graphics import darken, enlighten
 from . import graphics
 from .canonical import Element
+from . import sorting
 import pygame.gfxdraw as gfx
 from .styles import get_text_height, get_text_size
 from .shadows import auto_set_fast
@@ -187,6 +188,25 @@ class Group(Element):
             self.sort_children(mode,margins=margins,gap=gap,nx=nx,ny=ny,align=align)
             self.center_on(p.screen)
         self.copy_normal_state(True)
+
+    def stick_to(self, other, self_side, other_side, delta=(0,0), move_x=True, move_y=True):
+        """Sticks the element to another.
+        ***Mandatory arguments***
+        <other> : another element or pygame surface.
+        <self_side> : side of the element beeing sticked. Can be 'left', 'right', 'top' or 'bottom'.
+        <other_side> : side of the other element. Can be 'left', 'right', 'top' or 'bottom'.
+        ***Optional arguments***
+        <delta> : 2-tuple delta (pixels) to apply after the element has been moved.
+        <move_x> : (bool) set to False if x-axis movement should be ignored.
+        <move_y> : (bool) set to False if y-axis movement should be ignored.
+        """
+        if isinstance(other, str):
+            other = p.screen
+        if not isinstance(other, pygame.Rect):
+            other = other.get_rect()
+        x0,y0 = sorting.get_side_center(self.get_children_rect(), self_side)
+        x1,y1 = sorting.get_side_center(other, other_side)
+        self.move((x1-x0+delta[0])*move_x, (y1-y0+delta[1])*move_y)
 
 class Text(Button):
     """Text that can be used as a GUI element taking all standard element states

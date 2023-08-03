@@ -600,6 +600,7 @@ def theme_game1(base_style=None,
 
 def theme_game2():
     p.current_theme = "game2"
+    theme_classic()
     #Button
     base_style = styles.RoundStyle
     Button.style_normal = base_style()
