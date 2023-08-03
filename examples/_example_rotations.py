@@ -1,6 +1,7 @@
 """
 We show here how to rotate elements.
 """
+#tags: rotate, rotation, advanced styling
 
 import pygame
 import thorpy as tp
