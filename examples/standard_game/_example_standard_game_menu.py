@@ -11,7 +11,7 @@ from _example_standard_game_utils import play_game #game logics (nothing to do w
 
 pygame.init()
 screen = pygame.display.set_mode((1200, 700))
-thorpy.set_default_font("PressStart2P-Regular.ttf", 15)
+thorpy.set_default_font("PressStart2P-Regular.ttf", 20)
 thorpy.init(screen, thorpy.theme_text) #bind screen to gui elements and set theme
 
 
