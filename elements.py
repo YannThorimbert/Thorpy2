@@ -896,7 +896,6 @@ class TextInput(Button):
 
     def focus(self):
         if self.focused: #then set the cursor to the mouse pos
-            print("focus1")
             pos = pygame.mouse.get_pos()
             r = self.get_rect()
             dx = pos[0] - (r.x + self.input_margin_x)
@@ -909,7 +908,6 @@ class TextInput(Button):
             score, i = min(scores)
             self.cursor_pos = i
         else: #then enter loop for text input
-            print("focus2")
             self.initial_value = self.value
             self.focused = True
             root = self.root() #oldest ancester
