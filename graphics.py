@@ -150,9 +150,9 @@ def color_rect(gradient_color, size):
     gradient color can be:<br>
     *3-tuple or 4-tuple specifying the RGB or RGBA value of the color (in this case, this is a simple color);<br>
     *Tuple or list of 3-tuples or 4-tuples, plus an optional string at the end
-        indicating the orientation of the gradient : either 'h', 'v' 'h' 'v', 'r'(radial) or 'q'(square).
+        indicating the orientation of the gradient : either 'h', 'v', 'r'(radial) or 'q'(square).
         In this case, a gradient of colors is defined. Alpha component is ignored for gradients.<br>
-
+        When the orientation is 'q' (square), colors are on the form (topleft, topright, bottomleft, bottomright).<br>
     All examples below are valid:<br>
         (255,0,0) #red with alpha = 255<br>
         (255,0,0,90) #red with alpha = 90<br>
@@ -202,8 +202,8 @@ def color_gradient(colors, size, orientation):
     elif orientation == "q":
         r = pygame.Surface((2,2))
         gfx.pixel(r,0,0,colors[0])
-        gfx.pixel(r,0,1,colors[2])
         gfx.pixel(r,1,0,colors[1])
+        gfx.pixel(r,0,1,colors[2])
         gfx.pixel(r,1,1,colors[3])
     else:
         raise Exception("Orientation must be either 'h', 'v', 'r' or 'q'.")

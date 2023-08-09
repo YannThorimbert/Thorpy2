@@ -599,6 +599,10 @@ class TitleBox(Box):
         # if sort_immediately:
         #     self.sort_children()
 
+    def get_margins(self, margins, more=(5,5)):
+        margins = super().get_margins(margins)
+        more_x, more_y = more
+        return margins[0] + more_x, margins[1] + more_y
 
 class AlertWithChoices(TitleBox):
 
@@ -723,6 +727,7 @@ class TextInput(Button):
         self.last_keydown = -1000
         self.keys_validate = [pygame.K_RETURN]
         self.keys_cancel = [pygame.K_ESCAPE]
+        self.click_outside_cancel = True
         self.cursor_img = None
         self.cursor_width = 2
         self.cursor_blinking_mod = 30
@@ -891,21 +896,26 @@ class TextInput(Button):
 
     def focus(self):
         if self.focused: #then set the cursor to the mouse pos
+            print("focus1")
             pos = pygame.mouse.get_pos()
             r = self.get_rect()
             dx = pos[0] - (r.x + self.input_margin_x)
             style = self.get_current_style()
             scores = []
-            for i in range(len(self.value)+1):
+            #find the closest char of the word from the mouse pos to place the cursor
+            for i in range(len(self.value)+1): 
                 w = style.font.size(self.value[0:i])[0]
                 scores.append((abs(w-dx),i))
             score, i = min(scores)
             self.cursor_pos = i
         else: #then enter loop for text input
+            print("focus2")
             self.initial_value = self.value
             self.focused = True
             root = self.root() #oldest ancester
-            self.launch_and_lock_others(root, click_outside_cancel=True, reaction=self.reaction_keyboard)
+            self.launch_and_lock_others(root,
+                                        click_outside_cancel=self.click_outside_cancel,
+                                        reaction=self.reaction_keyboard)
             self.focused = False
 
     def default_at_hover(self):
@@ -915,6 +925,18 @@ class TextInput(Button):
     def default_at_unhover(self):
         Button.default_at_hover(self)
         pygame.mouse.set_cursor(cursor_arrow)
+
+    def direct_launch(self, element=None):
+        """Launch the text input to the screen without asking the user to press a button,
+        and directly put the focus on it.
+        This allows you to provide the user a more direct way that opening an alert,
+        inserting the text and then clicking 'Ok' or 'Cancel' button. See the examples."""
+        if element is None:
+            element = self
+        def draw():
+            self.focus()
+            loops.quit_current_loop()
+        element.launch_alone(draw)
 
 
 class DropDownListButton(Button):
@@ -1436,11 +1458,11 @@ class ColorPickerRGB(Element):
                 colorframe_size = (50,50)
         self.colorelement.set_size(colorframe_size)
         
-        self.r = SliderWithText("R", 0, 255, initial_value[0], slider_align, length,
+        self.r = SliderWithText("R", 0, 255, initial_value[0], length, slider_align,
                                 thickness=thickness, dragger_size=(10,"auto"), edit=True)
-        self.g = SliderWithText("G", 0, 255, initial_value[1], slider_align, length,
+        self.g = SliderWithText("G", 0, 255, initial_value[1], length, slider_align, 
                                 thickness=thickness, dragger_size=(10,"auto"), edit=True)
-        self.b = SliderWithText("B", 0, 255, initial_value[2], slider_align, length,
+        self.b = SliderWithText("B", 0, 255, initial_value[2], length, slider_align, 
                                 thickness=thickness, dragger_size=(10,"auto"), edit=True)
         self.r.slider.bar.set_bck_color(((0,0,0), (255,0,0), slider_align))
         self.g.slider.bar.set_bck_color(((0,0,0), (0,255,0), slider_align))
