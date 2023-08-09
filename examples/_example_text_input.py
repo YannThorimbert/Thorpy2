@@ -30,7 +30,7 @@ text_input = tp.TextInput("", placeholder="Type text here") #create an empty tex
 # text_input.set_only_integers() #accept only integers
 # text_input.set_only_alpha() #accept only alphabetic chars
 # text_input.accept_char = lambda x:x=="a" or x=="b"  #custom accept function
-# text_input.bck_func = ... #indicate here potential bck function to execute when focus in put on text input
+# text_input.click_outside_cancel = False #if True and user clicks outside, same as cancelling.
 # def dummy_validation():
 #    print("Setting the value of the first button to demonstrate how it works.")
 #    list_of_elements[0].set_text(text_input.get_value())
@@ -43,7 +43,6 @@ box = tp.Box(list_of_elements)
 box.center_on(screen)
 #For the sake of brevity, the main loop is replaced here by a shorter but blackbox-like method
 loop = box.get_updater()
-##text_input.toggle_focus() #put the focus on the input at the beginning
 loop.launch()
 pygame.quit()
 
