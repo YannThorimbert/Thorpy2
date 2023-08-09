@@ -1,5 +1,5 @@
 """We show here how to let the user choose a value using another element."""
-#tags: user input, alert, launch, choices, user choices
+#tags: user input, alert, launch, choices, user choices, AlertWithChoices, TextInput
 
 
 import pygame, thorpy as tp

@@ -1,5 +1,5 @@
 """We show here how to directly launch an element, without having to click another one for that."""
-#tags: text input, input, direct launch, direct, launch, integration
+#tags: text input, TextInput, input, direct launch, direct, launch, integration, direct_launch, on_validation
 
 
 import pygame, thorpy as tp

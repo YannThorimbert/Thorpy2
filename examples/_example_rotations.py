@@ -2,7 +2,7 @@
 We show here how to rotate elements. Rotations are an experimental feature for the moment.
 As for now, shadows are not rotated ! Be cautious when using rotations.
 """
-#tags: rotate, rotation, advanced styling
+#tags: rotate, rotation, advanced styling, rotate, stick_to
 
 import pygame
 import thorpy as tp
