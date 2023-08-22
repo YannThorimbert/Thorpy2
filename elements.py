@@ -544,7 +544,7 @@ class Box(Element):
                     r_text, lines = self.get_current_style().get_text_rect_and_lines(self.text)
                     margins = (15, r_text.h*1.5)
         if margins is None:
-            margins = (5,5)
+            margins = self.get_current_style().margins
         return margins
 
     def sort_children(self, mode="v", align="center", gap=5,
@@ -599,10 +599,6 @@ class TitleBox(Box):
         # if sort_immediately:
         #     self.sort_children()
 
-    def get_margins(self, margins, more=(5,5)):
-        margins = super().get_margins(margins)
-        more_x, more_y = more
-        return margins[0] + more_x, margins[1] + more_y
 
 class AlertWithChoices(TitleBox):
 

@@ -163,6 +163,8 @@ class Loop:
             pygame.display.flip()
             self.iteration += 1
 
-loops = []
+from typing import List
+
+loops: List[Loop] = []
 
 

@@ -496,6 +496,33 @@ def extract_frames(src, out_folder=None, size_factor=(1., 1.)):
             break
     return imgs
 
+def spritesheet_frames(src, nx, ny, line_number, colorkey=None):
+    """Return a list of pygame surfaces corresponding to a given line of the spritesheet.
+    ***Mandatory arguments***
+    <src> : filename of the spritesheet.
+    <nx> : number of sprites along x-axis.
+    <ny> : number of sprites along y-axis.
+    <line_number> : line at which the frames are picked."""
+    sheet = pygame.image.load(src)
+    w,h = sheet.get_size()
+    assert w%nx == 0 and h%ny == 0
+    frame_w = w // nx
+    frame_h = h // ny
+    frame_size = (frame_w, frame_h)
+    frames = []
+    current_rect = pygame.Rect((0,0), frame_size)
+    y = line_number * frame_h
+    x = 0
+    for i in range(nx):
+        current_rect.topleft = x,y
+        s = pygame.Surface(current_rect.size)
+        s.blit(sheet, (0,0), current_rect)
+        if colorkey:
+            s.set_colorkey(colorkey)
+        frames.append(s)
+        x += frame_w
+    return frames
+
 def draw_arrow(screen, start_coord, end_coord, arrow_color):
     """Draws an arrow on the screen from start_coord to end_coord, pointing towards end_coord."""
     angle = math.atan2(end_coord[1] - start_coord[1], end_coord[0] - start_coord[0])

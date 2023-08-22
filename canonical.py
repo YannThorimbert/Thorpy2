@@ -20,7 +20,10 @@ from . import shadows
 from . import parameters as p
 from . import loops
 from . import graphics
+from . import styles
 import warnings
+
+from typing import Optional
 
 arrow_cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_ARROW)
 hand_cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -42,13 +45,13 @@ def get_blit_rects(parent_rect, rect):
         return clip, area
 
 class Element:
-    current_id = 0
-    style_normal = None
-    style_hover = None
-    style_pressed = None
-    style_locked = None
-    hand_cursor = None
-    multi_shadows = False
+    current_id: int = 0
+    style_normal: Optional[styles.BaseStyle] = None
+    style_hover: Optional[styles.BaseStyle] = None
+    style_pressed: Optional[styles.BaseStyle] = None
+    style_locked: Optional[styles.BaseStyle] = None
+    hand_cursor: Optional[styles.BaseStyle] = None
+    multi_shadows: bool = False
 
     @classmethod
     def iter_styles(cls):
