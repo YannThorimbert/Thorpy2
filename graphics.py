@@ -2,28 +2,17 @@
 Module regrouping some functions for image processing.
 Some of the functions make use of Python Imaging Library and NumPy.
 """
-import warnings, math
-
-try:
-    from PIL import Image, ImageFilter
-    HAS_PIL = True
-except ImportError:
-    HAS_PIL = False
-
-try:
-    import numpy
-    import pygame.surfarray as surfarray
-    HAS_NUMPY = True
-except ImportError:
-    HAS_NUMPY = False
+import math
+import numpy
+from PIL import Image, ImageFilter
 
 import pygame
+import pygame.surfarray as surfarray
 from pygame.image import tostring, fromstring
 from pygame import Surface, SRCALPHA
 import pygame.gfxdraw as gfx
 
 from functools import cache
-
 
 MAX_NORM = 3*(255**2)
 
@@ -297,10 +286,6 @@ def set_alpha_from_intensity(surface, alpha_factor, decay_mode, color):
 
 def detect_frame(surf, vacuum=(255, 255, 255)):
     """_Returns a Rect of the minimum size to contain all that is not vacuum."""
-    if not HAS_NUMPY:
-        warnings.warn("Numpy was not found on this machine.\
-            Cannot call detect_frame. Returns surface's size instead.")
-        return surf.get_size()
     vacuum = numpy.array(vacuum)
     array = pygame.surfarray.array3d(surf)
     x_found = False
@@ -857,3 +842,41 @@ def scale_image_with_constraint(img, w, h, mode, smooth=True):
 #     if n_smooth == 1:
 #         return s
 #     return pygame.transform.smoothscale(s, orig_size)
+
+
+#Borrowed from pgzero
+_circle_cache = {}
+def _circlepoints(r):
+    r = int(round(r))
+    if r in _circle_cache:
+        return _circle_cache[r]
+    x, y, e = r, 0, 1 - r
+    _circle_cache[r] = points = []
+    while x >= y:
+        points.append((x, y))
+        y += 1
+        if e < 0:
+            e += 2 * y - 1
+        else:
+            x -= 1
+            e += 2 * (y - x) - 1
+    points += [(y, x) for x, y in points if x > y]
+    points += [(-x, y) for x, y in points if x]
+    points += [(x, -y) for x, y in points if y]
+    points.sort()
+    return points
+
+def render_outlined_text(text, font, gfcolor=pygame.Color('dodgerblue'),
+                         ocolor=(255, 255, 255), opx=2):
+    textsurface = font.render(text, True, gfcolor).convert_alpha()
+    w = textsurface.get_width() + 2 * opx
+    h = font.get_height()
+    osurf = pygame.Surface((w, h + 2 * opx)).convert_alpha()
+    osurf.fill((0, 0, 0, 0))
+    surf = osurf.copy()
+    osurf.blit(font.render(text, True, ocolor).convert_alpha(), (0, 0))
+    for dx, dy in _circlepoints(opx):
+        surf.blit(osurf, (dx + opx, dy + opx))
+
+    surf.blit(textsurface, (opx, opx))
+    return surf
