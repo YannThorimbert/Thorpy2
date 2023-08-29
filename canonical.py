@@ -146,16 +146,29 @@ class Element:
         """
         self.set_style_attr("bck_color", color, states, copy_style, refresh, apply_to_children)
 
+    def set_opacity_bck_color(self, value, states="all", copy_style=True, refresh=True, apply_to_children=False):
+        """Set the opacity (alpha value) of the element's background color.
+        ***Mandatory arguments***
+        <value> : (int) between 0 and 255
+        ***Optional arguments***
+        <states> : either 'all' or any state name (e.g. 'hover') or a sequence of state names (excluding 'all').
+        <copy_style> : (bool) make a copy of the current style, so that it does not affect element sharing the same style object.
+        <refresh> : (bool) refresh element surfaces.
+        <apply_to_children> : (bool) apply the same change to children elements.
+        """
+        c = self.get_main_bck_color()
+        new_color = (c[0], c[1], c[2], value)
+        self.set_bck_color(new_color, states, copy_style, refresh, apply_to_children)
+
     def get_bck_color(self):
         """Returns self's background color if there is a style attached to this element."""
         return self.get_style("normal").bck_color
     
-
     def get_main_bck_color(self):
         """Returns self's main background color if there is a style attached to this element.
         The difference with get_bck_color is that the latter can return gradient color, whereas
         get_main_bck_color necessarily returns either a single RGB tuple, a single RGBA tuple or None."""
-        graphics.get_main_color(self.get_bck_color())
+        return graphics.get_main_color(self.get_bck_color())
 
     def set_font_color(self, color, states="all", copy_style=True, refresh=True, apply_to_children=False):
         """Set the font color of the element (depending on how its style handles it).
