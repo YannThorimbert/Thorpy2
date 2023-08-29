@@ -24,8 +24,8 @@ attempts_text = tp.HeterogeneousTexts([("Remaining attempts: ", {"size":30, "col
 # *** Grouping elements ***
 group1 = tp.Group([guess_slider, try_guess_button])
 group1.sort_children("h")
-group1.center_on(screen)
 box = tp.Box([hint_text, attempts_text, group1])
+box.center_on(screen)
 gui_updater = box.get_updater() #will be used to update gui each frame in the main loop
 
 # *** From now on, this is just the game logic ***

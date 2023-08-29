@@ -25,7 +25,7 @@ while playing:
             playing = False
         if e.type == pygame.MOUSEBUTTONDOWN:
             if button.state != "pressed" and button.state != "hover":
-                mm.add(button, e.pos, vmax=40) #vmax is 30 by default
+                mm.add(button, e.pos, vmax=1) #vmax is 1 by default
         else:
             ... #do your stuff with events
     screen.fill((250,)*3)
