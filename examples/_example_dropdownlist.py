@@ -36,6 +36,7 @@ ddl3_labelled = tp.Labelled("Third example", ddl3)
 #to get the value of any my_ddl, just call my_ddl.get_value()
 
 group = tp.Box([ddl1_labelled, ddl2_labelled, ddl3_labelled])
+group.center_on(screen)
 group.get_updater().launch()
 pygame.quit()
 
