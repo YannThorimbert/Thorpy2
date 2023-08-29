@@ -2,7 +2,8 @@
 #tags: light, fx, light emitter, light emission, lighting, emit light, particle, particles, oscillating light, oscillating, generate_oscillating_lights, image
 
 
-import pygame, sys, random
+import pygame, random
+import thorpy as tp
 from thorpy.graphics import generate_oscillating_lights as gen_lights
 
 pygame.init()

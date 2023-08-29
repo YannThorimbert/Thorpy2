@@ -21,7 +21,7 @@ my_anim2 = tp.AnimatedGif(gif_filename,
                             freeze_frame=0) #frame number after loops are finish; None for disappear
 my_anim2.hand_cursor = True #show hand cursor when hovering the anim
 
-my_label = tp.Labelled("Click the small image\nto relaunch animation:", my_anim2, tp.Text)
+my_label = tp.Labelled("Click the small image\nto relaunch its animation:", my_anim2, tp.Text)
 
 def launch_gif_again():
     my_anim2.loops = 1

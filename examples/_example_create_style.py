@@ -12,7 +12,6 @@ tp.set_default_font("arialrounded", 15)
 tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 
 
-
 #here we will go from a lower level to make polygonal frame for buttons
 class MyStyle(tp.styles.TextStyle):
     bck_color = (150,150,150)
@@ -65,15 +64,15 @@ tp.Button.style_pressed = style_normal.copy()
 tp.Button.style_locked = style_normal.copy()
 tp.Button.style_hover = style_normal.copy()
 tp.Button.style_hover.nframes = 30
-tp.Button.style_hover.font_color = (255,255,0)
-tp.Button.style_hover.border_color = (255,255,0)
+tp.Button.style_hover.font_color = (255,0,0)
+tp.Button.style_hover.border_color = (255,0,0)
 tp.Button.style_hover.thickness = 5
 
 # au lieu de border litteral, faire 2 polygones enchasses 
 
 # tp.TitleBox.style_normal = style_normal
 
-button1 = tp.Button("Hello, world.\nThis is a useless button.")
+button1 = tp.Button("Hello, world.\nThis is a useless button using my own style.")
 button1.generate_shadow(fast=False)
 
 button2 = tp.Button("A second one")

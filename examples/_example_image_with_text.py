@@ -13,7 +13,7 @@ tp.init(screen)
 
 my_img = pygame.image.load(tp.fn("data/my_img.png"))
 my_img.set_colorkey(my_img.get_at((0,0)))
-e = tp.TextAndImageButton("My element", my_img,
+e = tp.TextAndImageButton("My button", my_img,
                               reverse=False) #reverse=True switches img and txt (left<-->right)
 e.center_on(screen)
 

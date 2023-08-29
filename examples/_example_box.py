@@ -13,7 +13,7 @@ screen = pygame.display.set_mode((1200, 700))
 tp.init(screen, tp.theme_classic) #bind screen to gui elements and set theme
 
 some_buttons = [tp.Button("Button "+str(i)) for i in range(5)]
-some_buttons.append(tp.Text("Try hovering the bottom right angle of the box to resize it."))
+some_buttons.append(tp.Text("Try moving the bottom right angle of the box to resize it."))
 
 # box = tp.Box(some_buttons) #version without title
 box = tp.TitleBox("My titled box", some_buttons) #version with a title
