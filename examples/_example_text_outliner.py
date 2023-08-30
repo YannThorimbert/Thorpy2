@@ -1,7 +1,8 @@
 """
 Text outliner is useful for drawing texts on top of changing background colors.
-Any method appliable to stantard Text objects is also appliable to Outlined texts. Just check Text examples for more.
-The text outline found here is borrowed from pgzero library.
+Any method appliable to stantard Text objects is also appliable to Outlined texts.
+Just check Text examples for more.
+The graphical text outlining method found here is borrowed from pgzero library.
 """
 #tags: outline, outlined, OutlinedText, set_font_rich_text_tag, advanced styling, rich text, rich, text, color text, color, text style, text styling, align, set_font_auto_multilines_width, set_style_attr
 
@@ -27,10 +28,10 @@ my_text = tp.OutlinedText("Blah blah\nblah",
 my_text.center_on(screen)
 
 #if you want to change the outline color dynamically:
-my_text.set_style_attr("outline_color", (255,0,0))
+# my_text.set_style_attr("outline_color", (255,0,0))
 
 #if you want to change the outline thickness dynamically:
-my_text.set_style_attr("outline_thickness", 3)
+# my_text.set_style_attr("outline_thickness", 3)
 
 #For the sake of brevity, the main loop is replaced here by a shorter but blackbox-like method
 tp.call_before_gui(before_gui) #tells thorpy to call before_gui() before drawing gui.
