@@ -2,7 +2,7 @@ from . import styles
 from .elements import Box, TitleBox, Button, Text, Line, assign_styles, DropDownList, ImageButton
 from .elements import TextInput, Slider, Image, Helper, Checkbox, Radio, SwitchButton, ToggleButton
 from .elements import DeadButton, _DropDownButton, _LabelButton, _DraggerButton, _SliderBar, _ColorFrameForColorPicker
-from .elements import ColorPicker, ColorPickerRGB, SwitchButtonWithText, _ButtonColor
+from .elements import ColorPicker, ColorPickerRGB, SwitchButtonWithText, _ButtonColor, OutlinedText
 from .graphics import darken, enlighten, change_alpha
 from thorpy import graphics
 from .shadows import propose_shadowgen
@@ -198,6 +198,9 @@ def apply_default_dragger(size=(20,10), bck_color=None):
         _DraggerButton.style_pressed.bck_color = bck_color
         _DraggerButton.style_locked.bck_color = bck_color
 
+def apply_default_outlined_text():
+    OutlinedText.style_normal = styles.OutlinedTextStyle()
+    OutlinedText.font_color = Text.style_normal.font_color
 
 def theme_classic():
     p.current_theme = "classic"
@@ -219,6 +222,7 @@ def theme_classic():
     #Text
     Text.style_normal = styles.TextStyle()
     Text.style_normal.font_color = (50,)*3
+    apply_default_outlined_text()
     apply_default_label()
     #Lines
     apply_default_line(styles.ClassicStyle)
@@ -268,6 +272,7 @@ def theme_round(base_style=None, base_color=(240,)*3, assign=True):
     #Text
     Text.style_normal = styles.TextStyle()
     Text.style_normal.font_color = (50,)*3
+    apply_default_outlined_text()
     apply_default_label()
     #Lines
     apply_default_line(base_style)
@@ -369,6 +374,7 @@ def theme_simple():
     #Text
     Text.style_normal = styles.TextStyle()
     Text.style_normal.font_color = (50,)*3
+    apply_default_outlined_text()
     apply_default_label()
     #Lines
     apply_default_line(styles.SimpleStyle, thickness=0)
@@ -419,6 +425,7 @@ def theme_text():
     #Text
     Text.style_normal = styles.TextStyle()
     Text.style_normal.font_color = Button.style_normal.font_color
+    apply_default_outlined_text()
     apply_default_label()
     #Lines
     apply_default_line(styles.SimpleStyle)
@@ -473,6 +480,7 @@ def theme_text_dark():
     #Text
     Text.style_normal = styles.TextStyle()
     Text.style_normal.font_color = Button.style_normal.font_color
+    apply_default_outlined_text()
     apply_default_label()
     #Lines
     apply_default_line(styles.SimpleStyle)
@@ -559,6 +567,7 @@ def theme_game1(base_style=None,
     Text.style_hover = Text.style_normal
     Text.style_pressed = Text.style_normal
     Text.style_locked = Text.style_normal
+    apply_default_outlined_text()
     apply_default_label()
     #Lines
     apply_default_line(base_style)
@@ -644,6 +653,7 @@ def theme_game2():
     Text.style_hover = Text.style_normal
     Text.style_pressed = Text.style_normal
     Text.style_locked = Text.style_normal
+    apply_default_outlined_text()
     apply_default_label()
     #Lines
     apply_default_line(base_style)

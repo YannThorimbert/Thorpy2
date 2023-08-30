@@ -866,8 +866,7 @@ def _circlepoints(r):
     points.sort()
     return points
 
-def render_outlined_text(text, font, gfcolor=pygame.Color('dodgerblue'),
-                         ocolor=(255, 255, 255), opx=2):
+def render_outlined_text(text, font, gfcolor, ocolor, opx):
     textsurface = font.render(text, True, gfcolor).convert_alpha()
     w = textsurface.get_width() + 2 * opx
     h = font.get_height()

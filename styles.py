@@ -325,6 +325,9 @@ class BaseStyle:
             tot_h = n * h + (n-1) * self.font_leading
             self.r_text = pygame.Rect((0,0), (max_w, tot_h))
         return self.r_text, self.text_lines
+    
+    def font_render(self, text, color):
+        return self.font.render(text, self.font_antialias, color)
 
     def get_rendered_text(self, lines):
         if self.font_rich_text_tag:
@@ -333,11 +336,13 @@ class BaseStyle:
             for line in lines:
                 line_render = []
                 for text, color in line:
-                    line_render.append(self.font.render(text, self.font_antialias, color))
+                    # line_render.append(self.font.render(text, self.font_antialias, color))
+                    line_render.append(self.font_render(text, color))
                 renderings.append(line_render)
             return renderings
         else:
-            return [self.font.render(line, self.font_antialias, self.font_color) for line in lines]
+            return [self.font_render(line, self.font_color) for line in lines]
+            # return [self.font.render(line, self.font_antialias, self.font_color) for line in lines]
 
 
     def blit_text_rich(self, s, lines, r_text):
@@ -538,6 +543,19 @@ class TextStyle(BaseStyle):
         else:
             s.blit(s_text, r_text)
         return [self.offset_surface(s)]
+    
+
+class OutlinedTextStyle(TextStyle):
+    font_color = (255,)*3
+    bck_color = (0,)*4
+    outline_color = (50,)*3
+    outline_thickness = 2
+
+    def font_render(self, text, color):
+        from .graphics import render_outlined_text
+        return render_outlined_text(text, self.font, color,
+                                        self.outline_color, self.outline_thickness)
+
 
 
 

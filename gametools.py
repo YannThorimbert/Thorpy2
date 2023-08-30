@@ -11,6 +11,11 @@ def lorem_ipsum(n=4):
     n = min(len(LOREM_IPSUM), n)
     return ".".join(LOREM_IPSUM[0:n]) + "."
 
+def get_e_or_r_topleft(e):
+    if isinstance(e, pygame.Rect):
+        return e.topleft
+    else:
+        return e.rect.topleft
 
 class MovementManager:
     """Generates smooth animated movements between two coordinates for a collection of
@@ -18,10 +23,11 @@ class MovementManager:
     def __init__(self):
         self.elements = []
         self.target_pos = []
+        self.current_pos = []
         self.vmax = []
         self.params = []
 
-    def add(self, element, target_pos, vmax=30., remove_if_already_moving=True):
+    def add(self, element, target_pos, vmax=1., remove_if_already_moving=True):
         """Register a movement for a Rect or an element. The element will move from where it is now
         up to the target_pos.
         ***Mandatory arguments***
@@ -34,12 +40,14 @@ class MovementManager:
         if remove_if_already_moving:
             self.remove(element)
         self.elements.append(element)
+        self.current_pos.append(V2(get_e_or_r_topleft(element)))
         self.target_pos.append(V2(target_pos))
         self.vmax.append(vmax)
 
     def pop(self, i):
         self.elements.pop(i)
         self.target_pos.pop(i)
+        self.current_pos.pop(i)
         self.vmax.pop(i)
 
     def update(self):
@@ -47,13 +55,7 @@ class MovementManager:
         a part of the movement animation."""
         to_remove = []
         for i,e in enumerate(self.elements):
-            if isinstance(e, pygame.Rect):
-                topleft = e.topleft
-                func = e.move_ip
-            else:
-                topleft = e.rect.topleft
-                func = e.move
-            d = (self.target_pos[i] - topleft)
+            d = (self.target_pos[i] - self.current_pos[i])
             D = d.length()
             if D < 1:
                 to_remove.append(i)
@@ -63,7 +65,11 @@ class MovementManager:
                 vel.scale_to_length(self.vmax[i])
             if D < self.vmax[i]:
                 vel = d
-            func(vel.x, vel.y)
+            self.current_pos[i] += vel
+            if isinstance(e, pygame.Rect):
+                e.topleft = tuple(self.current_pos[i])
+            else:
+                e.set_topleft(*tuple(self.current_pos[i]))
         for i in to_remove[::-1]:
             self.pop(i)
 

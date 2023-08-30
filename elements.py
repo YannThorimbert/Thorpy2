@@ -242,6 +242,20 @@ class Text(Button):
         if generate_surfaces:
             self.generate_surfaces()
 
+class OutlinedText(Text):
+
+    def __init__(self, text, font_size=None, font_color=None, outline_color=None, outline_thickness=None,
+                 style_normal=None, generate_surfaces=True, only_normal=True, max_width=None):
+        super().__init__(text, font_size, font_color, style_normal, False, only_normal, max_width)
+        if outline_color:
+            self.set_style_attr("outline_color", outline_color)
+        if outline_thickness:
+            self.set_style_attr("outline_thickness", outline_thickness)
+        if generate_surfaces:
+            self.generate_surfaces()
+
+
+
 class Box(Element):
     """Graphical box that contains children elements.
     ***Mandatory arguments***
