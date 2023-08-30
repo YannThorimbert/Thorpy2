@@ -27,7 +27,7 @@ from .themes import theme_round_gradient, theme_round2
 from .themes import theme_text_dark, theme_game1, set_style_attr, refresh_all_elements_style, get_theme_bck_color, get_theme_main_bck_color
 from .styles import get_default_font, set_default_font, get_text_size, get_text_height
 
-__version__ = "2.1.01"
+__version__ = "2.1.1"
 
 def set_screen(screen):
     """Set the default surface display for all elements that will be created after this call."""
