@@ -25,7 +25,7 @@ box.sort_children("grid", nx=5, ny=2)
 box.center_on(screen)
 
 #second option : change the opacity for a single element (without changing its color)
-box.set_opacity_bck_color(255)
+box.set_opacity_bck_color(200)
 
 #Your main loop here #########################
 m = tp.Loop(element=box)
