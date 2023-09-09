@@ -247,12 +247,12 @@ class OutlinedText(Text):
     def __init__(self, text, font_size=None, font_color=None, outline_color=None, outline_thickness=None,
                  style_normal=None, generate_surfaces=True, only_normal=True, max_width=None):
         super().__init__(text, font_size, font_color, style_normal, False, only_normal, max_width)
+        if generate_surfaces:
+            self.generate_surfaces()
         if outline_color:
             self.set_style_attr("outline_color", outline_color)
         if outline_thickness:
             self.set_style_attr("outline_thickness", outline_thickness)
-        if generate_surfaces:
-            self.generate_surfaces()
 
 
 
@@ -2460,7 +2460,8 @@ class Slider(Element):
 
 
 class DropDownList(Box):
-    """_List of choices (buttons) that is launched by a DropDownListButton instance.
+    """_List of choices (buttons) that is launched by a DropDownListButton instance. You probably want
+    a DropDownListButton instead !
     ***Mandatory arguments***
     <launcher> : launcher element (instance of DropDownListButton).
     <choices> : sequence of strings or elements.
@@ -2544,6 +2545,85 @@ class DropDownList(Box):
 
 
 
+class DiscreteLifebar(Group): #TODO: should have a corresponding style to generate images, would be cleaner
+    """A set of slots to represent discrete-levels quantity.
+    ***Mandatory arguments***
+    <img_slot_empty> : pygame surface for empty slots.
+    <img_slot_full> : pygame surface for full slots.
+    <n_slots> : (int) the number of slots
+    <initial_value> : (int) the initial number of filled slots.
+    ***Optional arguments***
+    <clickable> : (bool) set to False if user cannot modify the value by clicking.
+    <img_slot_empty_hover> : pygame surface for empty slots at hover.
+    <img_slot_full_hover> : pygame surface for full slots at hover.
+    <auto_inflate> : (2-tuple ints) x and y inflation of slots at hover.
+    <mode> : either 'h' (horizontal) or 'v' (vertical).
+    <margins> : (2-tuple ints) margins around the slots.
+    <gap> : space between the slots.
+    """
+    def __init__(self, img_slot_empty, img_slot_full, n_slots, initial_value, clickable=True,
+                 img_slot_empty_hover=None, img_slot_full_hover=None, auto_inflate=(2,2),
+                 mode="h", margins=(0,0), gap=5):
+        self.img_slot_empty = img_slot_empty
+        self.img_slot_full = img_slot_full
+        self.img_slot_empty_hover = img_slot_empty_hover
+        self.img_slot_full_hover = img_slot_full_hover
+        if img_slot_empty_hover is None:
+            size = self.img_slot_empty.get_rect().inflate(auto_inflate).size
+            self.img_slot_empty_hover = pygame.transform.scale(self.img_slot_empty, size)
+        elif auto_inflate:
+            size = self.img_slot_empty_hover.get_rect().inflate(auto_inflate).size
+            self.img_slot_empty_hover = pygame.transform.scale(self.img_slot_empty_hover, size)
+        #
+        if img_slot_full_hover is None:
+            size = self.img_slot_full.get_rect().inflate(auto_inflate).size
+            self.img_slot_full_hover = pygame.transform.scale(self.img_slot_full, size)
+        elif auto_inflate:
+            size = self.img_slot_full_hover.get_rect().inflate(auto_inflate).size
+            self.img_slot_full_hover = pygame.transform.scale(self.img_slot_full_hover, size)
+        self.n_slots = n_slots
+        self.value = initial_value
+        self.mode = mode
+        self.margins = margins
+        self.gap = gap
+        self.clickable = clickable
+        children = self.refresh_slots()
+        nx, ny, align = "auto", "auto", "center"
+        super().__init__(children, mode, margins, gap, nx, ny, align)
+        self.set_value(initial_value)
+
+    def set_value(self, value):
+        self.value = value
+        children = self.refresh_slots()
+        old_children = self.get_children()
+        for i in range(len(children)):
+            self.replace_child(old_children[i], children[i], refresh=False)
+        self.sort_children(self.mode, "center", self.gap, self.margins,
+                           nx="auto", ny="auto")
+
+    def get_value(self):
+        return self.value
+    
+    def get_relative_value(self):
+        return self.get_value() / self.n_slots
+        
+    def refresh_slots(self):
+        children = []
+        for i in range(self.n_slots):
+            if i < self.value:
+                img = self.img_slot_full
+                img_hover = self.img_slot_full_hover
+            else:
+                img = self.img_slot_empty
+                img_hover = self.img_slot_empty_hover
+            if self.clickable:
+                e = ImageButton("", img, img_hover=img_hover)
+                e.at_unclick = self.set_value
+                e.at_unclick_params = {"value":i+1}
+            else:
+                e = Image(img)
+            children.append(e)
+        return children
 
 
 class Lifebar(Group):

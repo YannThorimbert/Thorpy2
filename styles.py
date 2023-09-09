@@ -551,11 +551,21 @@ class OutlinedTextStyle(TextStyle):
     outline_color = (50,)*3
     outline_thickness = 2
 
+    def get_line_size(self, text):
+        w,h = super().get_line_size(text)
+        return w, h + 2*self.outline_thickness
+        
+
     def font_render(self, text, color):
         from .graphics import render_outlined_text
         return render_outlined_text(text, self.font, color,
                                         self.outline_color, self.outline_thickness)
-
+    
+    def copy(self):
+        c = TextStyle.copy(self)
+        c.outline_color = self.outline_color
+        c.outline_thickness = self.outline_thickness
+        return c
 
 
 

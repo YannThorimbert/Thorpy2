@@ -201,6 +201,10 @@ def apply_default_dragger(size=(20,10), bck_color=None):
 def apply_default_outlined_text():
     OutlinedText.style_normal = styles.OutlinedTextStyle()
     OutlinedText.font_color = Text.style_normal.font_color
+    #
+    OutlinedText.style_hover = OutlinedText.style_normal.copy()
+    OutlinedText.style_pressed = OutlinedText.style_normal.copy()
+    OutlinedText.style_locked = OutlinedText.style_normal.copy()
 
 def theme_classic():
     p.current_theme = "classic"
@@ -742,3 +746,54 @@ def get_theme_main_bck_color():
     get_theme_main_bck_color necessarily returns either a single RGB tuple, a single RGBA tuple or None."""
     return graphics.get_main_color(Button.style_normal.bck_color)
 
+def theme_text_outlined():
+    p.current_theme = "text_outlined"
+    #Button
+    Button.style_normal = styles.OutlinedTextStyle()
+    thick = Button.style_normal.font_size // 20
+    if thick == 0:
+        thick = 1
+    Button.style_normal.font_color = (220,)*3
+    Button.style_normal.outline_thickness = thick
+    Button.style_normal.outline_color = (50,50,50)
+    Button.style_hover = Button.style_normal.copy()
+    Button.style_hover.font_color = (255,255,255)
+    # Button.style_hover.outline_color = (255,50,50)
+    Button.style_hover.outline_thickness = 1
+    Button.style_pressed = Button.style_hover.copy()
+    apply_default_locked()
+    apply_default_dragger(bck_color=Button.style_normal.font_color)
+    _DraggerButton.style_hover.bck_color = Button.style_hover.font_color
+    #Box
+    apply_default_box(styles.SimpleStyle)
+    Box.style_normal.bck_color = (200,200,200,200)
+    Box.style_locked.bck_color = darken(Box.style_normal.bck_color)
+    Button.style_locked.font_color = darken(Box.style_locked.bck_color)
+    apply_default_titlebox(styles.TitleBoxSimpleStyle)
+    TitleBox.style_normal.bck_color = Box.style_normal.bck_color
+    #DropDownList
+    apply_default_ddl(styles.SimpleStyle)
+    DropDownList.style_normal.bck_color = change_alpha(Box.style_normal.bck_color, 200)
+    apply_default_input(styles.SimpleStyle)
+    #Text
+    Text.style_normal = Button.style_normal.copy()
+    apply_default_outlined_text()
+    apply_default_label()
+    #Lines
+    apply_default_line(styles.SimpleStyle)
+    #Sliders
+    apply_default_slider(styles.SimpleStyle, darken(Box.style_normal.bck_color))
+    #Images
+    apply_default_image_style()
+    #Helpers
+    apply_default_helper()
+    #Checkboxes and radios
+    apply_default_toggle_button(styles.SimpleStyle, ((220,)*3, (150,)*3, "v"))
+    ToggleButton.style_pressed.bck_color = ((150,)*3, (220,)*3, "v")
+    apply_default_checkbox(styles.SimpleStyle)
+    apply_default_radio(styles.CircleStyle)
+    apply_default_switch()
+    SwitchButton.style_normal.bck_color = (255,)*3
+    apply_default_colorpickers()
+    #
+    assign_styles()

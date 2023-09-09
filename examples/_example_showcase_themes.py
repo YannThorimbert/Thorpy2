@@ -2,7 +2,6 @@
 allows the user to browse some of the default themes. See the showcase number 2 to check all the default themes."""
 #tags: showcase, Button, SliderWithText, Text, Checkbox, Radio, DropDownListButton, Labelled, ToggleButton, SwitchButtonWithText, SwitchButton, TitleBox, Group
 
-import sys; sys.path.insert(0, "./")
 import pygame
 import thorpy as tp
 
@@ -24,7 +23,7 @@ tp.call_before_gui(before_gui) #tells thorpy to call before_gui() before drawing
 
 #Display an alert to the user about screen resolution to use for this showcase
 alert = tp.Alert("Information", """This example is designed to be display on (at least) full HD.
-Have a look at showcase example 2 if your resolution is lower than that.""")
+Have a look at showcase example 2 if your resolution is lower than that.\n\nAlso, not all the themes are displayed here.""")
 alert.launch_alone()
 
 tp.set_waiting_bar("Building elements...")
@@ -72,6 +71,9 @@ text = get_group("Dark text")
 
 tp.theme_game1()
 game1 = get_group("Game1")
+
+# tp.theme_text_outlined()
+# game1 = get_group("Outlined text")
 
 bigbrother = tp.Group([human, classic, game1, game, text, simple], "h")
 

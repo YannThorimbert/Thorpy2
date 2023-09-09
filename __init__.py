@@ -19,15 +19,15 @@ from .elements import Slider, SliderWithText, Text, TextInput, TitleBox, ToggleB
 from .elements import Checkbox, Radio, SwitchButton, SwitchButtonWithText, DropDownListButton
 from .elements import ColorPicker, ColorPickerRGB, ColorPickerPredefined, ImageButton, HeterogeneousTexts
 from .elements import TextAndImageButton, Lifebar, DeadButton, AnimatedGif, WaitingBar, OutlinedText
-from .elements import TogglablesPool, Labelled, LabelledColorPicker, Group, ShowFPS, TkDialog
+from .elements import TogglablesPool, Labelled, LabelledColorPicker, Group, ShowFPS, TkDialog, DiscreteLifebar
 
 #Import styling functions
 from .themes import theme_classic, theme_human, theme_round, theme_simple, theme_text, theme_game2
-from .themes import theme_round_gradient, theme_round2
+from .themes import theme_round_gradient, theme_round2, theme_text_outlined
 from .themes import theme_text_dark, theme_game1, set_style_attr, refresh_all_elements_style, get_theme_bck_color, get_theme_main_bck_color
 from .styles import get_default_font, set_default_font, get_text_size, get_text_height
 
-__version__ = "2.1.2"
+__version__ = "2.1.3"
 
 def set_screen(screen):
     """Set the default surface display for all elements that will be created after this call."""

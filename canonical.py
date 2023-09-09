@@ -269,7 +269,10 @@ class Element:
                     getattr(style,"set_"+attr)(value)
                 else:
                     if not hasattr(style, attr):
-                        warnings.warn("No attribute " + attr + " for style " + str(style.__class__))
+                        print("Problematic attr =", attr)
+                        warnings.warn("No attribute " + attr + " for style " + str(style.__class__) +\
+                                      " on state " + state)
+                        assert False
                     setattr(style, attr, value)
                 self.styles[state] = style
         if refresh:
@@ -530,6 +533,7 @@ class Element:
         """Sort/organize children elements. See the tagged examples as they illustrate a lot of common situations.
         ***Optional arguments***
         <mode> : either 'v' (vertical), 'h' (horizontal) or 'grid'.
+        <align> : either 'center', 'left' or 'right.
         <gap> : (integer) space between elements.
         <margins> : 2-tuple of integers specifying the margins.
         <offset> : (integer) offset of the whole rearrangment.

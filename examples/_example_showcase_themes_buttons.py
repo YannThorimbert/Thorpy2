@@ -2,7 +2,6 @@
 allows the user to browse some of the default themes. See the showcase number 2 to check all the default themes."""
 #tags: showcase, Button, grouping & positioning, SliderWithText, Text, Checkbox, Radio, DropDownListButton, Labelled, ToggleButton, SwitchButtonWithText, SwitchButton, TitleBox, Group
 
-import sys; sys.path.insert(0, "./")
 import pygame
 import thorpy as tp
 
@@ -54,7 +53,11 @@ rg = get_group("Round gradient")
 tp.theme_classic()
 classic = get_group("Classic")
 
-bigbrother = tp.Group([human, textdark, game1, round2,  game2, rg, simple, text, classic], "grid", nx=3, ny=3)
+tp.theme_text_outlined()
+outlined = get_group("Outlined text")
+
+themes = [human, textdark, game1, round2,  game2, rg, simple, text, classic, outlined]
+bigbrother = tp.Group(themes, "grid", nx=3, ny=3)
 
 #For the sake of brevity, the main loop is replaced here by a shorter but blackbox-like method
 loop = bigbrother.get_updater()
