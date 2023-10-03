@@ -243,6 +243,18 @@ class Text(Button):
             self.generate_surfaces()
 
 class OutlinedText(Text):
+    """Outlined text that can be used as a GUI element taking all standard element states
+    (normal, hover, pressed, locked) and actions.
+    ***Mandatory arguments***
+    <text> : the text content. Can include line breaks.
+    ***Optional arguments***
+    <font_size> : size of the font (integer).
+    <font_color> : color of the font in (R,G,B) format.
+    <outline_color> : color of the outline in (R,G,B) format.
+    <outline_thickness> : (int) thickness of the outline in pixels.
+    <max_width> : maximum widht of the text element. To cope with tate, line breaks will be
+    automatically inserted if needed.
+    """
 
     def __init__(self, text, font_size=None, font_color=None, outline_color=None, outline_thickness=None,
                  style_normal=None, generate_surfaces=True, only_normal=True, max_width=None):
@@ -414,7 +426,7 @@ class Box(Element):
         else:
             length = min(sh,self.rect.h*0.6)
         if button_size is None:
-            button_size = (int(self.styles["normal"].font.get_height() * 0.8),) * 2
+            button_size = (int(self.styles["normal"].get_font_height() * 0.8),) * 2
         button_text = {"h":("left","right"), "v":("up","down")}
         deltas = {"h":(-1,0), "v":(0,-1)}
         # b1 = ArrowButton(button_text[mode][0],button_size)
@@ -756,13 +768,13 @@ class TextInput(Button):
 
     def refresh_surfaces_build(self):
         Button.refresh_surfaces_build(self)
-        h = self.get_current_style().font.get_height()
+        h = self.get_current_style().get_font_height()
         self.cursor_img = pygame.Surface((self.cursor_width, h))
         self.cursor_img.fill(self.get_current_style().font_color)
 
     def refresh_surfaces_copy(self):
         Button.refresh_surfaces_copy(self)
-        h = self.get_current_style().font.get_height()
+        h = self.get_current_style().get_font_height()
         self.cursor_img = pygame.Surface((self.cursor_width, h))
         self.cursor_img.fill(self.get_current_style().font_color)
 
@@ -948,7 +960,9 @@ class TextInput(Button):
 
 
 class DropDownListButton(Button):
-    """When this button is clicked, a list of choices is displayed to the user, who can choose one of them (or none) to close the list.
+    """When this button is clicked, a list of choices is displayed to the user,
+    who can choose one of them (or none) to close the list.
+    Caution, get_value() will return None until user choses an option.
     ***Mandatory arguments***
     <choices> : sequence of strings or elements.
     ***Optional arguments***
@@ -1642,10 +1656,12 @@ class LabelledColorPicker(Labelled):
     <cancel> : string of the cancellation text
     <color_size> : 2-tuple for the size of the color thumbnail
     <launch_mode> : either 'launch_nonblocking' or 'launch_blocking' or 'launch_alone'
+    <func_before> : the function to call before drawing self when launched.
     """
 
     def __init__(self, label, element, ok="Ok", cancel="Cancel",
-                 color_size=(20,20), launch_mode="launch_alone"):
+                 color_size=(20,20), launch_mode="launch_alone",
+                 func_before=None):
         if isinstance(element, ColorPickerPredefined):
             validation_choices = (cancel,)
         else:
@@ -1664,7 +1680,10 @@ class LabelledColorPicker(Labelled):
         element.alert = alert
         def choose_color():
             color_before = element.get_value()
-            getattr(alert, launch_mode)()
+            if func_before:
+                getattr(alert, launch_mode)(func_before=func_before)
+            else:
+                getattr(alert, launch_mode)()
             if alert.choice != ok and not(isinstance(alert.choice, tuple)):
                 element.set_value(color_before)
             imgb.get_current_frame().fill(element.get_value())
@@ -1864,7 +1883,7 @@ class Checkbox(ToggleButton):
     def __init__(self, value=False, size="auto", style_normal=None, generate_surfaces=True):
         ToggleButton.__init__(self, "", value=value, generate_surfaces=False)
         if size == "auto":
-            size = self.styles["normal"].font.get_height()-4
+            size = self.styles["normal"].get_font_height()-4
             if size < 16:
                 size = 16
         for s in styles.ALL_STYLES:
@@ -1915,8 +1934,8 @@ class Radio(Checkbox):
     def __init__(self, value=False, size="auto", style_normal=None, generate_surfaces=True):
         ToggleButton.__init__(self, "", value=value, generate_surfaces=False)
         if size == "auto":
-            # size = self.styles["normal"].font.get_height() - 4
-            size = int(self.styles["normal"].font.get_height() * 0.75)
+            # size = self.styles["normal"].get_font_height() - 4
+            size = int(self.styles["normal"].get_font_height() * 0.75)
         for s in styles.ALL_STYLES:
             self.styles[s] = self.styles[s].copy()
             self.styles[s].size = (size,size)
@@ -1965,7 +1984,7 @@ class SwitchButton(Button):
         if size[0] is None or size[0] == "auto":
             size = (50, size[1])
         if size[1] is None or size[1] == "auto":
-            size = (size[0], self.styles["normal"].font.get_height()+self.styles["normal"].margins[1]*2)
+            size = (size[0], self.styles["normal"].get_font_height()+self.styles["normal"].margins[1]*2)
         if drag_size[0] is None or drag_size[0] == "auto":
             drag_size = (25, drag_size[1])
         if drag_size[1] is None or drag_size[1] == "auto":
@@ -2905,13 +2924,19 @@ class HeterogeneousTexts(Group):
             else:
                 align = "center"
         for text, properties in texts:
-            e = Text(text, generate_surfaces=False)
+            if "outlined" in properties:
+                e = OutlinedText(text, generate_surfaces=False)
+            else:
+                e = Text(text, generate_surfaces=False)
             e.set_style_attr("margins", (0,0), refresh=False)
             for property_name, value in properties.items():
-                e.set_style_attr("font_"+property_name, value, refresh=False)
+                if property_name != "outlined":
+                    e.set_style_attr("font_"+property_name, value, refresh=False)
             e.generate_surfaces()
             elements.append(e)
         super().__init__(elements, mode, margins, gap, nx, ny, align)
+
+        
 
 
 

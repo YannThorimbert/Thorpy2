@@ -223,13 +223,27 @@ def pil_img_to_pygame_surf(img, color_format="RGBA"):
     data = img.convert(color_format).tobytes("raw", color_format)
     return fromstring(data, size, color_format)
 
-def get_black_white(surf, black=128, color_format="RGBA", convert=True):
+def get_black_white_pil(surf, black=128, color_format="RGBA", convert=True):
     img = pygame_surf_to_pil_img(surf)
     gray = img.convert('L')
     bw = gray.point(lambda x: 0 if x<black else 255, '1')
     if convert:
         bw = bw.convert(color_format)
     return bw
+
+def get_black_white(surf, black=128, color_format="RGBA", convert=True):
+    """Returns a monochrome version of the image, using PIL.
+    ***Mandatory arguments***
+    <surf> : the image you want to blur (pygame.Surface).
+    ***Optional arguments***
+    <black> : the gray level that is considered as black.
+    <color_format> : an accepted color format by PIL."""
+    img = pygame_surf_to_pil_img(surf)
+    gray = img.convert('L')
+    bw = gray.point(lambda x: 0 if x<black else 255, '1')
+    if convert:
+        bw = bw.convert(color_format)
+    return pil_img_to_pygame_surf(bw, color_format)
 
 def get_blurred(surf, radius=2, color_format="RGBA"):
     """Returns a blurred version of the image, using PIL.
@@ -247,7 +261,7 @@ def get_shadow(surf, radius=2, black=255, color_format="RGBA", alpha_factor=255,
                decay_mode="exponential", color=(0,0,0)):
     """_prefer the Shadow class if possible
     <black> : gray value below which the pixel is considered as opaque."""
-    img = get_black_white(surf, black, color_format)
+    img = get_black_white_pil(surf, black, color_format)
     img = img.filter(ImageFilter.GaussianBlur(radius))
     img = pil_img_to_pygame_surf(img, color_format)
     img = set_alpha_from_intensity(img, alpha_factor, decay_mode, color)
@@ -508,14 +522,16 @@ def spritesheet_frames(src, nx, ny, line_number, colorkey=None):
         x += frame_w
     return frames
 
-def draw_arrow(screen, start_coord, end_coord, arrow_color):
+def draw_arrow(screen, start_coord, end_coord, arrow_color,
+               arrowhead_length=13,
+               arrowhead_angle=math.pi/6):
     """Draws an arrow on the screen from start_coord to end_coord, pointing towards end_coord."""
     angle = math.atan2(end_coord[1] - start_coord[1], end_coord[0] - start_coord[0])
     # Draw the arrow line
     pygame.draw.aaline(screen, arrow_color, start_coord, end_coord)
     # Draw the arrowhead
-    arrowhead_length = 13
-    arrowhead_angle = math.pi / 6  # 30 degrees in radians
+    # arrowhead_length = 13
+    # arrowhead_angle = math.pi / 6  # 30 degrees in radians
     arrowhead_points = [
         (
             end_coord[0] - arrowhead_length * math.cos(angle + arrowhead_angle),
@@ -699,6 +715,36 @@ def draw_pixel_border_ip(surface, border_color, color_empty=None):
                 break
 
 
+def extract_pixel_border(surface, border_color, color_empty=None):
+    """This function is very slow and intended to be used once and for all before any loop,
+    most suitably on small sprites. The function uses the defined colorkey as <color_empty> by default."""
+    if not color_empty:
+        color_empty = surface.get_colorkey()
+    if not color_empty:
+        raise Exception("You must provide <color_empty> or a surface with non-None colorkey")
+    w,h = surface.get_size()
+    new_surface = pygame.Surface((w,h))
+    new_surface.set_colorkey(color_empty)
+    new_surface.fill(color_empty)
+    def draw_pix_if_needed(x,y):
+        color = surface.get_at((x,y))
+        if color != color_empty:
+            gfx.pixel(new_surface, x, y, border_color) #this or surface.set_at() ?
+            return True
+    for x in range(w): #columns from top to bottom
+        for y in range(h):
+            if draw_pix_if_needed(x,y):
+                break
+    for y in range(h): #lines 
+        for x in range(w): #from left to right
+            if draw_pix_if_needed(x,y):
+                break
+        for x in range(w-1, -1, -1): #from right to left
+            if draw_pix_if_needed(x,y):
+                break
+    return new_surface
+
+
 def illuminate_border_ip(surface, light_color, orientation, depth, intensity=0.5, color_empty=None):
     """This function is very slow and intended to be used once and for all before any loop,
     most suitably on small sprites. The function uses the defined colorkey as <color_empty> by default."""
@@ -879,3 +925,22 @@ def render_outlined_text(text, font, gfcolor, ocolor, opx):
 
     surf.blit(textsurface, (opx, opx))
     return surf
+
+
+
+def darken_every_color_ip(surface, factor=0.5, color_empty=None):
+    """This function is very slow and intended to be used once and for all before any loop,
+    most suitably on small sprites. If <color_empty> is None, then it detects the default colorkey
+    of the surface."""
+    if not color_empty:
+        color_empty = surface.get_colorkey()
+    if not color_empty:
+        raise Exception("You must provide <color_empty> or a surface with non-None colorkey")
+    w,h = surface.get_size()
+    for x in range(w): #columns from top to bottom
+        for y in range(h):
+            color = surface.get_at((x,y))
+            if color != color_empty:
+                new_color = darken(color, factor)
+                gfx.pixel(surface, x, y, new_color) #this or surface.set_at() ?
+    return surface

@@ -12,7 +12,7 @@ tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 texts = [("Hello, world. ", {"name":"arialrounded"}),
          ("How ", {"color":(0,0,255)}),
          ("are ", {}),
-         ("you ", {"color":(0,255,0), "size":25}),
+         ("you ", {"color":(0,255,0), "size":25, "outlined":True}),
          ("doing?", {"name":"timesnewroman"}),
          ]
 text = tp.HeterogeneousTexts(texts)

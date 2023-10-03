@@ -87,7 +87,7 @@ def get_text_height(cls=None):
     from .elements import Text
     if cls is None:
         cls = Text
-    return cls.style_normal.font.get_height()
+    return cls.style_normal.get_font_height()
 
 def get_text_size(text, cls=None):
     """Returns the size in pixels of the current default style. This is a different value
@@ -179,6 +179,9 @@ class BaseStyle:
                 h = size[1]
             return (w,h)
         return self.font.size(text)
+    
+    def get_font_height(self):
+        return self.font.get_height()
 
     def process_rich_text(self, text):
         L = len(COLOR_TAG)
@@ -553,14 +556,16 @@ class OutlinedTextStyle(TextStyle):
 
     def get_line_size(self, text):
         w,h = super().get_line_size(text)
-        return w, h + 2*self.outline_thickness
-        
-
+        m = 2 * self.outline_thickness
+        return w + m, h + m
+    
+    def get_font_height(self):
+        return super().get_font_height() + 2 * self.outline_thickness
+    
     def font_render(self, text, color):
         from .graphics import render_outlined_text
         return render_outlined_text(text, self.font, color,
                                         self.outline_color, self.outline_thickness)
-    
     def copy(self):
         c = TextStyle.copy(self)
         c.outline_color = self.outline_color
