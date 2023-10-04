@@ -2,9 +2,12 @@
 Module regrouping some functions for image processing.
 Some of the functions make use of Python Imaging Library and NumPy.
 """
+from typing import Union, Sequence, cast, Any
 import math
 import numpy
 from PIL import Image, ImageFilter
+
+from .thorpytypehints import *
 
 import pygame
 import pygame.surfarray as surfarray
@@ -16,7 +19,8 @@ from functools import cache
 
 MAX_NORM = 3*(255**2)
 
-def darken(color, factor=0.8, also_alpha=False):
+
+def darken(color:RGB_OR_RGBA, factor:float=0.8, also_alpha:bool=False)->RGB_OR_RGBA:
     """Returns a darkened version of the color.
     ***Mandatory arguments***
     <color> : 3-tuple or 4-tuple color.
@@ -27,14 +31,15 @@ def darken(color, factor=0.8, also_alpha=False):
     color = get_main_color(color)
     assert factor <= 1
     if len(color) > 3:
+        color = cast(RGBA, color)  # Explicitly tell mypy that color is RGBA in this block
         if also_alpha:
-            return tuple(int(c*factor) for c in color)
+            return (int(color[0]*factor), int(color[1]*factor), int(color[2]*factor), int(color[3]*factor))
         else:
             return (int(color[0]*factor), int(color[1]*factor), int(color[2]*factor), color[3])
     else:
-        return tuple(int(c*factor) for c in color)
+        return int(color[0]*factor), int(color[1]*factor), int(color[2]*factor)
 
-def enlighten(color, factor=1.2, min_value=20, also_alpha=False):
+def enlighten(color:RGB_OR_RGBA, factor=1.2, min_value=20, also_alpha=False)->RGB_OR_RGBA:
     """Returns a enlightened version of the color.
     ***Mandatory arguments***
     <color> : 3-tuple or 4-tuple color.
@@ -45,39 +50,43 @@ def enlighten(color, factor=1.2, min_value=20, also_alpha=False):
     also_alpha : (bool) specify whether you also want alpha to be affected."""
     color = get_main_color(color)
     assert factor >= 1
+    def mc(value):
+        return min(int(value*factor + min_value),255)
     if len(color) > 3:
+        color = cast(RGBA, color)  # Explicitly tell mypy that color is RGBA in this block
         if also_alpha:
-            return tuple(min(int(c*factor+min_value), 255) for c in color)
+            return mc(color[0]), mc(color[1]), mc(color[2]), mc(color[3])
         else:
-            return tuple(min(int(c*factor+min_value), 255) for c in color[0:3]) +\
-                        (color[3],)
+            return mc(color[0]), mc(color[1]), mc(color[2]), color[3]
     else:
-        return tuple(min(int(c*factor+min_value), 255) for c in color)
+        return mc(color[0]), mc(color[1]), mc(color[2])
 
-def change_alpha(color, alpha):
+def change_alpha(color:RGB_OR_RGBA, alpha:int)->RGBA:
     """_Always returns RGBA color"""
     return (color[0], color[1], color[2], alpha)
 
 
-def process_gradient_color(gradient_color):
+def process_gradient_color(gradient_color:GradientColor)->ProcessedGradient:
     """_Return color and orientation.
     We absolutely don't care that this seems slow.
     In comparison with the time that graphical computations take,
     this is nothing."""
     is_gradient = is_color_gradient(gradient_color)
     if is_gradient:
-        return gradient_color[0:-1], gradient_color[-1]
+        return gradient_color[0:-1], gradient_color[-1] # type: ignore
     else:
-        return gradient_color, None
+        gradient_color = cast(RGBA, gradient_color)
+        return gradient_color, None # type: ignore
     
 
-def get_main_color(gradient_color):
+
+def get_main_color(gradient_color:GradientColor)->RGB_OR_RGBA:
     all_colors, orientation = process_gradient_color(gradient_color)
     if orientation:
-        return all_colors[0]
-    return all_colors
+        return all_colors[0] # type: ignore
+    return all_colors # type: ignore
 
-def interpolate_2colors(c1, c2, k):
+def interpolate_2colors(c1:RGB_OR_RGBA, c2:RGB_OR_RGBA, k:float)->RGB_OR_RGBA:
     """Returns a color that is in between c1 and c2, with a factor k.
     For instance, if k = 0.75, then the color will be made of 75% of c1 and 25% of c2.
     Note that c1 and c2 must be of the same length in RGB or RGBA format.
@@ -87,10 +96,10 @@ def interpolate_2colors(c1, c2, k):
     """
     assert len(c1) == len(c2)
     one_minus_k = 1. - k
-    return tuple(k*c1[i]+one_minus_k*c2[i] for i in range(len(c1)))
+    return tuple(k*c1[i]+one_minus_k*c2[i] for i in range(len(c1))) # type: ignore
 
 #used for things like colorbars in google mode
-def interpolate_ncolors(colors, k): 
+def interpolate_ncolors(colors:ColorPair, k:float)->RGB_OR_RGBA: 
     """Returns a color that is in between two colors among the colors passed, with a factor k.
     For instance, if k = 0.75, then the color will be an interpolation of the two surrounding colors
     (see interpolate_colors) at 75% of the list of colors.
@@ -109,31 +118,40 @@ def interpolate_ncolors(colors, k):
     new_k = (k-k1)/(k2-k1)
     return interpolate_2colors(colors[i2], colors[i1], new_k)
 
-def color_distance(c1, c2):
+def color_distance(c1:RGB_OR_RGBA, c2:RGB_OR_RGBA)->float:
+    """Euclidian distance between two colors, ignoring alpha value."""
     return square_color_norm((c2[0]-c1[0],c2[1]-c1[1],c2[2]-c1[2]))
 
-def opposite_color(c):
+def opposite_color(c:RGB_OR_RGBA)->RGB_OR_RGBA:
     """Return the conjugate of a color. For instance, if (255,0,127) is passed, then
     (0,255,127) is returned."""
-    return tuple(255-v for v in c)
+    return tuple(255-v for v in c) # type: ignore
 
-def square_color_norm(c):
+def square_color_norm(c:RGB_OR_RGBA)->float:
+    """Magnitude of a color, ignoring alpha value."""
     return c[0]**2 + c[1]**2 + c[2]**2
 
-def is_color_gradient(color):
+# def is_color_gradient(color:GradientColor)->bool:
+#     return isinstance(color, Gradient)
+#     # if isinstance(color[0],int) or isinstance(color[0],float):
+#     #     return False
+#     # return True
+
+def is_color_gradient(color:GradientColor)->bool:
     if isinstance(color[0],int) or isinstance(color[0],float):
         return False
     return True
 
-def get_alpha(color):
+def get_alpha(color:RGB_OR_RGBA)->float:
     color = get_main_color(color)
     if len(color) < 4:
         return 255
+    color = cast(RGBA, color)
     return color[3]
 
-def color_rect(gradient_color, size):
+def color_rect(gradient_color:GradientColor, size:Size)->pygame.Surface:
     """Return a colored rect.
-    <gradient_color> : an gradient color (see below).
+    <gradient_color> : a gradient color (see below).
     <size> : 2-tuple beeing the size of the rect.<br>
     ---<br>
     gradient color can be:<br>
@@ -157,6 +175,7 @@ def color_rect(gradient_color, size):
         else:
             orientation = "v" #default orientation
         colors = gradient_color[0:-1]
+        colors = cast(Sequence[RGB_OR_RGBA],colors)
         if len(colors[0]) == 4:
             alpha = colors[0][-1]
         else:
@@ -171,11 +190,12 @@ def color_rect(gradient_color, size):
         elif L == 3:
             s = pygame.Surface(size).convert()
         else:
-            raise ValueError("Invalid color argument : " + gradient_color)
+            raise ValueError("Invalid color argument : " + str(gradient_color))
+        gradient_color = cast(RGB_OR_RGBA, gradient_color)
         s.fill(gradient_color)
         return s
 
-def color_gradient(colors, size, orientation):
+def color_gradient(colors:RGB_OR_RGBA_SEQ, size:Size, orientation:str)->pygame.Surface:
     "_Horizontal or vertical gradient between ordered colors, ignoring alpha."
     L = len(colors)
     if orientation == "h":
@@ -190,6 +210,7 @@ def color_gradient(colors, size, orientation):
         return color_gradient_radial(colors, size)
     elif orientation == "q":
         r = pygame.Surface((2,2))
+        colors = cast(RGBA, colors)
         gfx.pixel(r,0,0,colors[0])
         gfx.pixel(r,1,0,colors[1])
         gfx.pixel(r,0,1,colors[2])
@@ -199,9 +220,7 @@ def color_gradient(colors, size, orientation):
     s = pygame.transform.smoothscale( r, size )
     return s
 
-
-
-def color_gradient_radial(colors, size):
+def color_gradient_radial(colors:RGB_OR_RGBA_SEQ, size:Size)->pygame.Surface:
     "_Radial gradient with color c1 in center and c2 in borders, ignoring alpha."
     n = len(colors)*2
     r = pygame.Surface((n,n))
@@ -213,17 +232,18 @@ def color_gradient_radial(colors, size):
     s = pygame.transform.smoothscale( r, size )
     return s
 
-def pygame_surf_to_pil_img(surf, color_format="RGBA"):
+def pygame_surf_to_pil_img(surf:pygame.Surface, color_format:PygCol="RGBA")->Image:# type: ignore
     size = surf.get_size()
     pil_string_image = tostring(surf, color_format, False)
-    return Image.frombytes(color_format, size, pil_string_image)
+    return Image.frombytes(color_format, size, pil_string_image) 
 
-def pil_img_to_pygame_surf(img, color_format="RGBA"):
+def pil_img_to_pygame_surf(img:Any, color_format:PygCol2="RGBA")->pygame.Surface: 
     size = img.size
     data = img.convert(color_format).tobytes("raw", color_format)
     return fromstring(data, size, color_format)
 
-def get_black_white_pil(surf, black=128, color_format="RGBA", convert=True):
+def get_black_white_pil(surf:pygame.Surface, black:int=128,
+                        color_format:PygCol="RGBA", convert:bool=True)->Image: #type: ignore
     img = pygame_surf_to_pil_img(surf)
     gray = img.convert('L')
     bw = gray.point(lambda x: 0 if x<black else 255, '1')
@@ -231,7 +251,8 @@ def get_black_white_pil(surf, black=128, color_format="RGBA", convert=True):
         bw = bw.convert(color_format)
     return bw
 
-def get_black_white(surf, black=128, color_format="RGBA", convert=True):
+def get_black_white(surf:pygame.Surface, black:int=128,
+                    color_format:PygCol="RGBA", convert:bool=True)->pygame.Surface:
     """Returns a monochrome version of the image, using PIL.
     ***Mandatory arguments***
     <surf> : the image you want to blur (pygame.Surface).
@@ -245,7 +266,8 @@ def get_black_white(surf, black=128, color_format="RGBA", convert=True):
         bw = bw.convert(color_format)
     return pil_img_to_pygame_surf(bw, color_format)
 
-def get_blurred(surf, radius=2, color_format="RGBA"):
+def get_blurred(surf:pygame.Surface, radius:int=2,
+                color_format:PygCol="RGBA")->pygame.Surface:
     """Returns a blurred version of the image, using PIL.
     ***Mandatory arguments***
     <surf> : the image you want to blur (pygame.Surface).
@@ -257,8 +279,9 @@ def get_blurred(surf, radius=2, color_format="RGBA"):
     img = pil_img_to_pygame_surf(img, color_format)
     return img
 
-def get_shadow(surf, radius=2, black=255, color_format="RGBA", alpha_factor=255,
-               decay_mode="exponential", color=(0,0,0)):
+def get_shadow(surf:pygame.Surface, radius:int=2, black:int=255,
+               color_format:PygCol="RGBA", alpha_factor:int=255,
+               decay_mode:str="exponential", color:RGB_OR_RGBA=(0,0,0))->pygame.Surface:
     """_prefer the Shadow class if possible
     <black> : gray value below which the pixel is considered as opaque."""
     img = get_black_white_pil(surf, black, color_format)
@@ -267,7 +290,8 @@ def get_shadow(surf, radius=2, black=255, color_format="RGBA", alpha_factor=255,
     img = set_alpha_from_intensity(img, alpha_factor, decay_mode, color)
     return img
 
-def set_alpha_from_intensity(surface, alpha_factor, decay_mode, color):
+def set_alpha_from_intensity(surface:pygame.Surface, alpha_factor:float,
+                             decay_mode:str, color:RGB_OR_RGBA)->pygame.Surface:
     rect = surface.get_rect()
     newsurf = Surface(rect.size, SRCALPHA, depth=surface.get_bitsize())
     newsurf = newsurf.convert_alpha()
@@ -298,7 +322,7 @@ def set_alpha_from_intensity(surface, alpha_factor, decay_mode, color):
     return newsurf
 
 
-def detect_frame(surf, vacuum=(255, 255, 255)):
+def detect_frame(surf:pygame.Surface, vacuum:RGB_OR_RGBA=(255, 255, 255))->pygame.Rect:
     """_Returns a Rect of the minimum size to contain all that is not vacuum."""
     vacuum = numpy.array(vacuum)
     array = pygame.surfarray.array3d(surf)
@@ -324,7 +348,7 @@ def detect_frame(surf, vacuum=(255, 255, 255)):
     return pygame.Rect(first_x, miny, last_x - first_x, maxy - miny)
 
 
-def capture_screen(surface, rect=None):
+def capture_screen(surface:pygame.Surface, rect:Union[pygame.Rect,None]=None)->pygame.Surface:
     """_Returns a copy of the surface <surface>, with restriction <rect>
     (None means the whole surface)"""
     if not rect:
@@ -332,7 +356,8 @@ def capture_screen(surface, rect=None):
     return surface.copy().subsurface(rect).convert()
 
 
-def draw_gradient_along_path(surface, path, gradient):
+def draw_gradient_along_path(surface:pygame.Surface, path:Sequence[Coord],
+                             gradient:GradientColor)->None:
     """Draw a 1 D color gradient along a path.
     ***Mandatory arguments***
     <surface> : pygame Surface on which to draw.
@@ -340,7 +365,7 @@ def draw_gradient_along_path(surface, path, gradient):
     <gradient> : Thorpy gradient_color value."""
     import math
     #we do not want radial gradients !
-    assert gradient[-1] == "h" or gradient[-1] =="v" or not(isinstance(gradient[-1], str))
+    # assert gradient[-1] == "h" or gradient[-1] =="v" or not(isinstance(gradient[-1], str))
     all_colors, orientation = process_gradient_color(gradient)
     if is_color_gradient(gradient):
         all_colors = [tuple(int(c) for c in col) for col in all_colors]
@@ -369,7 +394,8 @@ def draw_gradient_along_path(surface, path, gradient):
         i += 1
     draw_gradient_line(surface, colors[-1], colors[0], path[-1], path[0])
     
-def draw_gradient_line(surface, col1, col2, p1, p2):
+def draw_gradient_line(surface:pygame.Surface, col1:RGB, col2:RGB,
+                       p1:Coord, p2:Coord)->None:
     """Draw a line between two points using a color gradient.
     CAUTION ! This is a very slow function to use only in initialization phases.
     ***Mandatory arguments***
@@ -392,7 +418,10 @@ def draw_gradient_line(surface, col1, col2, p1, p2):
         y += dpix_y
 
 
-def change_color_on_img(img, color_source, color_target, colorkey=None):
+def change_color_on_img(img:pygame.Surface,
+                        color_source:PygameAcceptedColor,
+                        color_target:PygameAcceptedColor,
+                        colorkey:RGB_OR_RGBA_OR_NONE=None)->pygame.Surface:
     """Return a copy of the image where all color_source pixels have been converted
     to color_target pixels.
     ***Mandatory arguments***
@@ -408,8 +437,10 @@ def change_color_on_img(img, color_source, color_target, colorkey=None):
         img2.set_colorkey(colorkey, pygame.RLEACCEL)
     return img2.convert()
 
-def change_color_on_img_ip(img, color_source, color_target, colorkey=None):
-    """Modify the image so that all color_source pixels have been converted
+def change_color_on_img_ip(img:pygame.Surface,
+                           color_source:PygameAcceptedColor,
+                           color_target:PygameAcceptedColor, colorkey=None)->None:
+    """Modify the image in place so that all color_source pixels have been converted
     to color_target pixels.
     ***Mandatory arguments***
     <img> : the image you want to blur (pygame.Surface).
@@ -425,16 +456,14 @@ def change_color_on_img_ip(img, color_source, color_target, colorkey=None):
     return img2.convert()
 
 
-
-
 @cache
-def helper_smoothed_polygon(size, points):
+def helper_smoothed_polygon(size:Size, points:Sequence[int])->pygame.Surface:
     surface = pygame.Surface(size, pygame.SRCALPHA)
     pygame.draw.polygon(surface, (0,0,0), points)
     return surface
 
 @cache
-def smoothed_polygon(n_smooth, color, size, points):
+def smoothed_polygon(n_smooth:int, color:PygameAcceptedColor, size:Size, points:Sequence[int])->pygame.Surface:
     orig_size = size
     big = (size[0]*n_smooth, size[1]*n_smooth)
     points = tuple((x*n_smooth, y*n_smooth) for x,y in points)
@@ -449,7 +478,7 @@ def smoothed_polygon(n_smooth, color, size, points):
     s.fill((255, 255, 255, alpha), special_flags=pygame.BLEND_RGBA_MIN)
     return pygame.transform.smoothscale(s, orig_size)
 
-def polygon_aa(color, size, points, n_smooth=1):
+def polygon_aa(color:RGB_OR_RGBA, size:Size, points:Sequence[int], n_smooth:int=1)->pygame.Surface:
     all_colors, orientation = process_gradient_color(color)
     if orientation: #then color is a gradient
         if len(all_colors[0]) == 4:
@@ -465,7 +494,8 @@ def polygon_aa(color, size, points, n_smooth=1):
     return surface
 
 
-def extract_frames(src, out_folder=None, size_factor=(1., 1.)):
+def extract_frames(src:str, out_folder:Union[str,None]=None,
+                   size_factor:Tuple[float,float]=(1., 1.))->Sequence[pygame.Surface]:
     """Extract the frames of a GIF animation. Needs PIL.
     ***Mandatory arguments***
     <src> : filename of the gif.
@@ -495,7 +525,8 @@ def extract_frames(src, out_folder=None, size_factor=(1., 1.)):
             break
     return imgs
 
-def spritesheet_frames(src, nx, ny, line_number, colorkey=None):
+def spritesheet_frames(src:str, nx:int, ny:int, line_number:int,
+                       colorkey:RGB_OR_RGBA_OR_NONE=None)->Sequence[pygame.Surface]:
     """Return a list of pygame surfaces corresponding to a given line of the spritesheet.
     ***Mandatory arguments***
     <src> : filename of the spritesheet.
@@ -522,9 +553,9 @@ def spritesheet_frames(src, nx, ny, line_number, colorkey=None):
         x += frame_w
     return frames
 
-def draw_arrow(screen, start_coord, end_coord, arrow_color,
-               arrowhead_length=13,
-               arrowhead_angle=math.pi/6):
+def draw_arrow(screen:pygame.Surface, start_coord:Coord, end_coord:Coord, arrow_color:RGB_OR_RGBA,
+               arrowhead_length:int=13,
+               arrowhead_angle:float=math.pi/6)->None:
     """Draws an arrow on the screen from start_coord to end_coord, pointing towards end_coord."""
     angle = math.atan2(end_coord[1] - start_coord[1], end_coord[0] - start_coord[0])
     # Draw the arrow line
@@ -549,7 +580,8 @@ def draw_arrow(screen, start_coord, end_coord, arrow_color,
     gfx.aatrigon(screen, a[0],a[1], b[0],b[1], c[0],c[1],  arrow_color)
 
 @cache
-def generate_non_uniform_rect_shadow(size, color, alpha_factor, shadow_radius):
+def generate_non_uniform_rect_shadow(size:Size, color:RGB_OR_RGBA,
+                                     alpha_factor:float, shadow_radius:int)->pygame.Surface:
     shadow = Surface(size).convert_alpha()
     if len(color) == 3:
         color = change_alpha(color, alpha_factor * 255)
@@ -561,10 +593,10 @@ def generate_non_uniform_rect_shadow(size, color, alpha_factor, shadow_radius):
     return shadow
 
 
-def generate_oscillating_lights(surface, n, inflation=8, radius_amplitude=3,
-                    alpha_factor_base=0.1, alpha_factor_amplitude=0.3,
-                    color=(255,255,255),
-                    base_radius=1):
+def generate_oscillating_lights(surface:pygame.Surface, n:int, inflation:int=8, radius_amplitude:int=3,
+                    alpha_factor_base:float=0.1, alpha_factor_amplitude:float=0.3,
+                    color:RGB_OR_RGBA=(255,255,255),
+                    base_radius:int=1)->List[pygame.Surface]:
     """Prepares the frames of lights animation. This is a complex function that should be used as described in
     the tagged examples."""
     from .shadows import Shadow
@@ -586,13 +618,14 @@ def generate_oscillating_lights(surface, n, inflation=8, radius_amplitude=3,
     surfaces += surfaces[::-1][1:-1]
     return surfaces
 
-def generate_static_light(surface, inflation=8,alpha=0.1,color=(255,255,255),radius=1):
+def generate_static_light(surface:pygame.Surface, inflation:int=8,alpha:float=0.1,
+                          color:RGB_OR_RGBA=(255,255,255),radius:int=1)->pygame.Surface:
     """Return an image that can be used as the light halo around an object.
     See the tagged examples for detailed use."""
     return generate_oscillating_lights(surface, 2, inflation, 0, alpha, 0, color, radius)[0]
 
 # @cache
-def smoothed_circle(radius):
+def smoothed_circle(radius:int)->pygame.Surface:
     diameter = 2*radius
     circle = pygame.Surface((diameter,diameter), pygame.SRCALPHA)
     # pygame.draw.ellipse(circle, (0, 0, 0), circle.get_rect())
@@ -600,7 +633,8 @@ def smoothed_circle(radius):
     return circle
 
 @cache
-def smoothed_round_rect(n_smooth, color, size, radius, force_radius):
+def smoothed_round_rect(n_smooth:int, color:RGB_OR_RGBA,
+                        size:Size, radius:FloatOrInt, force_radius:bool)->pygame.Surface:
     orig_size = size
     size = (size[0]*n_smooth, size[1]*n_smooth)
     if radius == 0:
@@ -648,7 +682,8 @@ def smoothed_round_rect(n_smooth, color, size, radius, force_radius):
 
 
 # @cache
-def round_rect_aa(color, size, radius, force_radius=False, n_smooth=1.5):
+def round_rect_aa(color:RGB_OR_RGBA, size:Size, radius:FloatOrInt,
+                  force_radius:bool=False, n_smooth:float=1.5)->pygame.Surface:
     """Returns a round rectangle.
     ***Mandatory arguments***
     <color> : an gradient color (see below).
@@ -689,8 +724,11 @@ def round_rect_aa(color, size, radius, force_radius=False, n_smooth=1.5):
     return surface
 
 
-def draw_pixel_border_ip(surface, border_color, color_empty=None):
-    """This function is very slow and intended to be used once and for all before any loop,
+def draw_pixel_border_ip(surface:pygame.Surface,
+                         border_color:RGB_OR_RGBA,
+                         color_empty:RGB_OR_RGBA_OR_NONE=None)->None:
+    """Draw a color outline around the external (non-transparent) shape of a surface.
+    This function is very slow and intended to be used once and for all before any loop,
     most suitably on small sprites. The function uses the defined colorkey as <color_empty> by default."""
     if not color_empty:
         color_empty = surface.get_colorkey()
@@ -715,8 +753,10 @@ def draw_pixel_border_ip(surface, border_color, color_empty=None):
                 break
 
 
-def extract_pixel_border(surface, border_color, color_empty=None):
-    """This function is very slow and intended to be used once and for all before any loop,
+def extract_pixel_border(surface:pygame.Surface, border_color:RGB_OR_RGBA,
+                         color_empty:RGB_OR_RGBA_OR_NONE=None)->pygame.Surface:
+    """Return a surface containing only the outline around the external (non-transparent) shape of a surface.
+    This function is very slow and intended to be used once and for all before any loop,
     most suitably on small sprites. The function uses the defined colorkey as <color_empty> by default."""
     if not color_empty:
         color_empty = surface.get_colorkey()
@@ -745,7 +785,8 @@ def extract_pixel_border(surface, border_color, color_empty=None):
     return new_surface
 
 
-def illuminate_border_ip(surface, light_color, orientation, depth, intensity=0.5, color_empty=None):
+def illuminate_border_ip(surface:pygame.Surface, light_color:RGB_OR_RGBA, orientation:str,
+                         depth:int, intensity:float=0.5, color_empty:RGB_OR_RGBA_OR_NONE=None)->pygame.Surface:
     """This function is very slow and intended to be used once and for all before any loop,
     most suitably on small sprites. The function uses the defined colorkey as <color_empty> by default."""
     if not color_empty:
@@ -781,7 +822,7 @@ def illuminate_border_ip(surface, light_color, orientation, depth, intensity=0.5
                     if n >= depth:
                         break
 
-def scale_image_with_constraint(img, w, h, mode, smooth=True):
+def scale_image_with_constraint(img:pygame.Surface, w:int, h:int, mode:str, smooth:bool=True)->pygame.Surface:
     """Return an image that is scaled so that it fits or fill, without deformation nor cropping,
     inside a rect of a given size.
     ***Mandatory arguments***
@@ -892,7 +933,7 @@ def scale_image_with_constraint(img, w, h, mode, smooth=True):
 
 #Borrowed from pgzero
 _circle_cache = {}
-def _circlepoints(r):
+def _circlepoints(r:float)->Sequence[int]:
     r = int(round(r))
     if r in _circle_cache:
         return _circle_cache[r]
@@ -912,7 +953,8 @@ def _circlepoints(r):
     points.sort()
     return points
 
-def render_outlined_text(text, font, gfcolor, ocolor, opx):
+def render_outlined_text(text:str, font:pygame.font.Font,
+                         gfcolor:RGB_OR_RGBA, ocolor:RGB_OR_RGBA, opx:int)->pygame.Surface:
     textsurface = font.render(text, True, gfcolor).convert_alpha()
     w = textsurface.get_width() + 2 * opx
     h = font.get_height()
@@ -928,7 +970,7 @@ def render_outlined_text(text, font, gfcolor, ocolor, opx):
 
 
 
-def darken_every_color_ip(surface, factor=0.5, color_empty=None):
+def darken_every_color_ip(surface:pygame.Surface, factor:float=0.5, color_empty:ColorAndNone=None)->pygame.Surface:
     """This function is very slow and intended to be used once and for all before any loop,
     most suitably on small sprites. If <color_empty> is None, then it detects the default colorkey
     of the surface."""
@@ -944,3 +986,6 @@ def darken_every_color_ip(surface, factor=0.5, color_empty=None):
                 new_color = darken(color, factor)
                 gfx.pixel(surface, x, y, new_color) #this or surface.set_at() ?
     return surface
+
+
+# mypy graphics.py | Select-Object -First 1 
