@@ -1,14 +1,19 @@
 from typing import Union, Tuple, List, Sequence, Literal
+from .canonical import Element #type: ignore
 import pygame
+from pygame.math import Vector2 as V2
 
-Coord = Tuple[int, int]
-Size = Tuple[int, int]
+
 FloatOrInt = Union[float, int]
+Coord = Tuple[FloatOrInt, FloatOrInt]
+Size = Tuple[FloatOrInt, FloatOrInt]
+
+V2orCoord = Union[Coord, V2]
 
 # RGB = Tuple[int, int, int]
 # RGBA = Tuple[int, int, int, int]
-RGB = Tuple[int, int, int]
-RGBA = Tuple[int, int, int, int]
+RGB = Tuple[FloatOrInt, FloatOrInt, FloatOrInt]
+RGBA = Tuple[FloatOrInt, FloatOrInt, FloatOrInt, FloatOrInt]
 RGB_OR_RGBA = Union[RGB, RGBA]
 RGB_OR_RGBA_OR_NONE = Union[RGB_OR_RGBA, None]
 
@@ -32,3 +37,5 @@ GradientColor = Union[RGB_OR_RGBA,
 
 PygCol = Literal['P', 'RGB', 'RGBX', 'RGBA', 'ARGB', 'BGRA', 'RGBA_PREMULT', 'ARGB_PREMULT']
 PygCol2 = Literal['P', 'RGB', 'RGBX', 'RGBA', 'ARGB', 'BGRA']
+
+RectOrElement = Union[pygame.Rect,Element]

@@ -75,8 +75,10 @@ for i in range(N+1):
                            )[0]
     surfaces_light.append(img_light)
 
+import thorpy.thorpytypehints as th
+from typing import List
 
-particles = []
+particles:List[th.Particle] = []
 clock = pygame.time.Clock()
 playing = True
 while playing:

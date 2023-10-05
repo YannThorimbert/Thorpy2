@@ -22,11 +22,11 @@ tp.set_style_attr("bck_color", new_color_pressed, "pressed", exceptions_cls=[tp.
 
 #customize TitleBox properties
 # tp.Box.style_normal.bck_color = (255,255,255)
-tp.TitleBox.style_normal.bck_color = (100,100,255,127)
-tp.TitleBox.style_normal.radius = 10
-tp.TitleBox.style_normal.bottom_line = False
-tp.TitleBox.style_normal.left_line = False
-tp.TitleBox.style_normal.right_line = False
+tp.TitleBox.style_normal.bck_color = (100,100,255,127) # type: ignore
+tp.TitleBox.style_normal.radius = 10 # type: ignore
+tp.TitleBox.style_normal.bottom_line = False # type: ignore
+tp.TitleBox.style_normal.left_line = False # type: ignore
+tp.TitleBox.style_normal.right_line = False # type: ignore
 
 
 elements = [tp.Text("Hello, world.\nHere is some text."),

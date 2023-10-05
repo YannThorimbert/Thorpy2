@@ -3,14 +3,14 @@ Note that you can pass either a rect or an element to the MovementManager instan
 #tags: movement, smooth movement, smooth, animation, MovementManager
 
 
-import sys, pygame, thorpy as tp
+import pygame, thorpy as tp
 
 pygame.init()
 W,H = 1200, 700
 screen = pygame.display.set_mode((W, H))
 tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 
-text = tp.Text("Click anywhere and the button will move to this location")
+text = tp.Text("Click anywhere and the button will smoothly move to this location")
 button = tp.Button("My button")
 group = tp.Group([text, button])
 player = group.get_updater()
