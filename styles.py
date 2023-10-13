@@ -133,6 +133,9 @@ class BaseStyle:
         self.r_text = None
         self.text_lines = None
 
+    def generate_images(self, img, arrow=False):
+        raise Exception("BaseStyle cannot be used as a Style (it is abstract).")
+
     def autoset_has_second_draw(self):
         color = graphics.get_main_color(self.bck_color)
         print("autoset", color)

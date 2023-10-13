@@ -1,84 +1,37 @@
 import pygame
+from typing import Optional, List, TYPE_CHECKING, Dict, Callable, Tuple
+if TYPE_CHECKING:
+    from .canonical import Element #type: ignore
 
 from . import parameters as p
-
-def pause(debug_msg="Thorpy pause - press a key to continue"):
-    print(debug_msg)
-    clock = pygame.time.Clock()
-    while True:
-        clock.tick(60)
-        for e in pygame.event.get():
-            if e.type == pygame.KEYDOWN or e.type == pygame.MOUSEBUTTONDOWN:
-                return
-            elif e.type == pygame.QUIT:
-                quit_all_loops()
-                pygame.event.post(pygame.event.Event(pygame.QUIT))
-                return
-
-
-def get_current_loop():
-    if loops:
-        return loops[-1]
-
-def quit_current_loop():
-    loop = loops.pop()
-    loop.playing = False
-    # new_loop = get_current_loop()
-    # if new_loop:
-    #     new_loop.last_click = loop.iteration - loop.last_click
-    return loop
-
-def quit_all_loops():
-    for i in range(len(loops)):
-        quit_current_loop()
-
-def exit_app():
-    quit_all_loops()
-    pygame.quit()
-    exit()
-
-
-#this is the function that elements will call to launch themselves.
-#it wraps the functionnalities of Loop.
-def loop_elements(main_element, others, func_before=None,
-                    click_outside_cancel=True, reaction=None, esc_quit=True, func_after=None):
-    loop = Loop(main_element, manually_updated=False)
-    if reaction:
-        loop.reaction = reaction
-    loop.click_outside_cancel = click_outside_cancel
-    loop.esc_quit = True
-    loop.to_update = others
-    # old = get_current_loop()
-    # if old:
-    #     dt = old.iteration - old.last_click
-    #     loop.last_click = loop.iteration - dt
-    loop.launch(func_before)
 
 
 class Loop:
 
-    def __init__(self, element=None, fps=60, manually_updated=True):
+    def __init__(self, element:Optional[Element]=None,
+                 fps:int=60,
+                 manually_updated:bool=True):
         """
         <element> : parent of all elements that are handled by this loop.
         <manually_updated> : set to True if this Loop's update method is called
         by you (end-user).
         """
-        self.element = element
-        self.to_update = [] #!!! List of elements to visually update
-        self.fps = fps
-        self.clock = pygame.time.Clock()
-        self.iteration = 0
-        self.playing = True
-        self.click_outside_cancel = True
+        self.element:Optional[Element] = element
+        self.to_update:List[Element] = [] #!!! List of elements to visually update
+        self.fps:int = fps
+        self.clock:pygame.time.Clock = pygame.time.Clock()
+        self.iteration:int = 0
+        self.playing:bool = True
+        self.click_outside_cancel:bool = True
         if manually_updated:
             self.click_outside_cancel = False
-        self.esc_quit = True
-        self.min_iterations_between_clicks = self.fps // 2 #set to 0 if not needed
+        self.esc_quit:bool = True
+        self.min_iterations_between_clicks:int = self.fps // 2 #set to 0 if not needed
         # self.last_click = -float("inf")
         if manually_updated:
             loops.append(self)
-        self.manually_updated = manually_updated
-        self.reactions = {}
+        self.manually_updated:bool = manually_updated
+        # self.reactions = {}
 
     # def user_is_allowed_to_click_again(self):
     #     dt = self.iteration - self.last_click
@@ -87,11 +40,15 @@ class Loop:
     #         return True
     #     return False
 
-    def reaction(self, e): #event e
+    def reaction(self, e)->None: #event e
         pass
 
-    def update(self, func_before=None, no_state_change=True, events=None, func_after=None,
-               mouse_rel=None):
+    def update(self,
+               func_before:Optional[Callable]=None,
+               no_state_change:bool=True,
+               events:Optional[List[pygame.event.Event]]=None,
+               func_after:Optional[Callable]=None,
+               mouse_rel:Optional[Tuple[int,int]]=None)->None:
         """Update and draw the thorpy elements.
         Method to call each frame of the game if you do not use automatic thorpy loops
         (typically, use this method in your own main loop, after drawing everything on the screen).
@@ -102,6 +59,7 @@ class Loop:
         <mouse_rel> : the change in position of the mouse since last call. If you dont indicate it,
         then Thorpy must call it. Otherwise, it just uses the value you give.
         """
+        assert self.element
         if self.fps > 0:
             self.clock.tick(self.fps)
         if func_before:
@@ -147,7 +105,9 @@ class Loop:
         p.refresh()
         self.iteration += 1
 
-    def launch(self, func_before=None, func_after=None):
+    def launch(self,
+               func_before:Optional[Callable]=None,
+               func_after:Optional[Callable]=None)->None:
         if self.fps < 0:
             self.fps = 60
         if self.manually_updated:
@@ -163,8 +123,64 @@ class Loop:
             pygame.display.flip()
             self.iteration += 1
 
-from typing import List
 
 loops: List[Loop] = []
 
 
+def pause(debug_msg:str="Thorpy pause - press a key to continue")->None:
+    print(debug_msg)
+    clock = pygame.time.Clock()
+    while True:
+        clock.tick(60)
+        for e in pygame.event.get():
+            if e.type == pygame.KEYDOWN or e.type == pygame.MOUSEBUTTONDOWN:
+                return
+            elif e.type == pygame.QUIT:
+                quit_all_loops()
+                pygame.event.post(pygame.event.Event(pygame.QUIT))
+                return
+
+
+def get_current_loop()->Optional[Loop]:
+    if loops:
+        return loops[-1]
+    return None
+
+def quit_current_loop()->Loop:
+    loop = loops.pop()
+    loop.playing = False
+    # new_loop = get_current_loop()
+    # if new_loop:
+    #     new_loop.last_click = loop.iteration - loop.last_click
+    return loop
+
+def quit_all_loops()->None:
+    for i in range(len(loops)):
+        quit_current_loop()
+
+def exit_app()->None:
+    quit_all_loops()
+    pygame.quit()
+    exit()
+
+
+#this is the function that elements will call to launch themselves.
+#it wraps the functionnalities of Loop.
+def loop_elements(main_element:Element,
+                    others:List[Element],
+                    func_before:Optional[Callable]=None,
+                    click_outside_cancel:bool=True,
+                    reaction:Optional[pygame.event.Event]=None,
+                    esc_quit:bool=True,
+                    func_after:Optional[Callable]=None)->None:
+    loop = Loop(main_element, manually_updated=False)
+    if reaction:
+        loop.reaction = reaction #type:ignore #sorry for that
+    loop.click_outside_cancel = click_outside_cancel
+    loop.esc_quit = True
+    loop.to_update = others
+    # old = get_current_loop()
+    # if old:
+    #     dt = old.iteration - old.last_click
+    #     loop.last_click = loop.iteration - dt
+    loop.launch(func_before)

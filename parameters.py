@@ -1,27 +1,33 @@
 import pygame
 
-fallback_font_name = "arial"
-fallback_font_size = 20
+from typing import Optional, Callable, TYPE_CHECKING
+if TYPE_CHECKING:
+    from .canonical import Element #type: ignore
+    from .elements import WaitingBar #type: ignore
 
-auto_shadow_threshold = 300*300
+fallback_font_name:str = "arial"
+fallback_font_size:int = 20
 
-current_theme = "default"
+auto_shadow_threshold:int = 300*300
 
-current_func_before = None
+current_theme:str = "default"
 
-screen = None
+current_func_before:Optional[Callable] = None
 
-cursor = None
+screen:Optional[pygame.Surface] = None
 
-element_being_dragged = None
+cursor:Optional[pygame.Cursor] = None
 
-waiting_bar = None
+element_being_dragged:Optional["Element"] = None
 
-def refresh():
+waiting_bar:Optional["WaitingBar"] = None
+
+def refresh()->None:
     global element_being_dragged
     if not pygame.mouse.get_pressed()[0]:
         element_being_dragged = None
 
-def refresh_waiting_bar():
+def refresh_waiting_bar()->None:
+    """Refreshes the waiting bar state, if any global waiting bar is set."""
     if waiting_bar:
         waiting_bar.refresh()
