@@ -1,4 +1,7 @@
-def sort_children(elements, xy, mode="v", align="center", gap=5):
+from typing import Tuple
+
+
+def sort_children(elements, xy, mode="v", align="center", gap=5)->None:
     x,y = xy
     if mode == "v":
         for i,e in enumerate(elements):
@@ -32,7 +35,7 @@ def sort_children(elements, xy, mode="v", align="center", gap=5):
         raise ValueError("'mode' argument must be either 'v' or "+\
                          "'h'.")
 
-def sort_children_grid(els, xy, nx, ny, cellsize, horizontal_first=True, gap_x=5, gap_y=5):
+def sort_children_grid(els, xy, nx, ny, cellsize, horizontal_first=True, gap_x=5, gap_y=5)->None:
     if nx == "auto" and ny == "auto":
         nx = ny = int(len(els)**0.5) + 1
     elif nx == "auto":
@@ -61,7 +64,7 @@ def sort_children_grid(els, xy, nx, ny, cellsize, horizontal_first=True, gap_x=5
             y += 1
 
 
-def get_side_center(r, side):
+def get_side_center(r, side)->Tuple[int,int]:
     if side == "top":
         x0,y0 = r.centerx, r.top
     elif side == "bottom":

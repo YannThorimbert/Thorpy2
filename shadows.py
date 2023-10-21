@@ -1,9 +1,10 @@
 from math import tan, pi
-import pygame
 from pygame import Surface
 from pygame.transform import rotate, flip, scale
+
 from . import graphics
 from . import parameters as p
+
 
 
 SUN_ANGLE = 45.

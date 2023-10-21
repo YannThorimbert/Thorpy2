@@ -1,5 +1,6 @@
 from pygame.math import Vector2 as V2
 import pygame
+import numpy as np
 
 from typing import List
 import thorpytypehints as ty
@@ -84,3 +85,19 @@ class MovementManager:
         if element in self.elements:
             index = self.elements.index(element)
             self.pop(index)
+
+
+# class GroupOfParticles:
+
+#     def __init__(self):
+#         self.pos:np.ndarray = np.zeros((0, dtype=np.float64) #empty array at first
+#         self.x:np.ndarray = np.zeros(0, dtype=np.float64) #empty array at first
+#         self.vx:np.ndarray = np.zeros(0, dtype=np.float64) #empty array at first
+#         self.vx:np.ndarray = np.zeros(0, dtype=np.float64) #empty array at first
+#         self.ax:np.ndarray = np.zeros(0, dtype=np.float64) #empty array at first
+#         self.ax:np.ndarray = np.zeros(0, dtype=np.float64) #empty array at first
+
+
+#     def add_particle(self, x, y, vx, vy, ax=0, ay=0):
+        
+        
