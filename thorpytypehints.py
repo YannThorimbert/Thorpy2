@@ -1,5 +1,4 @@
 from typing import Union, Tuple, List, Sequence, Literal
-from .canonical import Element #type: ignore
 import pygame
 from pygame.math import Vector2 as V2
 
@@ -38,4 +37,4 @@ GradientColor = Union[RGB_OR_RGBA,
 PygCol = Literal['P', 'RGB', 'RGBX', 'RGBA', 'ARGB', 'BGRA', 'RGBA_PREMULT', 'ARGB_PREMULT']
 PygCol2 = Literal['P', 'RGB', 'RGBX', 'RGBA', 'ARGB', 'BGRA']
 
-RectOrElement = Union[pygame.Rect,Element]
+RectOrElement = Union[pygame.Rect,"Element"]
