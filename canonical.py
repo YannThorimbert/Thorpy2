@@ -502,7 +502,10 @@ class Element:
         self.move((x1-x0+delta[0])*move_x, (y1-y0+delta[1])*move_y)
 
 
-    def englobe_children(self, margins=(5,5), adapt_parent=True, size_limit=(float("inf"), float("inf")))->None:
+    def englobe_children(self,
+                         margins:Optional[Tuple[int]]=(5,5),
+                         adapt_parent:bool=True,
+                         size_limit:Tuple[float,float]=(float("inf"), float("inf")))->None:
         """Resizes the element so that its size englobes that of its children.
         ***Optional arguments***
         <margins> : space between self's border and its children.
@@ -617,23 +620,34 @@ class Element:
 ##            return style.get_rendered_text(self.text).get_rect().size
         return (0,0)
    
-    def sort_children(self, mode="v", align="center", gap=5,
-                        margins=(5,5), offset=0, nx="auto", ny="auto", grid_gaps=(5,5),
-                        horizontal_first=False, englobe_children=True,
-                        limit_size_if_englobe=(float("inf"),float("inf")))->None:
+   
+    def sort_children(self,
+                        mode:str="v",
+                        align:str="center",
+                        gap:int=5,
+                        margins:Optional[Tuple[int]]=(5,5),
+                        offset:int=0,
+                        nx:Union[str,int]="auto",
+                        ny:Union[str,int]="auto",
+                        grid_gaps:Tuple[int,int]=(5,5),
+                        horizontal_first:bool=False,
+                        englobe_children:bool=True,
+                        limit_size_if_englobe:Tuple[float,float]=(float("inf"),float("inf")))->None:
         """Sort/organize children elements. See the tagged examples as they illustrate a lot of common situations.
         ***Optional arguments***
         <mode> : either 'v' (vertical), 'h' (horizontal) or 'grid'.
         <align> : either 'center', 'left' or 'right.
         <gap> : (integer) space between elements.
-        <margins> : 2-tuple of integers specifying the margins.
+        <margins> : 2-tuple of integers specifying the margins. If None, default style's margin is used.
         <offset> : (integer) offset of the whole rearrangment.
         <nx> : number of columns (in grid mode).
         <ny> : number of lines (in grid mode).
         <grid_gaps> : gap to use if grid mode used.
-        <horizontal_first> : (bool) whether columns are filled first in grid mode (otherwise, lines are filled first).
+        <horizontal_first> : (bool) whether columns are filled first in grid mode
+        (otherwise, lines are filled first).
         <englobe_children> : update self's size after sorting so that it englobes its children.
-        <limit_size_if_englobe> : (2-tuple) specifying the maximum width and height of the new size, if englobe_children is True.
+        <limit_size_if_englobe> : (2-tuple) specifying the maximum width and height of the new size,
+        if englobe_children is True.
         """
         children = [e for e in self.children if not e.ignore_for_sorting]
         # self.last_sorted = (mode, align, gap, margins, offset, nx, ny, grid_gaps, horizontal_first, englobe_children)
@@ -683,6 +697,7 @@ class Element:
         if self.last_sorted:
             # self.sort_children(*self.last_sorted)
             # self.sort_children(*self.last_sorted.arguments())
+            prev_center = self.rect.center
             self.sort_children(self.last_sorted.mode,
                                 self.last_sorted.align,
                                 self.last_sorted.gap,
@@ -693,7 +708,8 @@ class Element:
                                 self.last_sorted.grid_gaps,
                                 self.last_sorted.horizontal_first,
                                 self.last_sorted.englobe_children)
-            self.set_center(*self.rect.center)
+            # self.set_center(*self.rect.center)
+            self.set_center(*prev_center)
 
 
     def drag_if_needed(self, mouse_delta)->None:
@@ -863,6 +879,8 @@ class Element:
         return states
    
     def get_children_rect(self, margins=(0,0))->pygame.Rect:
+        if not self.children:
+            return pygame.Rect(self.rect.center, (1,1))
         r = self.children[0].rect.unionall([e.rect for e in self.children if not e.ignore_for_sorting])
         r.inflate_ip((margins[0]*2, margins[1]*2))
         return r
@@ -1180,7 +1198,7 @@ class Element:
                
     "#--- Children management ---#"
 
-    def add_child(self, element, i=-1)->None:
+    def add_child(self, element, i:int=-1, auto_sort:bool=False)->None:
         """Add a child to the element.
         ***Mandatory arguments***
         <element> : the child element to add.
@@ -1193,22 +1211,35 @@ class Element:
             self.children.append(element)
         else:
             self.children.insert(i, element)
+        if auto_sort:
+            self.resort()
 
-    def add_children(self, elements)->None:
+    def add_children(self, elements, auto_sort:bool=False)->None:
         """Add children to the element.
         ***Mandatory arguments***
         <elements> : (list) the children elements to add.
         """
         for e in elements:
-            self.add_child(e)
+            self.add_child(e, auto_sort=auto_sort)
 
-    def remove_child(self, element)->None:
+    def remove_child(self, element, auto_sort:bool=False)->None:
         """Remove a child to the element.
         It's your responsibility to check that the element is really among the children.
         <element> : the children element to add.
         """
         element.parent = None
         self.children.remove(element)
+        if auto_sort:
+            self.sort_children()
+
+    def remove_all_children(self, auto_sort:bool=False)->None:
+        for e in self.children:
+            e.parent = None
+        self.children.clear()
+        if auto_sort:
+            self.resort()
+            # self.sort_children()
+            # self.englobe_children()
 
     def replace_child(self, old_one, new_one, refresh=True)->None:
         """Replaces a child of the element.

@@ -1,12 +1,16 @@
 import sys, inspect, math
+import warnings
+
 import pygame.gfxdraw as gfx
 import pygame
+from typing import Optional
+
 from . import parameters as p
 from .graphics import darken, enlighten
 from . import graphics
-import warnings
+from .shadows import Shadow
 
-import random
+
 
 
 ALL_STYLES = ("normal", "pressed", "hover", "locked")
@@ -112,7 +116,7 @@ class BaseStyle:
     size = "auto"
     margins = (6,6)
     bck_color = (220,)*3
-    shadowgen = None
+    shadowgen:Optional[Shadow] = None
     offset = (0,0)
     radius = 0
     # draw_in_2_times = False

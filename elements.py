@@ -14,6 +14,9 @@ See the most useful methods of any elements (e.g. set_size, move, etc) in the do
 """
 import os, sys, inspect
 import pygame
+
+from typing import Optional, List, Tuple, Sequence, Union
+
 from . import styles, loops
 from . import parameters as p
 from .graphics import darken, enlighten
@@ -135,7 +138,11 @@ class Button(Element):
         if generate_surfaces:
             self.generate_surfaces()
 
-    def set_text(self, text, adapt_parent=True, only_if_different=True, max_width=None):
+    def set_text(self,
+                 text:str,
+                 adapt_parent:bool=True,
+                 only_if_different:bool=True,
+                 max_width:Optional[int]=None)->None:
         """Regenerate element's surfaces with new text content.
         ***Mandatory arguments***
         <text> : the new text.
@@ -573,9 +580,31 @@ class Box(Element):
             margins = self.get_current_style().margins
         return margins
 
-    def sort_children(self, mode="v", align="center", gap=5,
-                        margins=None, offset=0, nx="auto", ny="auto", grid_gaps=(5,5),
-                        horizontal_first=False, englobe_children=True):
+    def sort_children(self,
+                        mode:str="v",
+                        align:str="center",
+                        gap:int=5,
+                        margins:Optional[Tuple[int]]=None,
+                        offset:int=0,
+                        nx:Union[str,int]="auto",
+                        ny:Union[str,int]="auto",
+                        grid_gaps:Tuple[int,int]=(5,5),
+                        horizontal_first:bool=False,
+                        englobe_children:bool=True):
+        """Sort/organize children elements. See the tagged examples as they illustrate a lot of common situations.
+        ***Optional arguments***
+        <mode> : either 'v' (vertical), 'h' (horizontal) or 'grid'.
+        <align> : either 'center', 'left' or 'right.
+        <gap> : (integer) space between elements.
+        <margins> : 2-tuple of integers specifying the margins. If None, default style's margin is used.
+        <offset> : (integer) offset of the whole rearrangment.
+        <nx> : number of columns (in grid mode).
+        <ny> : number of lines (in grid mode).
+        <grid_gaps> : gap to use if grid mode used.
+        <horizontal_first> : (bool) whether columns are filled first in grid mode (otherwise, lines are filled first).
+        <englobe_children> : update self's size after sorting so that it englobes its children.
+        <limit_size_if_englobe> : (2-tuple) specifying the maximum width and height of the new size, if englobe_children is True.
+        """
         margins = self.get_margins(margins)
         Element.sort_children(self, mode, align, gap, margins, offset, nx, ny,
                               grid_gaps, horizontal_first, englobe_children,
@@ -593,11 +622,12 @@ class TitleBox(Box):
     ***Optional arguments***
     <sort_immediately> : set to False if you do not want to sort the elements.
     May be useful if you plan to sort them later and performance is critical.
-    <scrollbar_if_needed> : set to True if you want a scrollbar to automatically pop when content exceeds a given size. Otherwise, the size of the box adapts.
-    <size_limit> : 2-tuple of integers representing the size limit. Any of these integers can be replaced by 'auto' to let Thorpy decide.
+    <scrollbar_if_needed> : set to True if you want a scrollbar to automatically pop
+    when content exceeds a given size. Otherwise, the size of the box adapts.
+    <size_limit> : 2-tuple of integers representing the size limit.
+    Any of these integers can be replaced by 'auto' to let Thorpy decide.
     """
     
-
     def __init__(self, text, children, sort_immediately=True,
                     style_normal=None, generate_surfaces=True, copy_normal_state=True,
                     scrollbar_if_needed=False, size_limit="auto"):
@@ -617,14 +647,22 @@ class TitleBox(Box):
             raise Exception("Contradictory arguments. Cannot sort without generating surfaces.")
         if sort_immediately:
             self.rect = pygame.Rect(0,0,1,1)
-            self.sort_children()
-        elif generate_surfaces and not self.has_surfaces_generated:
+            self.sort_children() #may generate surfaces
+            if not children:
+                style = self.get_current_style()
+                self.rect = pygame.Rect((0,0),style.get_line_size(text)).inflate(style.margins)
+                self.set_size(self.rect.size, adapt_parent=False)
+        if generate_surfaces and not self.has_surfaces_generated:
             self.generate_surfaces()
         # if generate_surfaces:
         #     self.generate_surfaces()
         # if sort_immediately:
         #     self.sort_children()
 
+
+
+    def sort_children(self, mode: str = "v", align: str = "center", gap: int = 5, margins: Tuple[int] | None = None, offset: int = 0, nx: str | int = "auto", ny: str | int = "auto", grid_gaps: Tuple[int, int] = (5, 5), horizontal_first: bool = False, englobe_children: bool = True):
+        return super().sort_children(mode, align, gap, margins, offset, nx, ny, grid_gaps, horizontal_first, englobe_children)
 
 class AlertWithChoices(TitleBox):
 
@@ -1211,7 +1249,7 @@ class Helper(Element):
     <follow_mouse> : (bool) set to True if you want the help to follow the mouse when hovering the parent.
     """
 
-    def __init__(self, text, parent, countdown=30, generate_shadow=(True,"auto"), offset=(0,-20),
+    def __init__(self, text, parent, countdown=15, generate_shadow=(True,"auto"), offset=(0,-20),
                     style_normal=None, generate_surfaces=True, children=None, max_width=None,
                     follow_mouse=False):
         Element.__init__(self, children)
@@ -1714,13 +1752,17 @@ class TogglablesPool(Element):
     <togglable_type> : (str) either 'toggle', 'radio' or 'checkbox'.
     """
 
-    def __init__(self, label, choices, initial_value, togglable_type="toggle"):
+    def __init__(self,
+                 label:str,
+                 choices:Sequence[str],
+                 initial_value:str,
+                 togglable_type:str="toggle"):
         assert initial_value in choices
-        self.label = _LabelButton(label)
-        e_choices = []
-        self.togglable_type = togglable_type
+        self.label:_LabelButton = _LabelButton(label)
+        e_choices:List[Element] = []
+        self.togglable_type:str = togglable_type
         def update_pool(tog):
-            print("update")
+            print("update pool sp") #ok
             count = 0
             for e in self.togglables:
                 if not(e is tog):
@@ -1748,7 +1790,7 @@ class TogglablesPool(Element):
             e_choices.append(tog)
             if c == initial_value:
                 tog.set_value(True)
-        self.togglables = e_choices
+        self.togglables:List[Element] = e_choices
         if togglable_type == "toggle":
             sort_mode = "h"
         else:

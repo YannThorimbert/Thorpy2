@@ -26,7 +26,8 @@ box.center_on(screen)
 def refresh():#some function that you call once per frame
     screen.fill((255,255,255))
     if my_pool.get_value():
-        choice.set_text("Your choice: " + my_pool.get_value(), adapt_parent=True)
+        choice.set_text("Your choice: " + my_pool.get_value())
+        print(box.rect, box.get_children_rect())
         
 #For the sake of brevity, the main loop is replaced here by a shorter but blackbox-like method
 player = box.get_updater().launch(refresh)

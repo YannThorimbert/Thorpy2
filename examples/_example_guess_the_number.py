@@ -18,13 +18,16 @@ tp.init(screen, tp.theme_round2) #bind screen to gui elements and set theme
 guess_slider = tp.SliderWithText("Choose a number", 1, 100, 50, 300, dragger_size=(50,20))
 try_guess_button = tp.Button("This is my guess")
 hint_text = tp.Text("Guess a number between 1 and 100!", font_size=30, font_color=(255,)*3)
+hint_text.set_font_rich_text_tag("#") #will be used to change the color of some letters only
 attempts_text = tp.HeterogeneousTexts([("Remaining attempts: ", {"size":30, "color":(255,)*3}),
                                        ("5/5", {"color":(255,0,0), "size":30})])
+attempts_view = tp.TitleBox("Attempts", [], generate_surfaces=True)
+attempts_view.set_invisible(True)
 
 # *** Grouping elements ***
 group1 = tp.Group([guess_slider, try_guess_button])
 group1.sort_children("h")
-box = tp.Box([hint_text, attempts_text, group1])
+box = tp.Box([hint_text, attempts_text, group1, attempts_view])
 box.center_on(screen)
 gui_updater = box.get_updater() #will be used to update gui each frame in the main loop
 
@@ -40,12 +43,15 @@ def validate_guess():
     global attempts_left
     attempts_left -= 1
     last_guess = guess_slider.get_value()
+    attempts_view.set_invisible(False)
     if last_guess == number_to_guess:
         game_ended("victory")
     elif last_guess < number_to_guess:
-        hint_text.set_text("The number to guess is larger than "+str(last_guess))
+        hint_text.set_text("The number to guess is #RGB(255,0,0)larger# than "+str(last_guess))
+        attempts_view.add_child(tp.Text("> " + str(last_guess)), auto_sort=True)
     else:
-        hint_text.set_text("The number to guess is smaller than "+str(last_guess))
+        hint_text.set_text("The number to guess is #RGB(0,0,255)smaller# than "+str(last_guess))
+        attempts_view.add_child(tp.Text("< " + str(last_guess)), auto_sort=True)
     if attempts_left < 1:
         game_ended("defeat")
     attempts_text.children[-1].set_text(str(attempts_left)+"/5")
@@ -66,6 +72,7 @@ def game_ended(result): #called either when player wins or looses.
         hint_text.set_text("Guess a number between 1 and 100!")
         guess_slider.set_value(50)
         attempts_left = 5
+        attempts_view.remove_all_children(auto_sort=True)
     else:
         playing = False
 
