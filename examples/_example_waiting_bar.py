@@ -28,7 +28,7 @@ button = tp.Button("Click to wait\n(yes, it's a bit weird)")
 button.center_on(screen)
 
 def load_heavy_stuff():
-    for i in range(10000000): 
+    for i in range(10000000//4): 
         import random #let's pretend we load some heavy stuff here
         x = (random.random()**0.4219) / (random.random()+1.) #random computation
         if i % 10000 == 0: #its up to you to decide how often you want to refresh

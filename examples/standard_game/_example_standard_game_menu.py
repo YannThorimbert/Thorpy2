@@ -11,14 +11,15 @@ from _example_standard_game_utils import play_game #game logics (nothing to do w
 
 pygame.init()
 screen = pygame.display.set_mode((1200, 700))
-tp.set_default_font("PressStart2P-Regular.ttf", 26)
-tp.init(screen, tp.theme_text) #bind screen to gui elements and set theme
+# tp.set_default_font("PressStart2P-Regular.ttf", 26)
+# tp.init(screen, tp.theme_text) #bind screen to gui elements and set theme
+tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 
 #customize the background color of boxes
 tp.set_style_attr("bck_color", (200,200,255,255), only_to_cls=[tp.Box, tp.TitleBox])
 
 
-start = tp.Button("Start new game") 
+start = tp.Button("Start new game")  
 howto = tp.Button("How to play")
 options = tp.Button("Options")
 bye = tp.Button("Quit")

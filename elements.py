@@ -2760,13 +2760,36 @@ class Lifebar(Group):
         if initial_value != 1.:
             self.set_value(initial_value)
 
+    def sort_children(self,
+                        mode:str="v",
+                        align:str="left",
+                        gap:int=5,
+                        margins:Optional[Tuple[int]]=None,
+                        offset:int=0,
+                        nx:Union[str,int]="auto",
+                        ny:Union[str,int]="auto",
+                        grid_gaps:Tuple[int,int]=(5,5),
+                        horizontal_first:bool=False,
+                        englobe_children:bool=True):
+        super().sort_children(mode, align, gap, margins, offset, nx, ny, grid_gaps,
+                              horizontal_first, englobe_children, (float("inf"),float("inf")))
+        self.e_frame.set_center(None, self.e_rect.rect.centery)
+        self.life_text.center_on(self.e_frame)
+        # self.e_frame.set_topleft(self.e_rect.rect.x+1,None)
+
+    def build_default_sort_options(self) -> SortOptions:
+        sort_options = super().build_default_sort_options()
+        sort_options.align = "left"
+        return sort_options
+
     def auto_text_refresh(self):
         text = self.get_str_value_times() + "%"
         self.life_text.set_text(text, adapt_parent=False)
         self.life_text.center_on(self.e_frame)
 
-    def set_value(self, value):
-        """The value of a lifebar must be greater than zero. It will automatically be set to zero if you put greater value."""
+    def set_value(self, value:float)->None:
+        """The value of a lifebar must be in [0,1].
+        It will automatically be set to zero if you put greater value."""
         value = 0 if value < 0 else value
         self.value = value
         x = self.e_rect.rect.x

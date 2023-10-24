@@ -1,4 +1,4 @@
-import sys, inspect, math
+import sys, inspect, math, random
 import warnings
 
 import pygame.gfxdraw as gfx

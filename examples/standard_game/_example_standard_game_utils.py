@@ -25,10 +25,10 @@ def play_game(screen, difficulty, hero_color):
     hero_rect.size = (20,20)
     #generate HUD elements ######################################################################
     text_vel = thorpy.Text(str(vx)+" km/h")
-    text_dist = thorpy.Lifebar("Distance: 100%", 300, #text and length
+    bar_dist = thorpy.Lifebar("Distance: 100%", 300, #text and length
                                bck_color=((255,80,80), (50,0,0), "v"), #vertical red to black
                                font_color=(255,255,255))
-    group = thorpy.Group([text_dist, text_vel], "h")
+    group = thorpy.Group([bar_dist, text_vel], "h")
     group.stick_to(screen,"bottom","bottom")
     game_over = False
     def draw():
@@ -46,12 +46,12 @@ def play_game(screen, difficulty, hero_color):
     clock = pygame.time.Clock()
     for i in range(duration):
         clock.tick(60)
-        #Refresh HUD ################################################
+        #Refresh display ################################################
         text_vel.set_text(str(round(vx,1))+" km/h")
-        text_dist.set_value(1-i/duration)
-        text_dist.life_text.set_text("Distance: "+text_dist.get_str_value_times()+"%")
+        bar_dist.set_value(1-i/duration)
+        bar_dist.life_text.set_text("Distance: " + bar_dist.get_str_value_times() + "%")
         draw()
-        ##########################
+        #Game logics ###############################################
         events = pygame.event.get()
         for e in events:
             if e.type == pygame.QUIT: #quit immediately, bypassing the rest
