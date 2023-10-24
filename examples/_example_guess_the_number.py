@@ -15,14 +15,16 @@ tp.set_default_font(("arialrounded", "arial", "calibri", "century"), font_size=2
 tp.init(screen, tp.theme_round2) #bind screen to gui elements and set theme
 
 # *** Declare UI elements ***
-guess_slider = tp.SliderWithText("Choose a number", 1, 100, 50, 300, dragger_size=(50,20))
+guess_slider = tp.SliderWithText("Choose a number",
+                                 min_value=1, max_value=100, initial_value=50,
+                                  length=300, dragger_size=(50,20))
 try_guess_button = tp.Button("This is my guess")
 hint_text = tp.Text("Guess a number between 1 and 100!", font_size=30, font_color=(255,)*3)
 hint_text.set_font_rich_text_tag("#") #will be used to change the color of some letters only
 attempts_text = tp.HeterogeneousTexts([("Remaining attempts: ", {"size":30, "color":(255,)*3}),
                                        ("5/5", {"color":(255,0,0), "size":30})])
-attempts_view = tp.TitleBox("Attempts", [], generate_surfaces=True)
-attempts_view.set_invisible(True)
+attempts_view = tp.TitleBox("Attempts", children=[])
+attempts_view.set_invisible(True) #will become visible when attemps isn't empty
 
 # *** Grouping elements ***
 group1 = tp.Group([guess_slider, try_guess_button])
@@ -34,6 +36,7 @@ gui_updater = box.get_updater() #will be used to update gui each frame in the ma
 # *** From now on, this is just the game logic ***
 number_to_guess = random.randint(1,100)
 attempts_left = 5
+
 
 def refresh_game(): #meant to be called each frame of the game
     screen.blit(bck, (0,0))
@@ -73,6 +76,7 @@ def game_ended(result): #called either when player wins or looses.
         guess_slider.set_value(50)
         attempts_left = 5
         attempts_view.remove_all_children(auto_sort=True)
+        attempts_view.set_invisible(True)
     else:
         playing = False
 

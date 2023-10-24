@@ -21,7 +21,7 @@ from . import styles, loops
 from . import parameters as p
 from .graphics import darken, enlighten
 from . import graphics
-from .canonical import Element
+from .canonical import Element, SortOptions
 from . import sorting
 import pygame.gfxdraw as gfx
 from .styles import get_text_height, get_text_size
@@ -95,6 +95,8 @@ def assign_styles():
     """
     clsmembers = inspect.getmembers(sys.modules[__name__], inspect.isclass)
     for name, cls in clsmembers:
+        if cls is SortOptions:
+            continue
         if name == "Element" or name == "SliderWithText":
             continue
         if not cls.style_normal:
@@ -391,8 +393,8 @@ class Box(Element):
             self.refresh_resizer_size()
 #         if self.keep_first_children_inside_when_resize:
 #             if not self.rect.contains(self.children[0].rect):
-#                 if self.last_sorted:
-#                     mx,my = self.last_sorted[3]
+#                 if self.sort_options:
+#                     mx,my = self.sort_options[3]
 # ##                    dx = self.children[0].rect.x - self.rect.x + mx
 #                 else:
 #                     my, mx = 5, 5
@@ -610,7 +612,13 @@ class Box(Element):
                               grid_gaps, horizontal_first, englobe_children,
                               self.size_limit)
         self.children_rect = self.get_children_rect(margins)
+        if not self.children:
+            self.rect = self.get_min_size()
+            self.set_size(self.rect.size, adapt_parent=False)
 
+    def get_min_size(self)->None:
+        style = self.get_current_style()
+        return pygame.Rect((0,0),style.get_line_size(" ")).inflate(style.margins)
 ##    def add_vertical_scrollbar(self):
 ##        up =
 
@@ -648,10 +656,6 @@ class TitleBox(Box):
         if sort_immediately:
             self.rect = pygame.Rect(0,0,1,1)
             self.sort_children() #may generate surfaces
-            if not children:
-                style = self.get_current_style()
-                self.rect = pygame.Rect((0,0),style.get_line_size(text)).inflate(style.margins)
-                self.set_size(self.rect.size, adapt_parent=False)
         if generate_surfaces and not self.has_surfaces_generated:
             self.generate_surfaces()
         # if generate_surfaces:
@@ -659,10 +663,10 @@ class TitleBox(Box):
         # if sort_immediately:
         #     self.sort_children()
 
+    def get_min_size(self)->None:
+        style = self.get_current_style()
+        return pygame.Rect((0,0),style.get_line_size(self.text)).inflate(style.margins)
 
-
-    def sort_children(self, mode: str = "v", align: str = "center", gap: int = 5, margins: Tuple[int] | None = None, offset: int = 0, nx: str | int = "auto", ny: str | int = "auto", grid_gaps: Tuple[int, int] = (5, 5), horizontal_first: bool = False, englobe_children: bool = True):
-        return super().sort_children(mode, align, gap, margins, offset, nx, ny, grid_gaps, horizontal_first, englobe_children)
 
 class AlertWithChoices(TitleBox):
 
@@ -1092,9 +1096,20 @@ class SliderWithText(Element):
 
     
 
-    def __init__(self, text, min_value, max_value, initial_value, length, mode="h",  edit=True, thickness=5,
-                    show_value_on_right_side=True, round_decimals=-1, show_value_on_cursor=False,
-                    dragger_size=None, set_when_click=True):
+    def __init__(self,
+                 text,
+                 min_value,
+                 max_value,
+                 initial_value,
+                 length,
+                 mode="h", 
+                 edit=True,
+                 thickness=5,
+                show_value_on_right_side=True,
+                round_decimals=-1,
+                show_value_on_cursor=False,
+                dragger_size=None,
+                set_when_click=True):
         self.min_value = min_value
         self.max_value = max_value
         if isinstance(min_value, float) or isinstance(max_value, float) or isinstance(initial_value, float):
@@ -1143,11 +1158,18 @@ class SliderWithText(Element):
         elif dragger_size:
             if dragger_size[1] == "auto":
                 dragger_size = (dragger_size[0], get_text_height())
-            self.slider.dragger.set_size(dragger_size)
+            self.slider.dragger.set_size(dragger_size, adapt_parent=False)
         Element.__init__(self, children)
-        self.sort_children(mode, gap=10)
+        self.sort_children(mode)
         # self.englobe_children()
         self.set_value(initial_value)
+
+    def build_default_sort_options(self)->SortOptions:
+        sort_options = super().build_default_sort_options()
+        sort_options.mode = "h"
+        sort_options.align = "center"
+        sort_options.gap = 10
+        return sort_options
 
     def update_input_size(self, txt=None):
         if txt is None:
@@ -2380,7 +2402,10 @@ class Slider(Element):
                  dragger_height='auto'):
         dragger_length = None if dragger_length == 'auto' else dragger_length
         dragger_height = None if dragger_height == 'auto' else dragger_height
-        self.bar = _SliderBar(mode, length, thickness)
+        self.bar = _SliderBar(mode, length, thickness, generate_surfaces=True)
+        if set_when_click:
+            self.bar.hand_cursor = True
+        # self.bar.generate_surfaces()
         #Note that dragger limit doesnt have to be controlled when dragged, since
         #it is naturally locked to its parent through cannot_drag_outside.
         self.set_when_click = set_when_click

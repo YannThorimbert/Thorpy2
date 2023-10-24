@@ -8,7 +8,7 @@ import numpy
 from PIL import Image, ImageFilter
 PILimage = Image.Image
 
-from thorpytypehints import *
+from .thorpytypehints import *
 
 import pygame
 import pygame.surfarray as surfarray

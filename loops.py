@@ -1,14 +1,12 @@
 import pygame
-from typing import Optional, List, TYPE_CHECKING, Dict, Callable, Tuple
-if TYPE_CHECKING:
-    from .canonical import Element #type: ignore
+from typing import Optional, List, Dict, Callable, Tuple
 
 from . import parameters as p
 
 
 class Loop:
 
-    def __init__(self, element:Optional[Element]=None,
+    def __init__(self, element:Optional["Element"]=None,
                  fps:int=60,
                  manually_updated:bool=True):
         """
@@ -16,8 +14,8 @@ class Loop:
         <manually_updated> : set to True if this Loop's update method is called
         by you (end-user).
         """
-        self.element:Optional[Element] = element
-        self.to_update:List[Element] = [] #!!! List of elements to visually update
+        self.element:Optional["Element"] = element
+        self.to_update:List["Element"] = [] #!!! List of elements to visually update
         self.fps:int = fps
         self.clock:pygame.time.Clock = pygame.time.Clock()
         self.iteration:int = 0
@@ -166,8 +164,8 @@ def exit_app()->None:
 
 #this is the function that elements will call to launch themselves.
 #it wraps the functionnalities of Loop.
-def loop_elements(main_element:Element,
-                    others:List[Element],
+def loop_elements(main_element:"Element",
+                    others:List["Element"],
                     func_before:Optional[Callable]=None,
                     click_outside_cancel:bool=True,
                     reaction:Optional[pygame.event.Event]=None,

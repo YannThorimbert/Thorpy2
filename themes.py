@@ -60,6 +60,7 @@ def apply_default_helper():
     Helper.style_normal.bck_color = enlighten(Helper.style_normal.bck_color, 1.1)
     # Helper.style_normal.bck_color = change_alpha(Helper.style_normal.bck_color, 100)
     # Helper.style_normal.font_color = enlighten(Helper.style_normal.bck_color, 1.3)
+    Helper.style_normal.has_second_draw = False
 
 def apply_default_checkbox(basestyle, radius=0, bck=None):
     Checkbox.style_normal = basestyle()
@@ -98,7 +99,7 @@ def apply_default_slider(basestyle, basecolor):
     Slider.style_locked = Slider.style_normal.copy()
     Slider.style_locked.bck_color = darken(Slider.style_normal.bck_color, 0.8)
     _SliderBar.style_normal = basestyle()
-    _SliderBar.style_normal.bck_color = (255,)*3
+    _SliderBar.style_normal.bck_color = (250,)*3
     _SliderBar.style_normal.pressed = True
     
 
@@ -197,6 +198,8 @@ def apply_default_dragger(size=(20,10), bck_color=None):
         _DraggerButton.style_hover.bck_color = bck_color
         _DraggerButton.style_pressed.bck_color = bck_color
         _DraggerButton.style_locked.bck_color = bck_color
+    _DraggerButton.style_hover.bck_color = enlighten(_DraggerButton.style_normal.bck_color)
+    _DraggerButton.style_pressed.bck_color = _DraggerButton.style_hover.bck_color
 
 def apply_default_outlined_text():
     OutlinedText.style_normal = styles.OutlinedTextStyle()

@@ -12,7 +12,6 @@ from .shadows import Shadow
 
 
 
-
 ALL_STYLES = ("normal", "pressed", "hover", "locked")
 COLOR_TAG = "RGB"
 

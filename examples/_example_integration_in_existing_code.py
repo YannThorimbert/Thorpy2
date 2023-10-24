@@ -11,7 +11,7 @@ def my_stuff(): #do what you want with the display like in any pygame code you w
 
 #Now let's pretend the UI elements below are what you need for your app:
 tp.init(screen, tp.theme_game2) #bind screen to gui elements and set theme
-button = tp.Button("Hello, world")
+button = tp.Button("Hello, world (this button has no effect)")
 ddl = tp.DropDownListButton(("Blah", "Blah", "Blah blah"), "My list", bck_func=my_stuff)
 my_ui_elements = tp.Group([button, ddl])
 updater = my_ui_elements.get_updater() #this will be used to update the UI elements

@@ -20,7 +20,6 @@ from . import shadows
 from . import parameters as p
 from . import loops
 from . import graphics
-from . import styles
 import warnings
 
 from typing import Optional, Tuple, List, Dict, Sequence, Callable, Union, Any
@@ -47,7 +46,7 @@ def get_blit_rects(parent_rect:Optional[pygame.Rect],
         return clip, area
 
 
-class SortRecord:
+class SortOptions:
 
     def __init__(self,
                  mode:Optional[str],
@@ -82,15 +81,17 @@ class SortRecord:
     #             self.grid_gaps,
     #             self.horizontal_first,
     #             self.englobe_children)
-       
+
+
+
 
 class Element:
     current_id: int = 0
-    style_normal: Optional[styles.BaseStyle] = None
-    style_hover: Optional[styles.BaseStyle] = None
-    style_pressed: Optional[styles.BaseStyle] = None
-    style_locked: Optional[styles.BaseStyle] = None
-    # hand_cursor: Optional[styles.BaseStyle] = None
+    style_normal: Optional["BaseStyle"] = None
+    style_hover: Optional["BaseStyle"] = None
+    style_pressed: Optional["BaseStyle"] = None
+    style_locked: Optional["BaseStyle"] = None
+    # hand_cursor: Optional["BaseStyle"] = None
     hand_cursor:bool = False
     multi_shadows: bool = False
 
@@ -102,7 +103,7 @@ class Element:
         yield cls.style_locked
 
     #classmethod
-    # def get_class_style(cls, state:str)->styles.BaseStyle:
+    # def get_class_style(cls, state:str)->"BaseStyle":
     #     if state == "normal": return cls.style_normal
     #     elif state == "hover": return cls.style_normal
     #     elif state == "pressed": return cls.style_normal
@@ -119,9 +120,10 @@ class Element:
         for c in self.children:
             c.parent = self
         self.rect = pygame.Rect(0,0,0,0)
-        self.last_sorted:Optional[SortRecord] = None
+        # self.sort_options:Optional[SortOptions] = None
+        self.sort_options:SortOptions = self.build_default_sort_options()
         self.text:str = ""
-        self.styles:Dict[str,Optional[styles.BaseStyle]] = {"normal":None,
+        self.styles:Dict[str,Optional["BaseStyle"]] = {"normal":None,
                                                             "hover":None,
                                                             "pressed":None,
                                                             "locked":None}
@@ -157,7 +159,7 @@ class Element:
         self.at_drag_params:Dict = {}
         # self.at_cancel = None
         self.action:Callable = self.default_at_unclick
-        self.hand_cursor:Optional[styles.BaseStyle] = self.__class__.hand_cursor
+        self.hand_cursor:Optional["BaseStyle"] = self.__class__.hand_cursor
 ##        self._at_click_outside = None
 ##        self._at_click_outside_params = {}
         self.loop_give_back:Optional[Tuple[loops.Loop, Element, bool]] = None
@@ -182,6 +184,18 @@ class Element:
    
 
     #--- Styling ---#
+
+    def build_default_sort_options(self)->SortOptions:
+        return SortOptions(mode="v",
+                        align="center",
+                        gap=5,
+                        margins=(5,5),
+                        offset=0,
+                        nx="auto",
+                        ny="auto",
+                        grid_gaps=(5,5),
+                        horizontal_first=False,
+                        englobe_children=True)
 
     def set_bck_color(self,
                       color:Sequence[int],
@@ -319,7 +333,7 @@ class Element:
         self.set_style_attr("font_rich_text_tag", tag, states, copy_style, refresh, apply_to_children)
 
     def set_style(self,
-                  style:styles.BaseStyle,
+                  style:"BaseStyle",
                   states:Union[str,Sequence[str]]="all",
                   refresh:bool=True,
                   copy:bool=False):
@@ -377,11 +391,11 @@ class Element:
 
    
 
-    def get_current_style(self)->Optional[styles.BaseStyle]:
+    def get_current_style(self)->Optional["BaseStyle"]:
         """Returns the current style object of the element, using its current state."""
         return self.styles.get(self.state)
 
-    def get_style(self, state:str)->Optional[styles.BaseStyle]:
+    def get_style(self, state:str)->Optional["BaseStyle"]:
         """Returns the style object of the element corresponding to a given state.
         <state> : name of the state (either "normal", "pressed", "hover" or "locked")."""
         return self.styles.get(state)
@@ -650,8 +664,9 @@ class Element:
         if englobe_children is True.
         """
         children = [e for e in self.children if not e.ignore_for_sorting]
-        # self.last_sorted = (mode, align, gap, margins, offset, nx, ny, grid_gaps, horizontal_first, englobe_children)
-        self.last_sorted = SortRecord(mode, align, gap, margins, offset, nx, ny, grid_gaps, horizontal_first, englobe_children)
+        # self.sort_options = (mode, align, gap, margins, offset, nx, ny, grid_gaps, horizontal_first, englobe_children)
+        self.sort_options = SortOptions(mode, align, gap, margins, offset, nx, ny,
+                                      grid_gaps, horizontal_first, englobe_children)
         sts = self.get_text_size() #Self Text Size = (0,0) if no text
         rects_w = [e.rect.width for e in children]+[sts[0]]
         rects_h = [e.rect.height for e in children]+[sts[1]]
@@ -694,20 +709,20 @@ class Element:
 
     def resort(self)->None:
         """Try to sort using the last parameters as for last call to sort."""
-        if self.last_sorted:
-            # self.sort_children(*self.last_sorted)
-            # self.sort_children(*self.last_sorted.arguments())
+        if self.sort_options:
+            # self.sort_children(*self.sort_options)
+            # self.sort_children(*self.sort_options.arguments())
             prev_center = self.rect.center
-            self.sort_children(self.last_sorted.mode,
-                                self.last_sorted.align,
-                                self.last_sorted.gap,
-                                self.last_sorted.margins,
-                                self.last_sorted.offset,
-                                self.last_sorted.nx,
-                                self.last_sorted.ny,
-                                self.last_sorted.grid_gaps,
-                                self.last_sorted.horizontal_first,
-                                self.last_sorted.englobe_children)
+            self.sort_children(self.sort_options.mode,
+                                self.sort_options.align,
+                                self.sort_options.gap,
+                                self.sort_options.margins,
+                                self.sort_options.offset,
+                                self.sort_options.nx,
+                                self.sort_options.ny,
+                                self.sort_options.grid_gaps,
+                                self.sort_options.horizontal_first,
+                                self.sort_options.englobe_children)
             # self.set_center(*self.rect.center)
             self.set_center(*prev_center)
 
@@ -898,6 +913,14 @@ class Element:
                 for s in self.surfaces[key]:
                     s.fill(color)
                     s.set_alpha(255)
+
+    def draw_outlines_on_screen_for_debug(self)->None:
+        for e in self.get_all_descendants():
+            if e.id == 2:
+                color = (0,0,255)
+            else:
+                color = (0,0,0)
+            pygame.draw.rect(self.surface, color, e.rect, 1)
 
     def refresh_surfaces_shadow(self)->None:
         if self.multi_shadows:
@@ -1196,7 +1219,9 @@ class Element:
         """Stops the special frames display (see set_special_frames)"""
         self.get_current_frame = self.get_current_frame_normal #type:ignore #guaranteed
                
-    "#--- Children management ---#"
+    #--- Children management ---#
+
+    
 
     def add_child(self, element, i:int=-1, auto_sort:bool=False)->None:
         """Add a child to the element.
