@@ -17,7 +17,7 @@ tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 #                                "Beginner") #initial value
 my_pool = tp.TogglablesPool("Difficulty",
                                ("Beginner", "Intermediate", "Pro"), #possibilities
-                               "Beginner", #initial value
+                               "Beginner", #initial value (you can aldo pass its index, e.g. 0 here)
                                togglable_type="toggle") #either 'toggle', 'radio' or 'checkbox'
 choice = tp.Text("Your choice: " + my_pool.get_value())
 box = tp.TitleBox("Togglables Pool Example", [my_pool, choice])

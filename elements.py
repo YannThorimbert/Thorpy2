@@ -1784,7 +1784,6 @@ class TogglablesPool(Element):
         e_choices:List[Element] = []
         self.togglable_type:str = togglable_type
         def update_pool(tog):
-            print("update pool sp") #ok
             count = 0
             for e in self.togglables:
                 if not(e is tog):
@@ -1890,7 +1889,7 @@ class ToggleButton(Button):
                     style_locked=None, value=False):
         Button.__init__(self, text, style_normal, style_hover, style_pressed, False, children, style_locked)
         self.value = value
-        self.surfaces["nothoverpressed"] = []
+        self.surfaces["selected"] = []
         if generate_surfaces:
             self.generate_surfaces()
         self.action = self.default_at_unclick
@@ -1900,7 +1899,7 @@ class ToggleButton(Button):
         style = self.styles["pressed"].copy()
         style.font_color = self.styles["normal"].font_color
         # style.shadowgen = None
-        self.surfaces["nothoverpressed"] = style.generate_images(self.text)
+        self.surfaces["selected"] = style.generate_images(self.text)
         self.get_frame = self.get_frame_togglable
 
     def toggle(self):
@@ -1926,7 +1925,7 @@ class ToggleButton(Button):
         if self.value and state == "hover":
             state = "pressed" #with hovered text
         elif self.value and state != "hover":
-            state = "nothoverpressed" #without hovered text
+            state = "selected" #without hovered text
         return self.surfaces[state][it]
 
     def get_value(self):
@@ -1979,8 +1978,8 @@ class Checkbox(ToggleButton):
         #
         style = self.styles["pressed"].copy()
         graphics.change_color_on_img_ip(self.check_sign, color_check_sign, (51,)*3)
-        self.surfaces["nothoverpressed"] = style.generate_images(self.text)
-        for s in self.surfaces["nothoverpressed"]:
+        self.surfaces["selected"] = style.generate_images(self.text)
+        for s in self.surfaces["selected"]:
             r.center = self.rect.center
             r.x -= self.rect.x
             r.y -= self.rect.y
@@ -2017,8 +2016,8 @@ class Radio(Checkbox):
             gfx.aacircle(s, r.centerx, r.centery, r.w//6, (0,0,255))
         #
         style = self.styles["normal"].copy()
-        self.surfaces["nothoverpressed"] = style.generate_images(self.text)
-        for s in self.surfaces["nothoverpressed"]:
+        self.surfaces["selected"] = style.generate_images(self.text)
+        for s in self.surfaces["selected"]:
             r.center = self.rect.center
             r.x -= self.rect.x
             r.y -= self.rect.y

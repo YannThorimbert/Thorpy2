@@ -10,24 +10,22 @@ import thorpy as tp
 pygame.init()
 W,H = 1200, 700
 screen = pygame.display.set_mode((W, H))
-tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
+tp.init(screen, tp.theme_simple) #bind screen to gui elements and set theme
 
 # my_pool = tp.TogglablesPool("Difficulty",
 #                                ("Beginner", "Intermediate", "Pro"), #possibilities
 #                                "Beginner") #initial value
-my_pool = tp.TogglablesPool("Difficulty",
-                               ("Beginner", "Intermediate", "Pro"), #possibilities
-                               "Beginner", #initial value
-                               togglable_type="toggle") #either 'toggle', 'radio' or 'checkbox'
-choice = tp.Text("Your choice: " + my_pool.get_value())
-box = tp.TitleBox("Togglables Pool Example", [my_pool, choice])
+my_pool = tp.ListView("", #title - let empty for no title
+                        ["Entry "+str(i) for i in range(1,11)], #possibilities
+                        initial_value=4, #initial value (you can aldo pass its str content, e.g. 'Entry5')
+                        togglable_type="toggle") #either 'toggle', 'radio' or 'checkbox'
+
+
+box = tp.TitleBox("List View Example", [my_pool])
 box.center_on(screen)
 
 def refresh():#some function that you call once per frame
     screen.fill((255,255,255))
-    if my_pool.get_value():
-        choice.set_text("Your choice: " + my_pool.get_value())
-        print(box.rect, box.get_children_rect())
         
 #For the sake of brevity, the main loop is replaced here by a shorter but blackbox-like method
 player = box.get_updater().launch(refresh)
