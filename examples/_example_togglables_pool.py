@@ -12,13 +12,13 @@ W,H = 1200, 700
 screen = pygame.display.set_mode((W, H))
 tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 
-# my_pool = tp.TogglablesPool("Difficulty",
-#                                ("Beginner", "Intermediate", "Pro"), #possibilities
-#                                "Beginner") #initial value
+
 my_pool = tp.TogglablesPool("Difficulty",
-                               ("Beginner", "Intermediate", "Pro"), #possibilities
-                               "Beginner", #initial value (you can aldo pass its index, e.g. 0 here)
-                               togglable_type="toggle") #either 'toggle', 'radio' or 'checkbox'
+                            ("Beginner", "Intermediate", "Pro"), #possibilities
+                            "Beginner", #initial value (you can aldo pass its index, e.g. 0 here)
+                            togglable_type="toggle") #either 'toggle', 'radio' or 'checkbox'
+# my_pool.sort_children("v", align="left") #if you don't want default horizontal align
+
 choice = tp.Text("Your choice: " + my_pool.get_value())
 box = tp.TitleBox("Togglables Pool Example", [my_pool, choice])
 box.center_on(screen)
