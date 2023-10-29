@@ -120,8 +120,8 @@ class Element:
         for c in self.children:
             c.parent = self
         self.rect = pygame.Rect(0,0,0,0)
-        # self.sort_options:Optional[SortOptions] = None
-        self.sort_options:SortOptions = self.build_default_sort_options()
+        self.sort_options:Optional[SortOptions] = None
+        # self.sort_options:SortOptions = self.build_default_sort_options()
         self.text:str = ""
         self.styles:Dict[str,Optional["BaseStyle"]] = {"normal":None,
                                                             "hover":None,

@@ -193,7 +193,7 @@ class Group(Element):
     """
     def __init__(self, elements, mode="v", margins=(5,0), gap=5, nx="auto", ny="auto", align="center"):
         super().__init__(elements)
-        if mode is not None:
+        if mode:
             self.sort_children(mode,margins=margins,gap=gap,nx=nx,ny=ny,align=align)
             self.center_on(p.screen)
         self.copy_normal_state(True)
@@ -1772,65 +1772,79 @@ class TogglablesPool(Element):
     <choices> : sequence of strings.
     <initial_value> : text of the initial value chosen.
     <togglable_type> : (str) either 'toggle', 'radio' or 'checkbox'.
+    <togglable_look> : (str) used only if togglable_type is 'toggle'. Must be the name of an Element class.
+    defaults to Togglable
+    <all_same_width> : (bool) if True, all items have same width.
     """
 
     def __init__(self,
                  label:str,
                  choices:Sequence[str],
-                 initial_value:str,
-                 togglable_type:str="toggle"):
-        assert initial_value in choices
-        self.label:_LabelButton = _LabelButton(label)
-        e_choices:List[Element] = []
-        self.togglable_type:str = togglable_type
-        def update_pool(tog):
-            count = 0
-            for e in self.togglables:
-                if not(e is tog):
-                    e.set_value(False)
-                count += e.get_value()
-            tog.set_value(False)
-            if self.at_unclick:
-                self.at_unclick()
-        for c in choices:
-            if togglable_type == "toggle":
-                tog = ToggleButton(c)
-                tog._at_click = update_pool
-                tog._at_click_params = {"tog":tog}
-            elif togglable_type == "radio":
-                tog = Labelled(c, Radio())
-            elif togglable_type == "checkbox":
-                tog = Labelled(c, Checkbox())
-            else:
-                raise ValueError("You should indicate either 'toggle', 'radio' or 'checkbox'.")
-            if togglable_type != "toggle":
-                tog.element._at_click = update_pool
-                tog.label._at_click = update_pool
-                tog.element._at_click_params = {"tog":tog}
-                tog.label._at_click_params = {"tog":tog}
-            e_choices.append(tog)
-            if c == initial_value:
-                tog.set_value(True)
-        self.togglables:List[Element] = e_choices
-        if togglable_type == "toggle":
-            sort_mode = "h"
+                 initial_value:Union[str,int],
+                 togglable_type:str="toggle",
+                 togglable_look:str="ToggleButton",
+                 all_same_width:bool=False):
+        self.all_same_width = all_same_width
+        if isinstance(initial_value, str):
+            assert initial_value in choices
         else:
-            sort_mode = "v"
-            e_choices = [Box(e_choices)]
-        super().__init__(children=[self.label] + e_choices)
+            assert initial_value < len(choices)
+            initial_value = choices[initial_value]
+        self.label:_LabelButton = _LabelButton(label)
+        # e_choices:List[Element] = []
+        self.togglable_type:str = togglable_type
+        self.togglable_look = eval(togglable_look)
+        # #########################################
+        self.togglables:List[Element] = []
+        for c in choices:
+            self.add_item(c, c==initial_value, resort=False)
+        children, sort_mode = self.collect_children()
+        if all_same_width:
+            self.normalize_items_width()
+        super().__init__(children=children)
         self.sort_children(sort_mode, margins=(5,0), gap=5, nx="auto", ny="auto", align="center")
         self.copy_normal_state(True)
-    
-    def get_value(self):
-        """Returns the text of the chosen element."""
+
+    def normalize_items_width(self)->None:
+        if self.togglable_type != "toggle":
+            return
+        max_w = max([e.rect.width for e in self.togglables])
+        for e in self.togglables:
+            e.set_size((max_w, e.rect.h))
+
+    def collect_children(self)->Tuple[List["Element"],str]:
         if self.togglable_type == "toggle":
-            for e in self.togglables:
-                if e.get_value():
-                    return e.text
+            sort_mode = "h"
+            e_choices = self.togglables
         else:
-            for e in self.togglables:
+            sort_mode = "v"
+            e_choices = [Box(self.togglables)]
+        children = e_choices
+        if self.label.text:
+            children = [self.label] + children
+        return children, sort_mode
+    
+    def get_value(self, value_if_none="")->str:
+        """Returns the text of the chosen element, or <value_if_none>."""
+        i = self.get_selected_item_index()
+        if i >= 0:
+            if self.togglable_type == "toggle":
+                return self.togglables[i].text
+            else:
+                return self.togglables[i].label.text
+        return value_if_none
+    
+    def get_selected_item_index(self)->int:
+        """Returns the index of the chosen element, or -1 if there is no selected element."""
+        if self.togglable_type == "toggle":
+            for i,e in enumerate(self.togglables):
                 if e.get_value():
-                    return e.label.text
+                    return i
+        else:
+            for i,e in enumerate(self.togglables):
+                if e.get_value():
+                    return i
+        return -1
                 
     def get_choice_button(self, text):
         """Returns the choice element corresponding to the text given as argument."""
@@ -1838,7 +1852,142 @@ class TogglablesPool(Element):
             if e.text == text:
                 return e
             
+    # def check_integrity(self):
+    #     first = None
+    #     if self.togglable_type == "toggle":
+    #         for e in self.togglables:
+    #             if not(first) and e.get_value():
+    #                 first = e
+    #             elif e.get_value():
+    #                 e.state = "normal"
+    #     else:
+    #         for e in self.togglables:
+    #             if not(first) and e.get_value():
+    #                 first = e
+    #             elif e.get_value():
+    #                 e.state = "normal"
 
+    # def update(self, mouse_delta) -> bool:
+    #     self.check_integrity()
+    #     r = super().update(mouse_delta)
+    #     return r
+    
+    def add_item(self, item_text:str, initial_value:bool=False, i:int=-1, resort:bool=True):
+        #########################################
+        def update_pool(tog):
+            count = 0
+            for e in self.togglables:
+                if not(e is tog):
+                    e.set_value(False)
+                    e.state = "normal"
+                count += e.get_value()
+            tog.set_value(False)
+            if self.at_unclick:
+                self.at_unclick()
+        #########################################
+        c = item_text
+        if self.togglable_type == "toggle":
+            tog = self.togglable_look(c)
+            tog._at_click = update_pool
+            tog._at_click_params = {"tog":tog}
+        elif self.togglable_type == "radio":
+            tog = Labelled(c, Radio())
+        elif self.togglable_type == "checkbox":
+            tog = Labelled(c, Checkbox())
+        else:
+            raise ValueError("You should indicate either 'toggle', 'radio' or 'checkbox'.")
+        if self.togglable_type != "toggle":
+            tog.element._at_click = update_pool
+            tog.label._at_click = update_pool
+            tog.element._at_click_params = {"tog":tog}
+            tog.label._at_click_params = {"tog":tog}
+        # e_choices.append(tog)
+        if initial_value:
+            for c in self.togglables:
+                c.state = "normal"
+                c.set_value(False)
+            tog.set_value(True)
+        # return tog
+        if i == -1:
+            self.togglables.append(tog)
+        else:
+            self.togglables.insert(i, tog)
+        if self.all_same_width and self.togglable_type == "toggle":
+            w = tog.get_current_width()
+            w2 = self.togglables[0].get_current_width()
+            if w < w2:
+                tog.set_size((w2, None), adapt_parent=False)
+            elif w > w2:
+                self.normalize_items_width()
+        if resort:
+            self.resort()
+
+    def get_text_item_by_id(self, i:int)->str:
+        return self.togglables[i]
+    
+    def set_value_str(self, text:str) -> None:
+        for c in self.togglables:
+            c.state = "normal"
+            c.set_value(False)
+        self.get_choice_button(text).set_value(True)
+       
+    def set_value_id(self, i:int) -> None:
+        for c in self.togglables:
+            c.state = "normal"
+            c.set_value(False)
+        self.togglables[i].set_value(True)
+
+    def get_number_of_items(self):
+        return len(self.togglables)
+
+    def remove_item(self, i, resort=True)->"Element":
+        if i >= len(self.togglables) or not self.togglables:
+            return None
+        else:
+            selected_index = self.get_selected_item_index()
+            tog = self.togglables.pop(i)
+            if selected_index == i and len(self.togglables)>0:
+                self.set_value_id(0)#defaults to first
+            if self.all_same_width and self.togglable_type == "toggle":
+                self.normalize_items_width()
+            if resort:
+                self.resort()
+            return tog
+        
+    def remove_selected_item(self, resort=True)->"Element":
+        i = self.get_selected_item_index()
+        tog = self.remove_item(i, resort)
+        return tog
+
+
+# add_item (text, unique_id)
+# remove_item (unique_id)
+# get_selected_item_text() -> returns the string of the selected item
+# get_selected_item_id)_ -> returns the id of the selected item
+
+# optional get_text_item_by_id(unique_id) user provides an id and get the string returned that contains the item text.
+
+
+class ListView(TogglablesPool):
+
+    def __init__(self,
+                 items: Sequence[str],
+                 initial_value: Union[str,int],
+                 togglable_type: str = "toggle",
+                 togglable_look:Optional[str]= "_SelectButton",
+                 label: str="",
+                 all_same_width:bool=False):
+        super().__init__(label, items, initial_value, togglable_type, togglable_look, all_same_width)
+        if togglable_look == "_SelectButton":
+            gap = -2
+        else:
+            gap = 5
+        self.sort_children(mode="v", align="left", gap=gap)
+        
+
+    def collect_children(self) -> Tuple[List[Element], str]:
+        children, sort_mode = super().collect_children()
+        return children, "v"
 
 
 
@@ -1882,8 +2031,6 @@ class ToggleButton(Button):
     <value> : initial value. Set to False for normal state or True for pressed state.
     """
      
-
-
     def __init__(self, text, style_normal=None, style_hover=None,
                     style_pressed=None, generate_surfaces=True, children=None,
                     style_locked=None, value=False):
@@ -1893,9 +2040,10 @@ class ToggleButton(Button):
         if generate_surfaces:
             self.generate_surfaces()
         self.action = self.default_at_unclick
+        
 
-    def generate_surfaces(self):
-        Button.generate_surfaces(self)
+    def generate_surfaces(self)->None:
+        super().generate_surfaces()
         style = self.styles["pressed"].copy()
         style.font_color = self.styles["normal"].font_color
         # style.shadowgen = None
@@ -1933,9 +2081,8 @@ class ToggleButton(Button):
     
     def set_value(self, value):
         self.value = value
+
     
-
-
 class Checkbox(ToggleButton):
     """Checkbox that can be (un)checked by the user to model an on/off interaction.
     ***Optional arguments***
@@ -3048,4 +3195,7 @@ class _ColorFrameForColorPicker(DeadButton):
     ...
 
 class _ButtonColor(Button):
+    ...
+
+class _SelectButton(ToggleButton):
     ...

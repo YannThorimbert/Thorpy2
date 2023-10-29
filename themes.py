@@ -2,7 +2,7 @@ from . import styles
 from .elements import Box, TitleBox, Button, Text, Line, assign_styles, DropDownList, ImageButton
 from .elements import TextInput, Slider, Image, Helper, Checkbox, Radio, SwitchButton, ToggleButton
 from .elements import DeadButton, _DropDownButton, _LabelButton, _DraggerButton, _SliderBar, _ColorFrameForColorPicker
-from .elements import ColorPicker, ColorPickerRGB, SwitchButtonWithText, _ButtonColor, OutlinedText
+from .elements import ColorPicker, ColorPickerRGB, SwitchButtonWithText, _ButtonColor, OutlinedText, _SelectButton
 from .graphics import darken, enlighten, change_alpha
 from thorpy import graphics
 from .shadows import propose_shadowgen
@@ -115,6 +115,13 @@ def apply_default_toggle_button(cls, basecolor=None):
         s.bck_color = basecolor
         s.border_thickness = 1
         s.pressed_text_delta = (0,0)
+    _SelectButton.style_normal = styles.DDLEntryStyle()
+    _SelectButton.style_hover = _SelectButton.style_normal.copy()
+    _SelectButton.style_hover.bck_color = (110,110,255)
+    _SelectButton.style_pressed = _SelectButton.style_hover.copy()
+    _SelectButton.style_pressed.bck_color = darken(_SelectButton.style_hover.bck_color)
+    _SelectButton.style_locked = _SelectButton.style_normal.copy()
+    _SelectButton.style_locked.bck_color = darken(_SelectButton.style_normal.bck_color)
 
 
 def apply_default_box(cls):
