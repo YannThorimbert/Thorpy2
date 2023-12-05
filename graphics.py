@@ -4,7 +4,7 @@ Some of the functions make use of Python Imaging Library and NumPy.
 """
 from typing import Union, Sequence, cast, Any, Dict
 import math
-import numpy
+import numpy as np
 from PIL import Image, ImageFilter
 PILimage = Image.Image
 
@@ -20,6 +20,13 @@ from functools import cache
 
 MAX_NORM = 3*(255**2)
 
+
+def darken_or_enlighten(color:RGB_OR_RGBA, factor:float=0.8, also_alpha:bool=False, min_value=20)->RGB_OR_RGBA:
+    """Returns either a darkened or enlightened version of the color.
+    Refer to darken( ) and enlighten( ) functions for the explanation of the parameters."""
+    if factor < 1:
+        return darken(color, factor, also_alpha)
+    return enlighten(color, factor, min_value, also_alpha)
 
 def darken(color:RGB_OR_RGBA, factor:float=0.8, also_alpha:bool=False)->RGB_OR_RGBA:
     """Returns a darkened version of the color.
@@ -326,7 +333,7 @@ def set_alpha_from_intensity(surface:pygame.Surface, alpha_factor:float,
 
 def detect_frame(surf:pygame.Surface, vacuum:RGB_OR_RGBA=(255, 255, 255))->pygame.Rect:
     """_Returns a Rect of the minimum size to contain all that is not vacuum."""
-    vacuum = numpy.array(vacuum) #type:ignore
+    vacuum = np.array(vacuum) #type:ignore
     array = pygame.surfarray.array3d(surf)
     x_found = False
     last_x = 0
@@ -603,7 +610,7 @@ def generate_oscillating_lights(surface:pygame.Surface, n:int, inflation:int=8, 
                     base_radius:int=1)->List[pygame.Surface]:
     """Prepares the frames of lights animation. This is a complex function that should be used as described in
     the tagged examples."""
-    from .shadows import Shadow #type:ignore
+    from .shadows import Shadow
     n //= 2
     if n < 1:
         n = 1
@@ -758,23 +765,35 @@ def draw_pixel_border_ip(surface:pygame.Surface,
 
 
 def extract_pixel_border(surface:pygame.Surface, border_color:RGB_OR_RGBA,
-                         color_empty:RGB_OR_RGBA_OR_NONE=None)->pygame.Surface:
+                         color_empty:RGB_OR_RGBA_OR_NONE=None,
+                         thickness:int=1)->pygame.Surface:
     """Return a surface containing only the outline around the external (non-transparent) shape of a surface.
     This function is very slow and intended to be used once and for all before any loop,
-    most suitably on small sprites. The function uses the defined colorkey as <color_empty> by default."""
+    most suitably on small sprites. The function uses the defined colorkey as <color_empty> by default,
+    otherwise it looks at the color on the topleft pixel."""
     if not color_empty:
         color_empty = surface.get_colorkey()
     if not color_empty:
-        raise Exception("You must provide <color_empty> or a surface with non-None colorkey")
+        color_empty = surface.get_at((0,0))
+        # raise Exception("You must provide <color_empty> or a surface with non-None colorkey")
     w,h = surface.get_size()
     new_surface = pygame.Surface((w,h))
     new_surface.set_colorkey(color_empty) #type:ignore #pygame does the cast
     new_surface.fill(color_empty) #type:ignore #pygame does the cast
-    def draw_pix_if_needed(x,y):
-        color = surface.get_at((x,y))
-        if color != color_empty:
-            gfx.pixel(new_surface, x, y, border_color) #this or surface.set_at() ?
-            return True
+    if thickness != 1:
+        def draw_pix_if_needed(x,y):
+            color = surface.get_at((x,y))
+            if color != color_empty:
+                for ix in range(-1,2):
+                    for iy in range(-1,2):
+                        gfx.pixel(new_surface, x+ix, y+iy, border_color)
+                return True
+    else:
+        def draw_pix_if_needed(x,y):
+            color = surface.get_at((x,y))
+            if color != color_empty:
+                gfx.pixel(new_surface, x, y, border_color) #this or surface.set_at() ?
+                return True
     for x in range(w): #columns from top to bottom
         for y in range(h):
             if draw_pix_if_needed(x,y):
@@ -825,6 +844,45 @@ def illuminate_border_ip(surface:pygame.Surface, light_color:RGB_OR_RGBA, orient
                     n += 1
                     if n >= depth:
                         break
+
+
+
+def fill_nontransparent(surface:pygame.Surface, color:RGB,
+                         color_empty:RGB_OR_RGBA_OR_NONE=None)->pygame.Surface:
+    if not color_empty:
+        color_empty = surface.get_colorkey()
+    if not color_empty:
+        color_empty = surface.get_at((0,0))
+    #
+    colorkey = color_empty[:3]
+    surfcopy = surface.copy()
+    pixel_array = pygame.surfarray.pixels3d(surfcopy)
+    # Find which pixels are not the colorkey (not transparent)
+    not_colorkey = np.all(pixel_array != colorkey, axis=-1)
+    pixel_array[not_colorkey] = color
+    del pixel_array
+    return surfcopy
+    # w,h = surface.get_size()
+    # new_surface = pygame.Surface((w,h))
+    # new_surface.set_colorkey(color_empty) #type:ignore #pygame does the cast
+    # new_surface.fill(color_empty) #type:ignore #pygame does the cast
+    # def draw_pix_if_needed(x,y):
+    #     color = surface.get_at((x,y))
+    #     if color != color_empty:
+    #         gfx.pixel(new_surface, x, y, border_color) #this or surface.set_at() ?
+    #         return True
+    # for x in range(w): #columns from top to bottom
+    #     for y in range(h):
+    #         if draw_pix_if_needed(x,y):
+    #             break
+    # for y in range(h): #lines 
+    #     for x in range(w): #from left to right
+    #         if draw_pix_if_needed(x,y):
+    #             break
+    #     for x in range(w-1, -1, -1): #from right to left
+    #         if draw_pix_if_needed(x,y):
+    #             break
+    # return new_surface
 
 def scale_image_with_constraint(img:pygame.Surface, w:int, h:int, mode:str, smooth:bool=True)->pygame.Surface:
     """Return an image that is scaled so that it fits or fill, without deformation nor cropping,

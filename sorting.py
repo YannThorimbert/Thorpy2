@@ -64,7 +64,7 @@ def sort_children_grid(els, xy, nx, ny, cellsize, horizontal_first=True, gap_x=5
             y += 1
 
 
-def get_side_center(r, side)->Tuple[int,int]:
+def get_side_center(r, side:str)->Tuple[int,int]:
     if side == "top":
         x0,y0 = r.centerx, r.top
     elif side == "bottom":
@@ -73,4 +73,6 @@ def get_side_center(r, side)->Tuple[int,int]:
         x0,y0 = r.x, r.centery
     elif side == "right":
         x0,y0 = r.right, r.centery
+    else:
+        raise Exception("Side argument must be either 'top', 'bottom', 'left' or 'right'.")
     return x0,y0

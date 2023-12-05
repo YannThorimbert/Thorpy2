@@ -2,8 +2,8 @@ import pygame
 
 from typing import Optional, Callable, TYPE_CHECKING
 if TYPE_CHECKING:
-    from .canonical import Element #type: ignore
-    from .elements import WaitingBar #type: ignore
+    from .canonical import Element
+    from .elements import WaitingBar
 
 fallback_font_name:str = "arial"
 fallback_font_size:int = 20

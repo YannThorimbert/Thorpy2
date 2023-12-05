@@ -636,15 +636,21 @@ class TitleBox(Box):
     Any of these integers can be replaced by 'auto' to let Thorpy decide.
     """
     
-    def __init__(self, text, children, sort_immediately=True,
-                    style_normal=None, generate_surfaces=True, copy_normal_state=True,
-                    scrollbar_if_needed=False, size_limit="auto"):
+    def __init__(self,
+                 text:str,
+                 children:List[Element],
+                 sort_immediately:bool=True,
+                 style_normal:Optional[styles.BaseStyle]=None,
+                 generate_surfaces:bool=True,
+                 copy_normal_state:bool=True,
+                 scrollbar_if_needed:bool=False,
+                 size_limit:Union[Tuple[int,int],str]="auto"):
         Box.__init__(self, children, generate_surfaces=False, sort_immediately=False,
                      copy_normal_state=copy_normal_state, scrollbar_if_needed=scrollbar_if_needed,
                      size_limit=size_limit)
-        self.resize_margin = (-30,-50)
-        self.text = text
-        self.state = "normal"
+        self.resize_margin:Tuple[int,int] = (-30,-50)
+        self.text:str = text
+        self.state:str = "normal"
         if not style_normal:
             style_normal = self.__class__.style_normal.copy()
         self.styles = {"normal":style_normal,
@@ -666,6 +672,12 @@ class TitleBox(Box):
     def get_min_size(self)->None:
         style = self.get_current_style()
         return pygame.Rect((0,0),style.get_line_size(self.text)).inflate(style.margins)
+    
+    def set_title(self, new_title:str, resort:bool=True):
+        self.text = new_title
+        self.generate_surfaces()
+        if resort:
+            self.resort()
 
 
 class AlertWithChoices(TitleBox):
@@ -689,6 +701,7 @@ class AlertWithChoices(TitleBox):
             children = []
         if text:
             children = [Text(text)]+children
+        self.n_choices = len(choices)
         if choices:
             buttons = []
             for e in choices:
@@ -746,6 +759,13 @@ class AlertWithChoices(TitleBox):
         """Return the choice made by the user, after the alert with choices has been launched !
         The value is None if user has not chosen yet or if the alert has been cancelled by the user."""
         return self.choice
+    
+    def set_text(self, new_text:str, resort:bool=True):
+        if len(self.children) > self.n_choices:
+            self.children[0].set_text(new_text)
+        else:
+            self.add_child(Text(new_text), i=0)
+        self.resort()
 
 
 
@@ -2270,11 +2290,17 @@ class Image(Element):
     <img> : a pygame surface.
     """
 
-    def __init__(self, img, style_normal=None, generate_surfaces=True, children=None):
+    def __init__(self, img:pygame.Surface,
+                 style_normal:Optional[str]=None,
+                 generate_surfaces:bool=True,
+                 children:Optional[Element]=None,
+                 copy_normal_state:bool=True):
+        if not isinstance(img, pygame.Surface):
+            raise Exception("The <img> argument passed to Image must be a pygame surface.")
         Element.__init__(self, children)
-        self.copy_normal_state(True)
-        self.img = img
-        self.state = "normal"
+        self.copy_normal_state(copy_normal_state)
+        self.img:pygame.Surface = img
+        self.state:str = "normal"
         if not style_normal:
             style = self.__class__.style_normal.copy()
         else:
@@ -2856,6 +2882,20 @@ class DiscreteLifebar(Group): #TODO: should have a corresponding style to genera
                 e = Image(img)
             children.append(e)
         return children
+    
+    def get_slot_element_number(self, i)->Union[Image,ImageButton]:
+        if i >= len(self.children):
+            i = len(self.children)-1
+        elif i < 0:
+            i = 0
+        return self.children[i]
+
+    def get_last_not_empty_slot(self)->Union[Image,ImageButton]:
+        return self.get_slot_element_number(self.value - 1)
+    
+    def get_first_empty_slot(self)->Union[Image,ImageButton]:
+        return self.get_slot_element_number(self.value)
+
 
 
 class Lifebar(Group):

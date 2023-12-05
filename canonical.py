@@ -1170,9 +1170,9 @@ class Element:
         self.refresh_surfaces()
         self.rect = self.get_rect()
 
-    def get_current_frame(self):
+    def get_current_frame(self)->pygame.Surface:
         """Returns the image of the element being displayed."""
-        pass
+        pass #type:ignore #guaranteed
 
     def copy_normal_state(self, only_normal)->None:
         """Avoid building multiple times surfaces that are actually the same.

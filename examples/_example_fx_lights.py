@@ -34,7 +34,6 @@ def draw_light_particle(particle):
                         [int(particle[0][0]), int(particle[0][1])],
                         int(particle[2]))
     radius = particle[2] * RADIUS_FACTOR
-    
     c = circle_transp_bck(radius, LIGHT_COLOR)
     r = c.get_rect()
     r.center = particle[0]
