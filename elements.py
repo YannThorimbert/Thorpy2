@@ -2295,8 +2295,8 @@ class Image(Element):
                  generate_surfaces:bool=True,
                  children:Optional[Element]=None,
                  copy_normal_state:bool=True):
-        if not isinstance(img, pygame.Surface):
-            raise Exception("The <img> argument passed to Image must be a pygame surface.")
+        # if not isinstance(img, pygame.Surface) and not isinstance(img, list[pygame.Surface]):
+        #     raise Exception("The <img> argument passed to Image must be a pygame surface. Argument here is" + str(img))
         Element.__init__(self, children)
         self.copy_normal_state(copy_normal_state)
         self.img:pygame.Surface = img
@@ -2384,8 +2384,13 @@ class AnimatedGif(Image):
     <freeze_frame> : number of the frame to display if the animation is not played. Set to None to hide the element when not played.
     """
 
-    def __init__(self, filename, frame_mod=2, size_factor=(1.,1.), loops=float("inf"),
-                 freeze_frame=0, generate_surfaces=True):
+    def __init__(self,
+                 filename:Union[str, list[pygame.Surface]],
+                 frame_mod:int=2,
+                 size_factor:tuple[float,float]=(1.,1.),
+                 loops:Union[int,float]=float("inf"),
+                 freeze_frame:int=0,
+                 generate_surfaces:bool=True):
         style_normal = styles.MultipleImagesStyle()
         if isinstance(filename, str):
             imgs = graphics.extract_frames(filename, size_factor=size_factor)

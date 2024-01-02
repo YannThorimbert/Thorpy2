@@ -33,6 +33,11 @@ class Monitor:
         self.tot_time[symb] += time.perf_counter() - self.last_start[symb]
         self.n_called[symb] += 1
 
+    def end_start(self, end_symb, start_symb):
+        self.ended_ok[end_symb] = False
+        self.end(end_symb)
+        self.start(start_symb)
+
     def show(self, reference_symb="_main_loop_"):
         fps = round(self.n_called.get(reference_symb) / self.tot_time.get(reference_symb))
         print("========== Monitoring statistics relative to", reference_symb, " : avg FPS =", fps, " ==========")

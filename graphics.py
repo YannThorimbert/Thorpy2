@@ -1053,5 +1053,56 @@ def darken_every_color_ip(surface:pygame.Surface,
     return surface
 
 
+TWO_PI:float = 2 * math.pi
+
+def sine_wave_y_on_img(src:pygame.Surface, amplitude:int, step:int, phase:float, dst=None) -> pygame.Surface:
+    """Returns a new surface with a sine deformation."""
+    w,h = src.get_size()
+    if not dst:
+        w += amplitude
+        dst = pygame.Surface((w,h))
+        dst.fill(src.get_at((0,0)))
+        dst.set_colorkey(src.get_colorkey())
+    area = pygame.Rect(0,0,w,step)
+    for y in range(0,h,step):
+        dx = amplitude*math.sin(y/h * TWO_PI + phase)
+        dst.blit(src, (dx,y), area)
+        area.move_ip(0,step)
+    return dst
+
+def sine_wave_x_on_img(src:pygame.Surface, amplitude:int, step:int, phase:float, dst=None) -> pygame.Surface:
+    """Returns a new surface with a sine deformation."""
+    w,h = src.get_size()
+    if not dst:
+        h += amplitude
+        dst = pygame.Surface((w,h))
+        dst.fill(src.get_at((0,0)))
+        dst.set_colorkey(src.get_colorkey())
+    area = pygame.Rect(0,0,step,h)
+    for x in range(0,w,step):
+        dy = amplitude*math.cos(x/w * TWO_PI + phase)
+        dst.blit(src, (x,dy), area)
+        area.move_ip(step,0)
+    return dst
+
+
+def get_sine_wave_images(src:pygame.Surface, amplitude:int, step:int, colorkey=None) -> list[pygame.Surface]:
+    """Returns a list of surfaces with a sine deformation.
+    *** Mandatory arguments ***
+    <src> : source image.
+    <amplitude> : amplitude of the deformation.
+    <step> : size of the deformation.
+    *** Optional arguments ***
+    <colorkey> : colorkey of the source image."""
+    nsteps = src.get_height()//step
+    imgs = []
+    if not colorkey:
+        colorkey = src.get_colorkey()
+    for i in range(nsteps):
+        img = sine_wave_x_on_img(src, amplitude=amplitude, step=step, phase=i, dst=None)
+        img.set_colorkey(colorkey)
+        imgs.append(img)
+    return imgs
+
 # mypy graphics.py | Select-Object -First 1 
 # mypy --explicit-package-bases .\graphics.py | Select-Object -First 1
