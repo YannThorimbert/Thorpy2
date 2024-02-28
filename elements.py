@@ -190,11 +190,13 @@ class Group(Element):
     <nx> : number of columns if grid mode is used, or 'auto'
     <ny> : number of lines if grid mode is used, or 'auto'
     <align> : alignement of the choices in the list. Either 'center' (for both vertical and horizontal mode) or 'left', 'right' (for horizontal mode) or 'top', 'bottom' (for vertical mode)
+    <grid_gaps> : gap to use if grid mode used.
     """
-    def __init__(self, elements, mode="v", margins=(5,0), gap=5, nx="auto", ny="auto", align="center"):
+    def __init__(self, elements, mode="v", margins=(5,0), gap=5, nx="auto", ny="auto", align="center",
+                 grid_gaps=(5,5)):
         super().__init__(elements)
         if mode:
-            self.sort_children(mode,margins=margins,gap=gap,nx=nx,ny=ny,align=align)
+            self.sort_children(mode,margins=margins,gap=gap,nx=nx,ny=ny,align=align,grid_gaps=grid_gaps)
             self.center_on(p.screen)
         self.copy_normal_state(True)
 

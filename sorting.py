@@ -36,6 +36,10 @@ def sort_children(elements, xy, mode="v", align="center", gap=5)->None:
                          "'h'.")
 
 def sort_children_grid(els, xy, nx, ny, cellsize, horizontal_first=True, gap_x=5, gap_y=5)->None:
+    if cellsize is None:
+        sort_children_soft_grid(els, xy, nx, ny, horizontal_first, gap_x, gap_y)
+        return
+    ###
     if nx == "auto" and ny == "auto":
         nx = ny = int(len(els)**0.5) + 1
     elif nx == "auto":
@@ -62,6 +66,37 @@ def sort_children_grid(els, xy, nx, ny, cellsize, horizontal_first=True, gap_x=5
             x += 1
         else:
             y += 1
+
+
+def sort_children_soft_grid(els, xy, nx, ny, horizontal_first=False, gap_x=5, gap_y=5)->None:
+    if nx == "auto" and ny == "auto":
+        nx = ny = int(len(els)**0.5) + 1
+    elif nx == "auto":
+        nx = len(els) // ny + 1
+    elif ny == "auto":
+        ny = len(els) // nx + 1
+    x,y = xy
+    i_element:int = 0
+    if horizontal_first:
+        max_height = max([e.rect.height for e in els])
+        for e in els:
+            e.set_topleft(x, y)
+            x += e.rect.width + gap_x
+            i_element += 1
+            if i_element > nx:
+                x = xy[0]
+                y += max_height + gap_y
+                i_element = 0
+    else:
+        max_width = max([e.rect.width for e in els])
+        for e in els:
+            e.set_topleft(x, y)
+            y += e.rect.height + gap_y
+            i_element += 1
+            if i_element > ny:
+                y = xy[1]
+                x += max_width + gap_x
+                i_element = 0
 
 
 def get_side_center(r, side:str)->Tuple[int,int]:

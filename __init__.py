@@ -1,4 +1,4 @@
-__version__ = "2.1.6"
+__version__ = "2.1.7"
 
 import os
 from . import elements
@@ -23,12 +23,75 @@ from .elements import ColorPicker, ColorPickerRGB, ColorPickerPredefined, ImageB
 from .elements import TextAndImageButton, Lifebar, DeadButton, AnimatedGif, WaitingBar, OutlinedText
 from .elements import TogglablesPool, Labelled, LabelledColorPicker, Group, ShowFPS, TkDialog, DiscreteLifebar
 from .elements import ListView
+__all__ = [
+    "Alert",
+    "AlertWithChoices",
+    "ArrowButton",
+    "Box",
+    "Button",
+    "DropDownList",
+    "Image",
+    "Line",
+    "Slider",
+    "SliderWithText",
+    "Text",
+    "TextInput",
+    "TitleBox",
+    "ToggleButton",
+    "Helper",
+    "Checkbox",
+    "Radio",
+    "SwitchButton",
+    "SwitchButtonWithText",
+    "DropDownListButton",
+    "ColorPicker",
+    "ColorPickerRGB",
+    "ColorPickerPredefined",
+    "ImageButton",
+    "HeterogeneousTexts",
+    "TextAndImageButton",
+    "Lifebar",
+    "DeadButton",
+    "AnimatedGif",
+    "WaitingBar",
+    "OutlinedText",
+    "TogglablesPool",
+    "Labelled",
+    "LabelledColorPicker",
+    "Group",
+    "ShowFPS",
+    "TkDialog",
+    "DiscreteLifebar",
+    "ListView"
+]
 
 #Import styling functions
 from .themes import theme_classic, theme_human, theme_round, theme_simple, theme_text, theme_game2
 from .themes import theme_round_gradient, theme_round2, theme_text_outlined
 from .themes import theme_text_dark, theme_game1, set_style_attr, refresh_all_elements_style, get_theme_bck_color, get_theme_main_bck_color
 from .styles import get_default_font, set_default_font, get_text_size, get_text_height
+
+__all__.extend([
+    "theme_classic",
+    "theme_human",
+    "theme_round",
+    "theme_simple",
+    "theme_text",
+    "theme_game2",
+    "theme_round_gradient",
+    "theme_round2",
+    "theme_text_outlined",
+    "theme_text_dark",
+    "theme_game1",
+    "set_style_attr",
+    "refresh_all_elements_style",
+    "get_theme_bck_color",
+    "get_theme_main_bck_color",
+    "get_default_font",
+    "set_default_font",
+    "get_text_size",
+    "get_text_height"
+])
 
 
 

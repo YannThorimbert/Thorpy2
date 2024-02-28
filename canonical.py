@@ -646,7 +646,8 @@ class Element:
                         grid_gaps:Tuple[int,int]=(5,5),
                         horizontal_first:bool=False,
                         englobe_children:bool=True,
-                        limit_size_if_englobe:Tuple[float,float]=(float("inf"),float("inf")))->None:
+                        limit_size_if_englobe:Tuple[float,float]=(float("inf"),float("inf")),
+                        grid_type:str="soft")->None:
         """Sort/organize children elements. See the tagged examples as they illustrate a lot of common situations.
         ***Optional arguments***
         <mode> : either 'v' (vertical), 'h' (horizontal) or 'grid'.
@@ -662,6 +663,8 @@ class Element:
         <englobe_children> : update self's size after sorting so that it englobes its children.
         <limit_size_if_englobe> : (2-tuple) specifying the maximum width and height of the new size,
         if englobe_children is True.
+        <grid_type> : if "soft", then cell sizes of the grid are adatable, otherwise they are fixed
+        according to the max size of the children.
         """
         children = [e for e in self.children if not e.ignore_for_sorting]
         # self.sort_options = (mode, align, gap, margins, offset, nx, ny, grid_gaps, horizontal_first, englobe_children)
@@ -671,8 +674,8 @@ class Element:
         rects_w = [e.rect.width for e in children]+[sts[0]]
         rects_h = [e.rect.height for e in children]+[sts[1]]
         if mode == "v":
-            w = max(rects_w) + 2*margins[0]
-            h = sum(rects_h) + (len(children)-1)*gap + 2*margins[1]
+            # w = max(rects_w) + 2*margins[0]
+            # h = sum(rects_h) + (len(children)-1)*gap + 2*margins[1]
 ##            self.rect.width = w
 ##            self.rect.height = h
             if align == "center":
@@ -685,8 +688,8 @@ class Element:
             y = self.rect.y + margins[1]
             sorting.sort_children(children, (x,y), mode, align, gap)
         elif mode == "h":
-            w = sum(rects_w) + 2*margins[0] + (len(children)-1)*gap
-            h = max(rects_h)  + 2*margins[1]
+            # w = sum(rects_w) + 2*margins[0] + (len(children)-1)*gap
+            # h = max(rects_h)  + 2*margins[1]
             if align == "center":
                y = self.rect.centery
             elif align == "top":
@@ -697,11 +700,22 @@ class Element:
             x = self.rect.x + margins[0]
             sorting.sort_children(children, (x,y), mode, align, gap)
         elif mode == "grid":
-            max_w = max(rects_w)
-            max_h = max(rects_h)
             x = self.rect.x + margins[0]
             y = self.rect.y + margins[1]
-            sorting.sort_children_grid(children, (x,y), nx, ny, (max_w,max_h), horizontal_first, grid_gaps[0], grid_gaps[1])
+            if grid_type == "soft":
+                cellsize = None
+            else:
+                max_w = max(rects_w)
+                max_h = max(rects_h)
+                cellsize = (max_w, max_h)
+            sorting.sort_children_grid(els=children,
+                                       xy=(x,y),
+                                       nx=nx,
+                                       ny=ny,
+                                       cellsize=cellsize,
+                                       horizontal_first=horizontal_first,
+                                       gap_x=grid_gaps[0],
+                                       gap_y=grid_gaps[1])
         else:
             raise ValueError("<mode> must be either 'h', 'v' or 'grid'.")
         if englobe_children:
@@ -1265,6 +1279,11 @@ class Element:
             self.resort()
             # self.sort_children()
             # self.englobe_children()
+
+    def set_children(self, new_children, auto_sort:bool=False)->None:
+        """Set the children of the element. Previous children are removed."""
+        self.remove_all_children()
+        self.add_children(new_children, auto_sort)
 
     def replace_child(self, old_one, new_one, refresh=True)->None:
         """Replaces a child of the element.
