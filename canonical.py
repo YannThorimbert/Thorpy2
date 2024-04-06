@@ -1007,10 +1007,7 @@ class Element:
     def get_rect(self)->pygame.Rect:
         """_Returns (and updates!) the current rect of the element, using its current state."""
         if self.get_current_style():
-            current_center = self.rect.center
-            r = self.get_current_frame().get_rect()
-            r.center = current_center
-            return r
+            return self.get_current_frame().get_rect(center=self.rect.center)
         else:
             return self.rect
 

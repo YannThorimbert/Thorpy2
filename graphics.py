@@ -57,11 +57,11 @@ def enlighten(color:RGB_OR_RGBA, factor=1.2, min_value=20, also_alpha=False)->RG
     <min_value> : minimum value of color components in 255 bytes format.
     also_alpha : (bool) specify whether you also want alpha to be affected."""
     color = get_main_color(color)
-    assert factor >= 1
+    assert factor >= 1, "Factor for color enlightment must be >= 1"
     def mc(value):
         return min(int(value*factor + min_value),255)
     if len(color) > 3:
-        color = cast(RGBA, color)  # Explicitly tell mypy that color is RGBA in this block
+
         if also_alpha:
             return mc(color[0]), mc(color[1]), mc(color[2]), mc(color[3])
         else:
@@ -90,7 +90,7 @@ def process_gradient_color(gradient_color:GradientColor)->ProcessedGradient:
 
 def get_main_color(gradient_color:GradientColor)->RGB_OR_RGBA:
     all_colors, orientation = process_gradient_color(gradient_color)
-    if orientation:
+    if orientation: #orientation is None if the color is a simple RGB or RGBA tuple
         return all_colors[0] # type: ignore
     return all_colors # type: ignore
 
@@ -146,9 +146,11 @@ def square_color_norm(c:RGB_OR_RGBA)->float:
 #     # return True
 
 def is_color_gradient(color:GradientColor)->bool:
-    if isinstance(color[0],int) or isinstance(color[0],float):
-        return False
-    return True
+    # return not isinstance(color[0], (int, float))
+    return not np.issubdtype(type(color[0]), np.number) #type:ignore (à garder dans version finale)
+    # if isinstance(color[0],int) or isinstance(color[0],float):
+    #     return False
+    # return True
 
 def get_alpha(color:RGB_OR_RGBA)->float:
     color = get_main_color(color)
@@ -1047,6 +1049,27 @@ def darken_every_color_ip(surface:pygame.Surface,
         for y in range(h):
             color = surface.get_at((x,y))
             if color != color_empty:
+                new_color = darken(color, factor) #type:ignore #pygame casts it
+                #maybe surface.set_at(...) is more performant than gfx.pixel
+                gfx.pixel(surface, x, y, new_color) #type:ignore #pygame casts it
+    return surface
+
+def darken_every_color_except_ip(surface:pygame.Surface,
+                          factor:float=0.5,
+                          except_colors:list[RGB_OR_RGBA_OR_NONE]=None,
+                          color_empty:RGB_OR_RGBA_OR_NONE=None)->pygame.Surface:
+    """This function is very slow and intended to be used once and for all before any loop,
+    most suitably on small sprites. If <color_empty> is None, then it detects the default colorkey
+    of the surface."""
+    if not color_empty:
+        color_empty = surface.get_colorkey()
+    if not color_empty:
+        raise Exception("You must provide <color_empty> or a surface with non-None colorkey")
+    w,h = surface.get_size()
+    for x in range(w): #columns from top to bottom
+        for y in range(h):
+            color = surface.get_at((x,y))
+            if color != color_empty and not(color in except_colors):
                 new_color = darken(color, factor) #type:ignore #pygame casts it
                 #maybe surface.set_at(...) is more performant than gfx.pixel
                 gfx.pixel(surface, x, y, new_color) #type:ignore #pygame casts it

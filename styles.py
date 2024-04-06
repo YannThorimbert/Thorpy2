@@ -509,8 +509,6 @@ class ImageStyleWithText(BaseStyle):
         r_img = img.get_rect()
         r_button.center = r_img.center
         s = img
-
-
         r_text.center = r_button.center
         if not arrow:
             self.blit_text(s,lines,r_text)

@@ -1331,8 +1331,7 @@ class Helper(Element):
             self.time_before_launch -= 1
             self.last_parent_state_was_hover = True
         elif self.last_parent_state_was_hover:
-            self.time_before_launch = self.countdown
-            self.anchor = None
+            self.reset_countdown_and_anchor()
         #
 
         if self.time_before_launch <= 0:
@@ -1341,6 +1340,10 @@ class Helper(Element):
             self.set_center(*self.anchor)
             self.move(*self.offset)
         return dragged
+    
+    def reset_countdown_and_anchor(self):
+        self.time_before_launch = self.countdown
+        self.anchor = None
 
 class ColorPicker(Element):
     """Allows the user to pick a color in a pseudo continuum of colors.

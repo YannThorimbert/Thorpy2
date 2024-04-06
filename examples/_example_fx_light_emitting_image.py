@@ -1,6 +1,6 @@
 """We show here how to make an object emit light"""
 #tags: light, fx, light emitter, light emission, lighting, emit light, oscillating light, oscillating, generate_oscillating_lights, image
-import pygame, sys, thorpy as tp
+import pygame, thorpy as tp
 
 from thorpy.graphics import generate_oscillating_lights as gen_lights
 
@@ -50,9 +50,8 @@ while playing:
     #get and blit the bright image around
     if iteration % 2 == 0: #choose the speed of the animation
         i_light = (i_light+1)%len(my_img_lights)
-    r = my_img_lights[i_light].get_rect()
+    r = my_img_lights[i_light].get_rect(center=e.rect.center)
     # r.center = my_img_rect.center #move base image (instead of e if you want)
-    r.center = e.rect.center
     screen.blit(my_img_lights[i_light], r.topleft)
 
     events = pygame.event.get()
