@@ -52,6 +52,7 @@ while playing:
         i_light = (i_light+1)%len(my_img_lights)
     r = my_img_lights[i_light].get_rect(center=e.rect.center)
     # r.center = my_img_rect.center #move base image (instead of e if you want)
+
     screen.blit(my_img_lights[i_light], r.topleft)
 
     events = pygame.event.get()

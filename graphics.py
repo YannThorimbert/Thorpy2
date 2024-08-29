@@ -61,7 +61,6 @@ def enlighten(color:RGB_OR_RGBA, factor=1.2, min_value=20, also_alpha=False)->RG
     def mc(value):
         return min(int(value*factor + min_value),255)
     if len(color) > 3:
-
         if also_alpha:
             return mc(color[0]), mc(color[1]), mc(color[2]), mc(color[3])
         else:

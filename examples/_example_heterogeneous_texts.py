@@ -15,7 +15,7 @@ texts = [("Hello, world. ", {"name":"arialrounded"}),
          ("you ", {"color":(0,255,0), "size":25, "outlined":True}),
          ("doing?", {"name":"timesnewroman"}),
          ]
-text = tp.HeterogeneousTexts(texts)
+text = tp.HeterogeneousTexts(texts, align="center")
 text.center_on(screen)
 
 def before_gui(): #add here the things to do each frame before blitting gui elements

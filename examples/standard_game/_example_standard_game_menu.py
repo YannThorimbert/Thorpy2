@@ -26,8 +26,11 @@ bye = tp.Button("Quit")
 
 group = tp.Group([start, howto, options, bye])
 
-title = tp.Text("My Demo Game", font_color=(255,255,255))
-title.set_font_size(50)
+title = tp.OutlinedText("My Demo Game",
+                          font_size=50, #defaults to theme's font_size
+                          font_color=(250,250,250), #defaults to theme's font_color
+                          outline_color=(50,50,50), #defaults to (50,50,50)
+                          outline_thickness=2) #defaults to 2
 title.stick_to(screen, "top", "top", (0,10))
 gradient = tp.graphics.color_gradient(((50,50,255), (255,255,255)), screen.get_size(), "v")
 def refresh_frame():
@@ -64,15 +67,15 @@ def launch_play_game():
     play_game(screen, difficulty.get_value(), hero_color.get_value())
 
 def launch_help():
-    help_txt = "#RGB(255,0,0)Goal#\n"+\
-    "This is a Flappy-Bird-like game written for demonstration purpose."+\
-    "The velocity of the 'bird' (well...) increases with time."+\
-    "The goal is to survive for the given duration."+\
-    "The duration depends on the difficulty level.\n\n"+\
-    "#RGB(255,0,0)Commands#\n"+\
-    "#RGB(0,255,0)<space>#: jump\n\n"+\
-    "#RGB(255,0,0)Credits#\n"+\
-    "Yann Thorimbert"
+    help_txt = ("#RGB(0,0,255)Goal#\n"
+    "This is a Flappy-Bird-like game written for demonstration purpose."
+    "The velocity of the 'bird increases with time."
+    "The goal is to survive for the given duration."
+    "The duration depends on the difficulty level.\n\n"
+    "#RGB(0,0,255)Commands#\n"
+    "#RGB(50,50,50)<space>#: jump\n\n"
+    "#RGB(0,0,255)Credits#\n"
+    "Yann Thorimbert")
     help_element = tp.Text(help_txt)
     help_element.set_font_rich_text_tag("#")
     help_element.set_max_text_width(3*screen.get_width()//4)

@@ -1,4 +1,4 @@
-__version__ = "2.1.8"
+__version__ = "2.1.9"
 
 import os
 from . import elements
@@ -20,7 +20,7 @@ from .elements import Alert, AlertWithChoices, ArrowButton, Box, Button, DropDow
 from .elements import Slider, SliderWithText, Text, TextInput, TitleBox, ToggleButton, Helper
 from .elements import Checkbox, Radio, SwitchButton, SwitchButtonWithText, DropDownListButton
 from .elements import ColorPicker, ColorPickerRGB, ColorPickerPredefined, ImageButton, HeterogeneousTexts
-from .elements import TextAndImageButton, Lifebar, DeadButton, AnimatedGif, WaitingBar, OutlinedText
+from .elements import TextAndImageButton, Lifebar, VerticalLifebar, DeadButton, AnimatedGif, WaitingBar, OutlinedText
 from .elements import TogglablesPool, Labelled, LabelledColorPicker, Group, ShowFPS, TkDialog, DiscreteLifebar
 from .elements import ListView
 __all__ = [

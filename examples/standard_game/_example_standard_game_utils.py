@@ -24,10 +24,11 @@ def play_game(screen, difficulty, hero_color):
     obstacles = [r for r in obstacles if not r.colliderect(hero_rect)]
     hero_rect.size = (20,20)
     #generate HUD elements ######################################################################
-    text_vel = thorpy.Text(str(vx)+" km/h")
+    # text_vel = thorpy.Text(str(vx)+" km/h")
+    text_vel = thorpy.OutlinedText(str(vx)+" km/h", font_size=30)
     bar_dist = thorpy.Lifebar("Distance: 100%", 300, #text and length
                                bck_color=((255,80,80), (50,0,0), "v"), #vertical red to black
-                               font_color=(255,255,255))
+                               font_color=(50,0,0))
     group = thorpy.Group([bar_dist, text_vel], "h")
     group.stick_to(screen,"bottom","bottom")
     game_over = False

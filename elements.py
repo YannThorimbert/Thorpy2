@@ -1308,7 +1308,7 @@ class Helper(Element):
             self.set_max_text_width(max_width, refresh=False)
         if generate_surfaces:
             self.generate_surfaces()
-        self.event_parent = parent #can be different than blit-update parent
+        self.event_parent:Element = parent #can be different than blit-update parent
         parent.add_child(self)
         parent.helper = self
         self.countdown = countdown
@@ -1327,10 +1327,13 @@ class Helper(Element):
 
     def update(self,  mouse_delta):
         dragged = Element.update(self,  mouse_delta)
-        if self.event_parent.state == "hover":
+        # if self.event_parent.state == "hover" or self.event_parent.state == "pressed" or self.event_parent.being_dragged:
+        if mouse_delta[0] != 0 or mouse_delta[1] != 0:
+            self.reset_countdown_and_anchor()
+        if self.event_parent.state == "hover" or self.event_parent.state == "pressed" or self.event_parent.being_dragged:
             self.time_before_launch -= 1
             self.last_parent_state_was_hover = True
-        elif self.last_parent_state_was_hover:
+        elif self.last_parent_state_was_hover: #parent is not hovered now, but it was before!
             self.reset_countdown_and_anchor()
         #
 
@@ -2907,13 +2910,12 @@ class DiscreteLifebar(Group): #TODO: should have a corresponding style to genera
         return self.get_slot_element_number(self.value)
 
 
-
-class Lifebar(Group):
+class Lifebar(Group): #TODO : make a vertical version
     """Lifebar or loading bar that displays how much is left of a given quantity between 0% and 100%.
     Hence, the value of a Lifebar is always a float between 0. and 1.
     ***Mandatory arguments***
     <text> : string to display on the bar.
-    <length> : length of the bar in pixels.
+    <length> : horizontal length of the bar in pixels.
     ***Optional arguments***
     <bck_color> : background color of the bar. By default, it takes the current theme bck color for Button.
     <height> : height of the bar in pixels.
@@ -2923,11 +2925,14 @@ class Lifebar(Group):
     then the length is adjusted to fit the text.
     <auto_show_percentage> : (bool) if True, then the text is replaced by a text
     indicating the current percentage of the bar.
+    <mode> : either 'to_left' or 'to_right' (default is 'to_left'). Defines the direction in which the bar is filled.
     """
+    TYPE = "h"
 
     def __init__(self, text, length, bck_color=None, height=None, initial_value=1., font_color=None,
-                 auto_adapt_length=True, auto_show_percentage=None):
+                 auto_adapt_length=True, auto_show_percentage=None, mode="to_left"):
         from .themes import get_theme_main_bck_color
+        self.mode = mode
         if bck_color is None:
             bck_color = get_theme_main_bck_color()
         self.auto_show_percentage = auto_show_percentage
@@ -2937,9 +2942,14 @@ class Lifebar(Group):
         #
         style_frame = styles.FrameStyle() #TODO write wrappers to customize children
         self.e_frame = DeadButton("", style_frame)
-        if auto_adapt_length and self.life_text.rect.w > length - 5:
-            length = self.life_text.rect.w + 5
-        self.e_frame.set_size((length, height))
+        if self.TYPE == "h":
+            if auto_adapt_length and self.life_text.rect.w > length - 5:
+                length = self.life_text.rect.w + 5
+            self.e_frame.set_size((length, height))
+        else:
+            if auto_adapt_length and self.life_text.rect.h > length - 5:
+                length = self.life_text.rect.h + 5
+            self.e_frame.set_size((height, length))
         #
         style_rect = styles.SimpleStyle()
         style_rect.bck_color = bck_color
@@ -2988,10 +2998,16 @@ class Lifebar(Group):
         It will automatically be set to zero if you put greater value."""
         value = 0 if value < 0 else value
         self.value = value
-        x = self.e_rect.rect.x
+        if self.mode == "to_left":
+            x = self.e_rect.rect.left
+        else:
+            x = self.e_rect.rect.right
         size = value*self.max_length
         self.e_rect.set_size((size, None), False, False)
-        self.e_rect.set_topleft(x, self.e_rect.rect.y)
+        if self.mode == "to_left":
+            self.e_rect.set_topleft(x, self.e_rect.rect.y)
+        else:
+            self.e_rect.set_topright(x, self.e_rect.rect.y)
         if self.auto_show_percentage:
             self.auto_text_refresh()
 
@@ -3030,6 +3046,70 @@ class Lifebar(Group):
     #     #
     #     self.life_text.center_on(self.e_rect)
 
+class VerticalLifebar(Lifebar):
+    """Vertical lifebar or loading bar that displays how much is left of a given quantity between 0% and 100%.
+    Hence, the value of a Lifebar is always a float between 0. and 1.
+    ***Mandatory arguments***
+    <text> : string to display on the bar.
+    <length> : vertical length of the bar in pixels.
+    ***Optional arguments***
+    <bck_color> : background color of the bar. By default, it takes the current theme bck color for Button.
+    <width> : width of the bar in pixels.
+    <initial_value> : initial value between 0 and 1.
+    <font_color> : font_color in RGB format.
+    <auto_adapt_length> : (bool) if True and the specified length is too short for the text,
+    then the length is adjusted to fit the text.
+    <auto_show_percentage> : (bool) if True, then the text is replaced by a text
+    indicating the current percentage of the bar.
+    <mode> : either 'to_left' or 'to_right' (default is 'to_left'). Defines the direction in which the bar is filled.
+    """
+    TYPE = "v"
+
+    def __init__(self, text, length, bck_color=None, width=None, initial_value=1., font_color=None,
+                 auto_adapt_length=True, auto_show_percentage=None, mode="to_bottom"):
+        super().__init__(text, length, bck_color, width, initial_value, font_color,
+                         auto_adapt_length, auto_show_percentage, mode)
+
+    def sort_children(self,
+                        mode:str="h",
+                        align:str="top",
+                        gap:int=5,
+                        margins:Optional[Tuple[int]]=None,
+                        offset:int=0,
+                        nx:Union[str,int]="auto",
+                        ny:Union[str,int]="auto",
+                        grid_gaps:Tuple[int,int]=(5,5),
+                        horizontal_first:bool=True,
+                        englobe_children:bool=True):
+        super().sort_children(mode, align, gap, margins, offset, nx, ny, grid_gaps,
+                              horizontal_first, englobe_children, (float("inf"),float("inf")))
+        self.e_frame.set_center(self.e_rect.rect.centerx, None)
+        self.life_text.center_on(self.e_frame)
+        # self.e_frame.set_topleft(self.e_rect.rect.x+1,None)
+
+    def build_default_sort_options(self) -> SortOptions:
+        sort_options = super().build_default_sort_options()
+        sort_options.align = "top"
+        return sort_options
+
+
+    def set_value(self, value:float)->None:
+        """The value of a lifebar must be in [0,1].
+        It will automatically be set to zero if you put smaller value."""
+        value = 0 if value < 0 else value
+        self.value = value
+        if self.mode == "to_bottom":
+            y = self.e_rect.rect.bottom
+        else:
+            y = self.e_rect.rect.top
+        size = value*self.max_length
+        self.e_rect.set_size((None, size), False, False)
+        if self.mode == "to_bottom":
+            self.e_rect.set_bottomleft(self.e_rect.rect.x, y)
+        else:
+            self.e_rect.set_topleft(self.e_rect.rect.x, y)
+        if self.auto_show_percentage:
+            self.auto_text_refresh()
 
     
 class WaitingBar(Lifebar):
@@ -3128,7 +3208,7 @@ class TkDialog(Labelled):
     <basename> : (bool) keep only the basename of the path.
     <extension> : (bool) keep the extension of the file.
     <filetypes> : sequence like [("Excel files", ".xlsx .xls"), ...]
-    <initial_dire> : initial location.
+    <initial_dir> : initial location.
     <cls_label> : a Thorpy element class to be used as the label (default is Text).
     <cls_text> : a Thorpy element class to be used as the element displaying
     the value from the tkinter dialog (default is Text).

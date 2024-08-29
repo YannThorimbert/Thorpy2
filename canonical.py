@@ -481,7 +481,7 @@ class Element:
         dy = 0 if y is None else y-self.rect.centery
         self.move(dx, dy)
 
-    def center_on(self, what:Union[str,"Element",pygame.Rect,pygame.Surface])->None:
+    def center_on(self, what:Union[str,"Element",pygame.Rect,pygame.Surface])->"Element":
         """Centers the element on another, or on a pygame Surface or Rect.
         <what> : either a pygame Rect, a 2-tuple, a pygame Surface or a thorpy element.
         It is also possible to specify what = 'screen' as a shortcut for screen's rect.
@@ -495,6 +495,7 @@ class Element:
         else:
             rect = what
         self.set_center(*rect.center)
+        return self
 
     def stick_to(self, other, self_side, other_side, delta=(0,0), move_x=True, move_y=True)->None:
         """Sticks the element to another.
@@ -797,7 +798,7 @@ class Element:
         self.set_text(text)
 
     def set_text(self, text:str)->None:
-        raise Exception("This class of element doesn't support set_text().")
+        raise Exception(f"This class of element ({self.__class__}) doesn't support set_text().")
 
     def update(self, mouse_delta)->bool:
         """_Update state of the element. Return True if element was dragged."""
@@ -935,6 +936,7 @@ class Element:
             else:
                 color = (0,0,0)
             pygame.draw.rect(self.surface, color, e.rect, 1)
+        pygame.display.flip()
 
     def refresh_surfaces_shadow(self)->None:
         if self.multi_shadows:
