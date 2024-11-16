@@ -1,5 +1,5 @@
-"""Quick alert pop up example"""
-#tags: alert, popup, pop up, pop-up, launch, launch_alone, events handling
+"""Example of a sketch box that allows to draw on a grid with a color picker."""
+#tags: drawing, sketch, colorpicker, grid, bucket
 
 import pygame, thorpy as tp
 
