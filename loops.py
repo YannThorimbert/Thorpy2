@@ -83,7 +83,7 @@ class Loop:
                             self.element.remove_from_loop()
                         else:
                             quit_current_loop()
-                self.element.react_button(e.button)
+                self.element.react_buttondown(e.button)
             elif e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_ESCAPE and self.esc_quit:
                     quit_current_loop()

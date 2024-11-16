@@ -447,7 +447,7 @@ class BaseStyle:
         self.r_text = r_text
         return s_text, r_text
 
-    def offset_surface(self, surface):
+    def offset_surface(self, surface) -> pygame.Surface:
         ox,oy = self.offset
         if ox or oy:
             w,h = surface.get_size()
@@ -481,7 +481,7 @@ class BaseStyle:
 class ImageStyle(BaseStyle):
     margins = (0,0)
 
-    def generate_images(self, img, arrow=False):
+    def generate_images(self, img, arrow=False) -> list[pygame.Surface]:
         self.text_lines = ""
         self.r_text = img.get_rect()
         self.size = self.r_text.size

@@ -767,9 +767,9 @@ class Element:
             dy = rect.y - self.rect.y
             self.move(dx,dy)
 
-    def react_button(self, button)->None:
+    def react_buttondown(self, button)->None:
         for e in self.children:
-            e.react_button(button)
+            e.react_buttondown(button)
 
     def default_at_unclick(self):
         pass
@@ -1177,6 +1177,13 @@ class Element:
                     self.second_draw(style)
         for e in self.children:
             e.draw()
+
+    def draw_and_display_rect(self, fill_screen_before=None):
+        if fill_screen_before:
+            self.surface.fill(fill_screen_before)
+            pygame.display.flip()
+        self.draw()
+        pygame.display.update(self.rect)
 
     def generate_surfaces(self)->None:
         """Build the element surfaces for each style and refresh the element's rect accordingly."""

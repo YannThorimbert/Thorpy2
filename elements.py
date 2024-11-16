@@ -496,8 +496,8 @@ class Box(Element):
             # sbox.stick_to(self, "left", "right")
             sbox.set_topright(*self.rect.topright)
 
-    def react_button(self, button):
-        Element.react_button(self, button)
+    def react_buttondown(self, button):
+        Element.react_buttondown(self, button)
         if self.state == "hover":
             selected = self.scrollbar_y
             dx,dy = 0, 1
@@ -1734,6 +1734,9 @@ class Labelled(Element):
         if hasattr(element, "set_value"):
             self.set_value = element.set_value
 
+
+ColorPickerType = Union[ColorPicker, ColorPickerRGB, ColorPickerPredefined]
+
 class LabelledColorPicker(Labelled):
     """Forms a group with a color picker, on the left side of which a label text is displayed.
     ***Mandatory arguments***
@@ -2334,6 +2337,28 @@ class Image(Element):
         self.has_surfaces_generated = True
         self.refresh_surfaces_shadow()
 
+class SingleStateImage(Image):
+
+    def __init__(self, img:pygame.Surface, style_normal=None, generate_surfaces=True):
+        Image.__init__(self, img, style_normal, generate_surfaces=generate_surfaces)
+        
+    def set_image(self, img:pygame.Surface) -> None:
+        self.img = img
+        self.surfaces["normal"] = self.styles["normal"].generate_images(self.img)
+
+    def get_image(self) -> pygame.Surface:
+        return self.img
+
+    def get_frame(self, state:str, it:int) -> pygame.Surface:
+        return self.img
+    
+    def get_current_frame(self) -> pygame.Surface:
+        return self.img
+    
+    def refresh_surfaces_build(self):
+        self.refresh_surfaces_copy()
+
+    
 
 class ImageButton(Button):
     """Image that behaves like a button.
@@ -3304,6 +3329,202 @@ class HeterogeneousTexts(Group):
 
         
 
+class Sketch(TitleBox):
+
+    def __init__(self,
+                 size:tuple[int,int],
+                 cells_size:tuple[int,int],
+                 title="Sketch",
+                 bck_color=(255,255,255),
+                 colorpicker:tuple|ColorPickerType=(0,0,0),
+                 auto_fill_lines:bool=True,
+                 show_grid_text="Show grid", #if empty string, doesnt allow the option
+                 bucket_text="Bucket" #if empty string, doesnt allow the option
+                 ):
+        self.size:tuple[int,int] = size
+        self.cells_size:tuple[int,int] = cells_size
+        self.bck_color:tuple[int,int,int] = bck_color
+        self.auto_fill_lines:bool = auto_fill_lines
+        self.e_show_grid = Labelled(show_grid_text, Checkbox(False))
+        show_colorpicker = True
+        if isinstance(colorpicker, tuple):
+            colorpicker = ColorPickerPredefined([colorpicker])
+            show_colorpicker = False
+        self.colorpicker:ColorPickerType = colorpicker
+        cells_nx = size[0] // cells_size[0]
+        cells_ny = size[1] // cells_size[1]
+        self.cells:pygame.Surface = pygame.Surface((cells_nx, cells_ny))
+        self.cells.fill(bck_color)
+        # self.e_img:Image = Image(self.get_img_from_cells())
+        self.e_img:Image = SingleStateImage(self.get_img_from_cells())
+        min_size:int = 1
+        max_size:int = max(cells_size) // 2
+        if max_size < min_size:
+            max_size = min_size
+        self.e_cursor_size = SliderWithText("Cursor size", min_size, max_size, initial_value=1, length=100)
+        els = [self.e_cursor_size]
+        if show_colorpicker:
+            els.append(self.colorpicker)
+        if show_grid_text:
+            els.append(self.e_show_grid)
+        self.e_bucket = ToggleButton(bucket_text)
+        if bucket_text:
+            els.append(self.e_bucket)
+        children_group = Group(els, mode="v")
+        b = Group([self.e_img, children_group])
+        b.sort_children("h")
+        children_elements = [b]
+        super().__init__(title, children_elements, sort_immediately=False)
+        self.sort_children(mode="h", align="center", gap=5)
+        #####################
+        self.last_drawn_pos:tuple[int,int] = None
+
+    def set_show_grid(self, value) -> None:
+        self.e_show_grid.set_value(value)
+
+    def get_img_from_cells(self) -> pygame.Surface:
+        img:pygame.Surface = pygame.transform.scale(self.cells, self.size)
+        pygame.draw.rect(img, (0,0,0), (0,0,*self.size), 1)
+        return img
+    
+    def refresh_img(self) -> None:
+        img:pygame.Surface = self.get_img_from_cells()
+        # for key in self.e_img.surfaces:
+        #     self.e_img.surfaces[key] = [img]
+        self.e_img.set_image(img)
+
+    #TODO: classe single-state image, avec set_image
+    def set_color_of_cell(self, rel_coord, color) -> None:
+        self.cells.set_at(rel_coord, color)
+
+    def get_rel_pos(self, pos) -> tuple[int,int]:
+        dx = (pos[0] - self.e_img.rect.x)/self.e_img.rect.w
+        dy = (pos[1] - self.e_img.rect.y)/self.e_img.rect.h
+        rel_pos = int(dx * self.cells.get_width()), int(dy * self.cells.get_height())
+        return rel_pos
+    
+    def apply_bucket(self, rel_pos:tuple, color:tuple, original_color:tuple, already_done:list) -> None:
+        if rel_pos in already_done:
+            return
+        already_done.append(rel_pos)
+        if not (0 <= rel_pos[0] < self.cells.get_width() and 0 <= rel_pos[1] < self.cells.get_height()):
+            return
+        color_here = self.cells.get_at(rel_pos)
+        if color_here != original_color:
+            return
+        self.set_color_of_cell(rel_pos, color)
+        for dx,dy in ((-1,0),(1,0),(0,-1),(0,1)):
+            neigh_x = rel_pos[0]+dx
+            neigh_y = rel_pos[1]+dy
+            self.apply_bucket((neigh_x, neigh_y), color, original_color, already_done)
+
+    def update(self, mouse_delta) -> bool:
+        mouse_buttons = pygame.mouse.get_pressed()
+        left_button = mouse_buttons[0]
+        right_button = mouse_buttons[2]
+        if left_button and self.e_bucket.get_value():
+            pos = pygame.mouse.get_pos()
+            if not self.e_img.rect.collidepoint(pos):
+                return super().update(mouse_delta)
+            rel_pos = self.get_rel_pos(pos)
+            color = self.colorpicker.get_value()
+            self.apply_bucket(rel_pos, color, self.cells.get_at(rel_pos), [])
+        elif left_button or right_button:
+            pos = pygame.mouse.get_pos()
+            if not self.e_img.rect.collidepoint(pos):
+                return super().update(mouse_delta)
+            rel_pos = self.get_rel_pos(pos)
+            if left_button:
+                color = self.colorpicker.get_value()
+            else:
+                color = self.bck_color
+            #
+            if self.auto_fill_lines and self.last_drawn_pos and rel_pos != self.last_drawn_pos:
+                dx = rel_pos[0] - self.last_drawn_pos[0]
+                dy = rel_pos[1] - self.last_drawn_pos[1]
+                if dx < 1: dx = 1
+                if dy < 1: dy = 1
+                deltax = dx//abs(dx)
+                deltay = dy//abs(dy)
+                for i in range(abs(dx)):
+                    for j in range(abs(dy)):
+                        x = self.last_drawn_pos[0] + i * deltax
+                        y = self.last_drawn_pos[1] + j * deltay
+                        self.paint_at((x,y), color)
+            #
+            # self.set_color_of_cell(rel_pos, color)
+            self.paint_at(rel_pos, color)
+            self.last_drawn_pos = rel_pos
+        self.refresh_img()
+        self.show_grid()
+        self.show_cursor()
+        return super().update(mouse_delta)
+    
+    def react_buttondown(self, button):
+        super().react_buttondown(button)
+        if self.state == "hover":
+            cursor_size = self.e_cursor_size.get_value()
+            if button == 4: #wheel mouse
+                cursor_size += 1
+            elif button == 5: #wheel mouse
+                cursor_size -= 1
+            self.e_cursor_size.set_value(cursor_size)
+    
+    def paint_at(self, rel_pos:tuple[int,int], color:tuple[int,int,int]) -> None:
+        cursor_size = self.e_cursor_size.get_value()
+        if cursor_size <= 1:
+            self.set_color_of_cell(rel_pos, color)
+        else:
+            x0 = rel_pos[0] - cursor_size//2
+            y0 = rel_pos[1] - cursor_size//2
+            for i in range(cursor_size):
+                for j in range(cursor_size):
+                    self.set_color_of_cell((x0+i, y0+j), color)
+
+    def show_grid(self):
+        if not self.e_show_grid.get_value():
+            return
+        for i in range(self.cells.get_width()):
+            x = i*self.cells_size[0]
+            pygame.draw.line(self.e_img.img, (0,0,0), (x,0), (x, self.e_img.rect.h), 1)
+            pygame.draw.line(self.e_img.img, (0,0,0), (0,x), (self.e_img.rect.w, x), 1)
+            # for key in self.e_img.surfaces:
+            #     img = self.e_img.surfaces[key][0]
+            #     pygame.draw.line(img, (0,0,0), (x,0), (x, self.e_img.rect.h), 1)
+            #     pygame.draw.line(img, (0,0,0), (0,x), (self.e_img.rect.w, x), 1)
+
+    def show_cursor(self):
+        cursor_size = self.e_cursor_size.get_value()
+        if self.e_bucket.get_value():
+            cursor_size = 1
+        x,y = pygame.mouse.get_pos()
+        rp = self.get_rel_pos((x,y))
+        x = rp[0] * self.cells_size[0]
+        y = rp[1] * self.cells_size[1]
+        color = self.colorpicker.get_value()
+        # for key in self.e_img.surfaces:
+        #     img = self.e_img.surfaces[key][0]
+        if cursor_size <= 1:
+            if self.e_bucket.get_value():
+                pygame.draw.rect(self.e_img.img, color, ((x,y), self.cells_size))
+            else:
+                pygame.draw.rect(self.e_img.img, color, ((x,y), self.cells_size), 2)
+        else:
+            x0 = x - cursor_size//2 * self.cells_size[0]
+            y0 = y - cursor_size//2 * self.cells_size[1]
+            w = cursor_size * self.cells_size[0]
+            h = cursor_size * self.cells_size[1]
+            pygame.draw.rect(self.e_img.img, color, (x0,y0,w,h), 2)
+
+    def at_unclick(self, **params):
+        self.last_drawn_pos = None
+        return super().at_unclick(**params)
+    
+    def get_value(self) -> pygame.Surface:
+        return self.cells
+
+    # def update(self, mouse_delta):
+    #     return super().update(mouse_delta)
 
 
 
@@ -3329,3 +3550,5 @@ class _ButtonColor(Button):
 
 class _SelectButton(ToggleButton):
     ...
+
+

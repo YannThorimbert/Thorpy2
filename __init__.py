@@ -1,4 +1,4 @@
-__version__ = "2.1.9"
+__version__ = "2.1.10"
 
 import os
 from . import elements
@@ -22,7 +22,7 @@ from .elements import Checkbox, Radio, SwitchButton, SwitchButtonWithText, DropD
 from .elements import ColorPicker, ColorPickerRGB, ColorPickerPredefined, ImageButton, HeterogeneousTexts
 from .elements import TextAndImageButton, Lifebar, VerticalLifebar, DeadButton, AnimatedGif, WaitingBar, OutlinedText
 from .elements import TogglablesPool, Labelled, LabelledColorPicker, Group, ShowFPS, TkDialog, DiscreteLifebar
-from .elements import ListView
+from .elements import ListView, Sketch
 __all__ = [
     "Alert",
     "AlertWithChoices",
