@@ -719,6 +719,8 @@ def set_style_attr(attr, value, states=None, exceptions_cls=None, only_to_cls=No
     if exceptions_cls is None:
         exceptions_cls = []
     if only_to_cls:
+        if not isinstance(only_to_cls, (list, tuple)):
+            only_to_cls = [only_to_cls]
         classes = only_to_cls
     else:
         classes = all_classes

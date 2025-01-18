@@ -168,6 +168,7 @@ class Element:
         self.last_player:Optional[loops.Loop] = None
         self.id:int = Element.current_id
         self.has_surfaces_generated:bool = False
+        self.fit_to_children = self.englobe_children #just an alias
         Element.current_id += 1
 
     def __repr__(self)->str:

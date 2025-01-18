@@ -18,6 +18,8 @@ d4 = tp.TkDialog("Choose save path :", "save")
 group = tp.TitleBox("TkDialog example :", [d1,d2,d3,d4])
 group.center_on(screen)
 
+# d3.action() #Uncomment this is you want to directly launch the dialog, without having the user to click on it.
+
 def before_gui(): #add here the things to do each frame before blitting gui elements
     screen.fill((250,)*3)
     # print(my_dialog.get_value())

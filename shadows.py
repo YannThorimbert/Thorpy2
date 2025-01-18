@@ -94,7 +94,7 @@ class NonUniformRectShadow(Shadow):
                                                          self.shadow_radius)
 
 
-def propose_shadowgen(style, fast, uniform=False):
+def propose_shadowgen(style, fast, uniform=False) -> Shadow:
     # if fast or (hasattr(style, "radius") and style.radius == 0):
     if fast:
         if uniform:

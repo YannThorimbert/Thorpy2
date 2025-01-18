@@ -9,7 +9,7 @@ pygame.init()
 screen = pygame.display.set_mode((1200, 700))
 tp.init(screen, tp.theme_human) #bind screen to gui elements and set theme
 
-my_button = tp.Button("Hello, world.")
+my_button = tp.Button("Hello, world.\nPlease hover me a few seconds.")
 my_button.center_on(screen)
 
 #simple helper

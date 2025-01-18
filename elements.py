@@ -728,6 +728,9 @@ class AlertWithChoices(TitleBox):
 ##        self.choice_buttons = group_buttons
 ##        self.bck_func = bck_func
 
+    def choice_is_index(self, i):
+        return self.choice == self.get_button(i).text
+
     def get_button(self, choice_str_or_index):
         """Return the choice button corresponding to the passed arg.
         ***Mandatory arguments***
@@ -1142,10 +1145,10 @@ class SliderWithText(Element):
         self.slider = Slider(mode, length, thickness, set_when_click=set_when_click)
         self.edit = edit
         if self.edit:
-            self.text = _LabelButton(text)
+            self.text_element = _LabelButton(text)
         else:
-            self.text = Text(text)
-        children = [self.text, self.slider]
+            self.text_element = Text(text)
+        children = [self.text_element, self.slider]
         if edit and not show_value_on_right_side:
             raise Exception("Slider's show_value_on_right_side must be true to activate edit attribute.")
         if show_value_on_right_side:
@@ -1163,7 +1166,7 @@ class SliderWithText(Element):
                     self.value_text.set_only_integers()
                 else:
                     self.value_text.set_only_numbers()
-                self.text.default_at_unclick = self.value_text.action
+                self.text_element.default_at_unclick = self.value_text.action
             else:
                 self.value_text = Text(str_value)
             children.append(self.value_text)
@@ -1186,6 +1189,9 @@ class SliderWithText(Element):
         # self.englobe_children()
         self.set_value(initial_value)
 
+    def get_dragger(self)->Element:
+        return self.slider.dragger
+
     def build_default_sort_options(self)->SortOptions:
         sort_options = super().build_default_sort_options()
         sort_options.mode = "h"
@@ -1193,7 +1199,7 @@ class SliderWithText(Element):
         sort_options.gap = 10
         return sort_options
 
-    def update_input_size(self, txt=None):
+    def update_input_size(self, txt=None)->None:
         if txt is None:
             a,b = str(self.max_value), str(self.min_value)
             if len(a) > len(b):
@@ -1209,7 +1215,7 @@ class SliderWithText(Element):
         if update_input_size:
             self.font_size.update_input_size()
 
-    def get_delta(self):
+    def get_delta(self)->int|float:
         return self.max_value - self.min_value
 
     def validate_value_text(self):
@@ -1321,6 +1327,10 @@ class Helper(Element):
         self.offset = offset
         self.follow_mouse = follow_mouse
         self.anchor = None
+
+    def set_text(self, text):
+        self.text = text
+        self.generate_surfaces()
 
     def must_draw(self):
         return self.time_before_launch <= 0
@@ -3277,9 +3287,9 @@ class TkDialog(Labelled):
 
     def default_at_unclick(self):
         if self.filetypes:
-            value = self.tk_dialog(initialdir=self.initial_dir, filetypes=self.filetypes)
+            value = self.tk_dialog(initialdir=self.initial_dir, filetypes=self.filetypes, initialfile=self.initial_value)
         else:
-            value = self.tk_dialog(initialdir=self.initial_dir)
+            value = self.tk_dialog(initialdir=self.initial_dir, initialfile=self.initial_value)
         if not(isinstance(value,str)):
             value = [self.clean_value(v) for v in value]
             value = "\n".join(value)
@@ -3537,7 +3547,14 @@ class _LabelButton(Button):
     ...
 
 class _DraggerButton(Button):
-    ...
+    def __init__(self, text, style_normal=None, style_hover=None, style_pressed=None, generate_surfaces=True, children=None, style_locked=None, all_styles_as_normal=False):
+        super().__init__(text, style_normal, style_hover, style_pressed, generate_surfaces, children, style_locked, all_styles_as_normal)
+        self.dragged_last_iter:bool = False
+
+    def update(self, mouse_delta):
+        value = super().update(mouse_delta)
+        self.dragged_last_iter = bool(value)
+        return value
 
 class _SliderBar(Line):
     ...

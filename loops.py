@@ -46,8 +46,8 @@ class Loop:
                no_state_change:bool=True,
                events:Optional[List[pygame.event.Event]]=None,
                func_after:Optional[Callable]=None,
-               mouse_rel:Optional[Tuple[int,int]]=None)->None:
-        """Update and draw the thorpy elements.
+               mouse_rel:Optional[Tuple[int,int]]=None)->tuple[int,int]:
+        """Update and draw the thorpy elements. Returns the mouse_rel value.
         Method to call each frame of the game if you do not use automatic thorpy loops
         (typically, use this method in your own main loop, after drawing everything on the screen).
         ***Optional arguments***
@@ -102,6 +102,7 @@ class Loop:
             func_after()
         p.refresh()
         self.iteration += 1
+        return mouse_rel
 
     def launch(self,
                func_before:Optional[Callable]=None,

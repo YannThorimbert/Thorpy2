@@ -45,11 +45,14 @@ group.center_on(screen)
 def at_refresh():
     screen.fill((255,)*3)
     font = choose_font.get_value()
-    if font or font_size.get_value() != text.get_current_style().font_size:
-        group.set_font_name(font, apply_to_children=True)
+    changed = font != text.get_current_style().font_name
+    if changed or font_size.get_value() != text.get_current_style().font_size:
+        group.set_font_name(font, apply_to_children=True, refresh=False)
         group.set_font_size(font_size.get_value(), apply_to_children=True)
         font_size.sort_children("h")
         choose_font.sort_children("h")
         group.sort_children()
+
+# choose_font
 group.get_updater().launch(at_refresh)
 pygame.quit()

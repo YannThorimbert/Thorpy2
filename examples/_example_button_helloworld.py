@@ -19,3 +19,4 @@ tp.call_before_gui(before_gui) #tells thorpy to call before_gui() before drawing
 #For the sake of brevity, the main loop is replaced here by a shorter but blackbox-like method
 player = my_button.get_updater().launch()
 pygame.quit()
+

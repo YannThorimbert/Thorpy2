@@ -606,6 +606,7 @@ class RoundStyle(BaseStyle):
             bck_alpha = graphics.get_alpha(self.bck_color)
             if border_alpha != bck_alpha:
                 warnings.warn("Border alpha and background alpha should be the same for round styles")
+            # print("Border color", self.border_color)
             s0 = graphics.round_rect_aa(self.border_color, r_button.size,
                                         self.radius, self.force_radius, self.n_smooth).convert_alpha()
             size_s = [r_button.size[0]-2*thick, r_button.size[1]-2*thick]

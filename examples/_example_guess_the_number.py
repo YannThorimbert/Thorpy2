@@ -51,10 +51,10 @@ def validate_guess():
         game_ended("victory")
     elif last_guess < number_to_guess:
         hint_text.set_text("The number to guess is #RGB(255,0,0)larger# than "+str(last_guess))
-        attempts_view.add_child(tp.Text("> " + str(last_guess)), auto_sort=True)
+        attempts_view.add_child(tp.Text("The number is greater than " + str(last_guess)), auto_sort=True)
     else:
         hint_text.set_text("The number to guess is #RGB(0,0,255)smaller# than "+str(last_guess))
-        attempts_view.add_child(tp.Text("< " + str(last_guess)), auto_sort=True)
+        attempts_view.add_child(tp.Text("The number is smaller than " + str(last_guess)), auto_sort=True)
     if attempts_left < 1:
         game_ended("defeat")
     attempts_text.children[-1].set_text(str(attempts_left)+"/5")
@@ -66,7 +66,7 @@ def game_ended(result): #called either when player wins or looses.
         title = "You won !"
         message = "Well done. What do you want to do now ?"
     else:
-        title = "You lost"
+        title = "You lost. The number was "+str(number_to_guess)
         message = "What do you want to do now ?"
     choice = tp.AlertWithChoices(title, ("New game", "Quit"), message)
     choice.launch_alone() #wait for the user to make a choice

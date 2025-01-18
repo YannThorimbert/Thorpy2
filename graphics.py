@@ -20,6 +20,31 @@ from functools import cache
 
 MAX_NORM = 3*(255**2)
 
+def sgn(x:float)->int:
+    if x > 0:
+        return 1
+    return -1
+
+# def distance_point_to_segment(p:Coord, a:Coord, b:Coord)->float:
+#     if a[0] <= p[0] <= b[0] or a[0] >= p[0] >= b[0]:
+#         if a[1] <= p[1] <= b[1] or a[1] >= p[1] >= b[1]:
+#             length:float = math.hypot(b[0]-a[0], b[1]-a[1])
+#             d:float = abs((b[1]-a[1])*p[0] - (b[0]-a[0])*p[1] + b[0]*a[1] - b[1]*a[0]) / length
+#             return d
+#     return min(math.hypot(p[0]-a[0], p[1]-a[1]), math.hypot(p[0]-b[0], p[1]-b[1]))
+
+def distance_point_to_segment_sqr(p, v, w) -> float:
+    seg_length_sqr:float = (v[0]-w[0])**2 + (v[1]-w[1])**2
+    if seg_length_sqr == 0:
+        return (p[0]-v[0])**2 + (p[1]-v[1])**2
+    t:float = ((p[0] - v[0]) * (w[0] - v[0]) + (p[1] - v[1]) * (w[1] - v[1])) / seg_length_sqr
+    t:float = max(0, min(1, t)) #fraction of the segment at which the projection falls
+    x:float = v[0] + t * (w[0] - v[0])
+    y:float = v[1] + t * (w[1] - v[1])
+    return (p[0]-x)**2 + (p[1]-y)**2
+
+def distance_point_to_segment(p, v, w) -> float:
+    return math.sqrt(distance_point_to_segment_sqr(p, v, w))
 
 def darken_or_enlighten(color:RGB_OR_RGBA, factor:float=0.8, also_alpha:bool=False, min_value=20)->RGB_OR_RGBA:
     """Returns either a darkened or enlightened version of the color.
@@ -225,7 +250,7 @@ def color_gradient(colors:RGB_OR_RGBA_SEQ, size:Size, orientation:str)->pygame.S
         gfx.pixel(r,0,1,colors[2]) #type:ignore #pygame handles the cast to integer
         gfx.pixel(r,1,1,colors[3]) #type:ignore #pygame handles the cast to integer
     else:
-        raise Exception("Orientation must be either 'h', 'v', 'r' or 'q'.")
+        raise Exception(f"Orientation must be either 'h', 'v', 'r' or 'q', not '{orientation}'")
     s = pygame.transform.smoothscale( r, size )
     return s
 
@@ -427,6 +452,29 @@ def draw_gradient_line(surface:pygame.Surface, col1:RGB_OR_RGBA, col2:RGB_OR_RGB
         x += dpix_x
         y += dpix_y
 
+def draw_thick_aa_line(surface:pygame.Surface, color:RGB_OR_RGBA, start:V2, end:V2, thickness:int=1)->None:
+    direction:V2 = V2(end) - V2(start)
+    delta:V2 = direction.normalize().rotate(90)
+    absx, absy = abs(delta.x), abs(delta.y)
+    sgnx, sgny = sgn(delta.x), sgn(delta.y)
+    if absx > absy:
+        delta.x = sgnx
+        delta.y = 0
+    elif absx == absy:
+        delta.x = 0
+        delta.y = sgny
+    else:
+        delta.x = sgnx
+        delta.y = sgny
+    shift:V2 = V2()
+    shift0:V2 = (thickness*delta)//2
+    start -= shift0
+    end -= shift0
+    for i in range(thickness):
+        a = start + shift
+        b = end + shift
+        pygame.draw.aaline(surface, color, a, b)
+        shift += delta
 
 def change_color_on_img(img:pygame.Surface,
                         color_source:PygameAcceptedColor,
@@ -505,6 +553,40 @@ def polygon_aa(color:RGB_OR_RGBA, size:Size, points:Sequence[int], n_smooth:int=
         surface.blit(scolor, (0,0), special_flags=pygame.BLEND_RGBA_MIN)
     return surface
 
+
+def draw_dashed_line(surface:pygame.Surface, color:RGB_OR_RGBA, start:Coord, end:Coord, dash_length:int=40,
+                     aa:bool=True, thickness:int=1,) -> None:
+    """Draw a dashed line on the surface.
+    ***Mandatory arguments***
+    <surface> : the surface on which to draw.
+    <color> : the color of the line.
+    <start> : the starting point of the line.
+    <end> : the ending point of the line.
+    ***Optional arguments***
+    <dash_length> : the length of the dashes. If negative, then the norm is used as the number of segments.
+    <aa> : whether to use anti-aliasing.
+    <thickness> : the thickness of the line."""
+    if aa:
+        func_draw:callable = pygame.draw.aaline
+    else:
+        func_draw:callable = pygame.draw.line
+    a:V2 = V2(start)
+    b:V2 = V2(end)
+    delta:V2 = b - a
+    if dash_length < 0:
+        n:int = abs(dash_length)
+    else:
+        n:int = int(delta.length() / dash_length)
+    dash_vector:v2 = delta.normalize() * dash_length
+    current_pos:V2 = V2(a)
+    current_end:V2 = V2(a)
+    for i in range(n):
+        current_end = current_pos + dash_vector
+        if i%2 == 0:
+            func_draw(surface, color, current_pos, current_end, thickness)
+        current_pos = current_end
+    if current_end != b:
+        func_draw(surface, color, current_end, b, thickness)
 
 def extract_frames(src:str, out_folder:Union[str,None]=None,
                    size_factor:Size=(1., 1.))->Sequence[pygame.Surface]:

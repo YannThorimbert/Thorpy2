@@ -16,6 +16,10 @@ bck = pygame.transform.smoothscale(bck, (W,H))
 my_img = pygame.image.load(tp.fn("data/my_img.png"))
 my_img.set_colorkey(my_img.get_at((0,0)))
 
+tp.init(screen, theme=tp.theme_simple)
+tp.set_waiting_bar("Generating lights...")
+tp.refresh_waiting_bar()
+
 #cache lights images - this can take some time
 my_img_lights = gen_lights(my_img,
                            n=20, #number of frames
@@ -32,7 +36,7 @@ clock = pygame.time.Clock()
 iteration = 0
 playing = True
 
-tp.init(screen)
+
 
 #for convenience, we blit a thorpy Image element so we can drag it,
 #but you can handle everything as a pygame Surface as well
