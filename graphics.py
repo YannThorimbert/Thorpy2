@@ -161,7 +161,8 @@ def opposite_color(c:RGB_OR_RGBA)->RGB_OR_RGBA:
 
 def square_color_norm(c:RGB_OR_RGBA)->float:
     """Magnitude of a color, ignoring alpha value."""
-    return c[0]**2 + c[1]**2 + c[2]**2
+    return np.power(np.linalg.norm(c), 2)
+    # return c[0]**2 + c[1]**2 + c[2]**2
 
 # def is_color_gradient(color:GradientColor)->bool:
 #     return isinstance(color, Gradient)
