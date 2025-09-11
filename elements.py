@@ -307,6 +307,7 @@ class Box(Element):
         self.scrollbar_x_factor = 1.
         self.resizer = None
         self.resize_margin = (-10,-10)
+        self.wheel_scroll_speed = 1
         if size_limit == "auto":
             size_limit = ("auto",)*2
         self.size_limit = list(size_limit)
@@ -430,7 +431,19 @@ class Box(Element):
                 self.scrollbar_y = None
 
 
+    def auto_delta(self, mode):
+        rects = [e.rect for e in self.children if not e.ignore_for_sorting]
+        if mode == "h":
+            m = min([rect.left for rect in rects])
+            M = max([rect.right for rect in rects])
+        else:
+            m = min([rect.top for rect in rects])
+            M = max([rect.bottom for rect in rects])
+        return M - m
+
     def add_scrollbar(self, mode, delta, thickness=None, button_size=None ):
+        if delta is None:
+            delta = self.auto_delta(mode)
         sw,sh = p.screen.get_size()
         if mode == "h":
             length = min(sw,self.rect.w*0.6)
@@ -500,14 +513,14 @@ class Box(Element):
         Element.react_buttondown(self, button)
         if self.state == "hover":
             selected = self.scrollbar_y
-            dx,dy = 0, 1
+            dx,dy = 0, self.wheel_scroll_speed
             if self.scrollbar_x and self.scrollbar_y:
                 if self.scrollbar_x.bar.state == "hover":
                     selected = self.scrollbar_x
                     dx,dy = 1,0
             elif self.scrollbar_x:
                 selected = self.scrollbar_x
-                dx,dy = 1,0
+                dx,dy = self.wheel_scroll_speed, 0
             if selected:
                 if button == 4: #wheel mouse
                     self.at_scroll(-dx,-dy,selected.dragger)
@@ -615,10 +628,10 @@ class Box(Element):
                               self.size_limit)
         self.children_rect = self.get_children_rect(margins)
         if not self.children:
-            self.rect = self.get_min_size()
+            self.rect:pygame.Rect = self.get_min_size()
             self.set_size(self.rect.size, adapt_parent=False)
 
-    def get_min_size(self)->None:
+    def get_min_size(self)->pygame.Rect:
         style = self.get_current_style()
         return pygame.Rect((0,0),style.get_line_size(" ")).inflate(style.margins)
 ##    def add_vertical_scrollbar(self):
@@ -684,8 +697,16 @@ class TitleBox(Box):
 
 class AlertWithChoices(TitleBox):
 
-    def __init__(self, title, choices, text=None, children=None, choice_mode="h", bck_func=None,
-                    overwrite_choices=True):
+    def __init__(self,
+                 title:str,
+                 choices:list[str|Element],
+                 text:None|str=None,
+                 children:None|list[str|Element]=None,
+                 choice_mode:str="h",
+                 bck_func:callable=None,
+                 overwrite_choices:bool=True,
+                 use_as_choice:list[str]=None,
+                 children_come_before:bool=True):
         """Alert popping to the screen and allowing the user to choose among choices. 
         ***Mandatory arguments***
         <title> : string displayed as the title of the alert.
@@ -696,30 +717,39 @@ class AlertWithChoices(TitleBox):
         <children> : either None or a list of elements or a string.
         <bck_func> : either None or a function.
         <overwrite_choices> : if True, then if buttons are passed as choices, their at_unclick and at_unclick_params are overwritten.
+        <use_as_choice> : a list of strings that can be used as choices instead of the buttons' text. Useful when <choices> is not a list of sting
+        <children_come_before> : if True, then the children are put before the choices in the alert, else after.
         """
         self.choice = None
         self.choice_element = None
-        if children is None:
-            children = []
+        all_children:list[Element] = []
         if text:
-            children = [Text(text)]+children
+            all_children.append(Text(text)) #first the 'description text'
+        if children and children_come_before:
+            all_children += children
         self.n_choices = len(choices)
+        self.use_as_choice = use_as_choice
         if choices:
             buttons = []
-            for e in choices:
+            for i,e in enumerate(choices):
+                imposed_value:str = ""
+                if self.use_as_choice:
+                    imposed_value = use_as_choice[i]
                 if isinstance(e, str):
                     b = Button(e)
                     b.at_unclick = choice
-                    b.at_unclick_params = {"alert":self, "element":b}
+                    b.at_unclick_params = {"alert":self, "element":b, "value":imposed_value}
                     buttons.append(b)
                 else:
                     buttons.append(e)
                     if overwrite_choices:
                         e.at_unclick = choice
-                        e.at_unclick_params = {"alert":self, "element":e}
+                        e.at_unclick_params = {"alert":self, "element":e, "value":imposed_value}
         group_buttons = Group(buttons, choice_mode)
-        children += [group_buttons]
-        TitleBox.__init__(self, title, children)
+        all_children += [group_buttons]
+        if children and not children_come_before:
+            all_children += children
+        TitleBox.__init__(self, title, all_children)
         self.center_on(self.surface)
         self.choice_buttons = group_buttons
         self.bck_func = bck_func
@@ -745,6 +775,13 @@ class AlertWithChoices(TitleBox):
         if isinstance(n, str):
             raise Exception("No choice with text", choice_str_or_index)
         return self.choice_buttons.children[n]
+    
+    def get_button_if_any(self, choice_str_or_index):
+        try:
+            return self.get_button(choice_str_or_index)
+        except:
+            return None
+
 
     def set_choice_func(self, choice_str_or_index, func, params=None):
         """Redefine the function to be called when clicking on a given choice.
@@ -802,6 +839,7 @@ class TextInput(Button):
     def __init__(self, text, placeholder="", style_normal=None, style_hover=None,
                     style_pressed=None, generate_surfaces=True, placeholder_color=None):
         self.focused = False
+        self.func_before = None
         self.value = text
         self.initial_value = self.value
         self.placeholder = placeholder
@@ -825,6 +863,7 @@ class TextInput(Button):
         self.only_numbers = False
         self.only_integers = False
         self.only_alpha = False
+        self.forbidden_chars = []
         Button.__init__(self, "", style_normal, style_hover, style_pressed, generate_surfaces)
         self.update_max_size(self.get_value())
         self.action = self.default_at_click
@@ -949,6 +988,8 @@ class TextInput(Button):
         elif self.only_alpha:
             if not char.isalpha():
                 return False
+        if char in self.forbidden_chars:
+            return False
         return True
 
     def set_only_numbers(self):
@@ -1001,6 +1042,7 @@ class TextInput(Button):
             self.focused = True
             root = self.root() #oldest ancester
             self.launch_and_lock_others(root,
+                                        func_before=self.func_before,
                                         click_outside_cancel=self.click_outside_cancel,
                                         reaction=self.reaction_keyboard)
             self.focused = False
@@ -1722,7 +1764,7 @@ class Labelled(Element):
     <cls_label> : a Thorpy element class to be used as the label.
     """
 
-    def __init__(self, label, element, cls_label=None):
+    def __init__(self, label, element, cls_label=None, gap=5):
         forbidden = [ColorPickerRGB, ColorPicker, ColorPickerPredefined, SliderWithText]
         if element.__class__ in forbidden:
             raise Exception("The element passed to the Labelled instance cannot be of type",
@@ -1733,7 +1775,7 @@ class Labelled(Element):
             self.label = _LabelButton(label)
         self.element = element
         super().__init__(children=[self.label, self.element])
-        self.sort_children("h", margins=(5,0), gap=5, nx="auto", ny="auto", align="center")
+        self.sort_children("h", margins=(5,0), gap=gap, nx="auto", ny="auto", align="center")
         self.copy_normal_state(True)
         def at_unclick():
             if element.action:
@@ -1743,6 +1785,12 @@ class Labelled(Element):
             self.get_value = element.get_value
         if hasattr(element, "set_value"):
             self.set_value = element.set_value
+
+    # def std_sort(self, gap=5):
+    def std_sort(self):
+        self.label.adapt_to_text(adapt_parent=False)
+        gap = self.label.rect.w//4 + 5
+        self.sort_children("h", margins=(5,0), gap=gap, nx="auto", ny="auto", align="center")
 
 
 ColorPickerType = Union[ColorPicker, ColorPickerRGB, ColorPickerPredefined]
@@ -1816,6 +1864,7 @@ class TogglablesPool(Element):
     <togglable_look> : (str) used only if togglable_type is 'toggle'. Must be the name of an Element class.
     defaults to Togglable
     <all_same_width> : (bool) if True, all items have same width.
+    <sort_mode> : (str) either 'h' or 'v'. If None, the sort mode is automatically determined.
     """
 
     def __init__(self,
@@ -1824,7 +1873,8 @@ class TogglablesPool(Element):
                  initial_value:Union[str,int],
                  togglable_type:str="toggle",
                  togglable_look:str="ToggleButton",
-                 all_same_width:bool=False):
+                 all_same_width:bool=False,
+                 sort_mode:str=None):
         self.all_same_width = all_same_width
         if isinstance(initial_value, str):
             assert initial_value in choices
@@ -1839,7 +1889,9 @@ class TogglablesPool(Element):
         self.togglables:List[Element] = []
         for c in choices:
             self.add_item(c, c==initial_value, resort=False)
-        children, sort_mode = self.collect_children()
+        children, sort_mode_auto = self.collect_children()
+        if sort_mode is None:
+            sort_mode = sort_mode_auto
         if all_same_width:
             self.normalize_items_width()
         super().__init__(children=children)
@@ -3287,15 +3339,25 @@ class TkDialog(Labelled):
 
     def default_at_unclick(self):
         if self.filetypes:
-            value = self.tk_dialog(initialdir=self.initial_dir, filetypes=self.filetypes, initialfile=self.initial_value)
+            try:
+                value = self.tk_dialog(initialdir=self.initial_dir, filetypes=self.filetypes, initialfile=self.initial_value)
+            except:
+                value = self.tk_dialog(initialdir=self.initial_dir, filetypes=self.filetypes)
         else:
-            value = self.tk_dialog(initialdir=self.initial_dir, initialfile=self.initial_value)
+            try:
+                value = self.tk_dialog(initialdir=self.initial_dir, initialfile=self.initial_value)
+            except:
+                value = self.tk_dialog(initialdir=self.initial_dir)
         if not(isinstance(value,str)):
             value = [self.clean_value(v) for v in value]
             value = "\n".join(value)
         else:
             value = self.clean_value(value)
         self.tk_dialog_value.set_text(value)
+
+    def launch_tk_dialog(self):
+        """Directly launch the tkinter dialog (call this when you want to open the dialog without requiring the user to click on the element)."""
+        self.default_at_unclick()
     
     def get_value(self):
         return self.tk_dialog_value.get_value()

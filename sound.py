@@ -54,6 +54,9 @@ class SoundCollection:
         self.current_channel = pygame.mixer.Channel(self.current_channel_number)
         self.reserved_channels = set()
 
+
+
+
     def reserve_current_channel(self):
         self.reserved_channels.add(self.current_channel_number)
 

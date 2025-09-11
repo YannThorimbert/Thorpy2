@@ -145,13 +145,19 @@ def get_current_loop()->Optional[Loop]:
         return loops[-1]
     return None
 
+def quit_current_loop_if_any()->None|Loop:
+    if loops:
+        return quit_current_loop()
+
 def quit_current_loop()->Loop:
-    loop = loops.pop()
-    loop.playing = False
+    if loops:
+        loop = loops.pop()
+        loop.playing = False
     # new_loop = get_current_loop()
     # if new_loop:
     #     new_loop.last_click = loop.iteration - loop.last_click
-    return loop
+        return loop
+    return None
 
 def quit_all_loops()->None:
     for i in range(len(loops)):
@@ -176,10 +182,12 @@ def loop_elements(main_element:"Element",
     if reaction:
         loop.reaction = reaction #type:ignore #sorry for that
     loop.click_outside_cancel = click_outside_cancel
-    loop.esc_quit = True
+    loop.esc_quit = esc_quit
     loop.to_update = others
     # old = get_current_loop()
     # if old:
     #     dt = old.iteration - old.last_click
     #     loop.last_click = loop.iteration - dt
     loop.launch(func_before)
+    if func_after:
+        func_after()

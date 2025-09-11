@@ -742,6 +742,11 @@ class Element:
             # self.set_center(*self.rect.center)
             self.set_center(*prev_center)
 
+    def get_parent_rect_or_screen(self)->pygame.Rect:
+        """Returns the parent rect if it exists and has a positive size, otherwise returns the screen's rect."""
+        if self.parent and self.parent.rect.w > 0 and self.parent.rect.h > 0:
+            return self.parent.rect
+        return p.screen.get_rect()
 
     def drag_if_needed(self, mouse_delta)->None:
         # mp = pygame.mouse.get_pos()
@@ -761,9 +766,10 @@ class Element:
             #do not directly move the elements, as there may be a clamp correction, and we
             #do not want to apply the correction recursively to children
             rect = self.rect.move(dx,dy)
-            if self.cannot_drag_outside and self.parent:
-                if not (self.parent.__class__ is Element):
-                    rect.clamp_ip(self.parent.rect)
+            parent_rect:pygame.Rect | None = None
+            if self.cannot_drag_outside:
+                parent_rect = self.get_parent_rect_or_screen()
+                rect.clamp_ip(parent_rect)
             dx = rect.x - self.rect.x
             dy = rect.y - self.rect.y
             self.move(dx,dy)
@@ -1069,7 +1075,9 @@ class Element:
                      func_before:Optional[Callable]=None,
                      click_outside_cancel:bool=True,
                      reaction:Optional[Callable]=None,
-                     func_after:Optional[Callable]=None)->None:
+                     func_after:Optional[Callable]=None,
+                     press_enter_validates:bool=False,
+                     esc_quit:bool=True)->None:
         """Creates a time loop to interact with this element alone. The element thus 'pops' to the screen for the user.
         ***Optional arguments***
         <func_before> : either None or a function to call before each update and draw of the element.
@@ -1083,7 +1091,17 @@ class Element:
             if not(h.parent is self):
                 h.parent.remove_child(h) #type:ignore #guaranteed
                 self.add_child(h)
-        loops.loop_elements(self, [], func_before, click_outside_cancel, reaction, func_after) #type:ignore #guaranteed
+        if press_enter_validates and not reaction:
+            def reaction(event):
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                    loops.quit_current_loop_if_any()
+        loops.loop_elements(main_element=self,
+                            others=[],
+                            func_before=func_before,
+                            click_outside_cancel=click_outside_cancel,
+                            reaction=reaction,
+                            esc_quit=esc_quit,
+                            func_after=func_after) #type:ignore #guaranteed
 ##        if extract_helpers:
 ##            for h in helpers:
 ##                h.event_parent.add_child(h)
@@ -1397,7 +1415,7 @@ class Element:
             for e in self.get_children():
                 e.set_invisible(value, recursive)
 
-    def set_locked(self, value)->None:
+    def set_locked(self, value:bool)->None:
         """Set the current state from 'locked' to 'normal' or from 'normal' to 'locked'.
         <value> : (bool) if True, the new state will be 'locked', wheras if False, the new state
         will be 'normal'. Also adapt the children states.
@@ -1408,6 +1426,9 @@ class Element:
             self.state = "normal"
         for c in self.get_all_descendants():
             c.state = self.state
+
+    def gray_out(self, value:bool)->None: #alias for set_locked
+        self.set_locked(value)
 
     def set_draggable(self,
                       x_axis:bool=True,
