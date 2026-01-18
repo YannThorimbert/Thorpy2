@@ -35,13 +35,13 @@ def load_heavy_stuff():
             tp.refresh_waiting_bar()
     print("Finished waiting !")
         
-button.at_unclick = load_heavy_stuff
+button.at_unclick = load_heavy_stuff #type:ignore
 
 def before_gui(): #add here the things to do each frame before blitting gui elements
     screen.fill((200,)*3)
 tp.call_before_gui(before_gui) #tells thorpy to call before_gui() before drawing gui.
 
 #For the sake of brevity, the main loop is replaced here by a shorter but blackbox-like method
-player = button.get_updater().launch()
+button.get_updater().launch()
 pygame.quit()
 

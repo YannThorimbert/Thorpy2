@@ -22,8 +22,8 @@ from . import loops
 from . import graphics
 import warnings
 
-from typing import Optional, Tuple, List, Dict, Sequence, Callable, Union, Any
-Number = Union[float, int]
+from typing import Optional, Tuple, List, Dict, Sequence, Callable, Any
+Number = float|int
 
 arrow_cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_ARROW)
 hand_cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -200,7 +200,7 @@ class Element:
 
     def set_bck_color(self,
                       color:Sequence[int],
-                      states:Union[str,Sequence[str]]="all",
+                      states:str|Sequence[str]="all",
                       copy_style:bool=True,
                       refresh:bool=True,
                       apply_to_children:bool=False)->None:
@@ -217,7 +217,7 @@ class Element:
 
     def set_opacity_bck_color(self,
                                 value:int,
-                                states:Union[str,Sequence[str]]="all",
+                                states:str|Sequence[str]="all",
                                 copy_style:bool=True,
                                 refresh:bool=True,
                                 apply_to_children:bool=False)->None:
@@ -246,7 +246,7 @@ class Element:
 
     def set_font_color(self,
                        color:Sequence[int],
-                       states:Union[str,Sequence[str]]="all",
+                       states:str|Sequence[str]="all",
                         copy_style:bool=True,
                         refresh:bool=True,
                         apply_to_children:bool=False)->None:
@@ -263,7 +263,7 @@ class Element:
 
     def set_font_size(self,
                       size:int,
-                      states:Union[str,Sequence[str]]="all",
+                      states:str|Sequence[str]="all",
                         copy_style:bool=True,
                         refresh:bool=True,
                         apply_to_children:bool=False)->None:
@@ -280,7 +280,7 @@ class Element:
 
     def set_font_name(self,
                       name:str,
-                      states:Union[str,Sequence[str]]="all",
+                      states:str|Sequence[str]="all",
                         copy_style:bool=True,
                         refresh:bool=True,
                         apply_to_children:bool=False)->None:
@@ -297,7 +297,7 @@ class Element:
 
     def set_font_auto_multilines_width(self,
                                        width:int,
-                                       states:Union[str,Sequence[str]]="all",
+                                       states:str|Sequence[str]="all",
                                         copy_style:bool=True,
                                         refresh:bool=True,
                                         apply_to_children:bool=False)->None:
@@ -318,7 +318,7 @@ class Element:
 
     def set_font_rich_text_tag(self,
                                tag:str,
-                               states:Union[str,Sequence[str]]="all",
+                               states:str|Sequence[str]="all",
                                 copy_style:bool=True,
                                 refresh:bool=True,
                                 apply_to_children:bool=False)->None:
@@ -335,7 +335,7 @@ class Element:
 
     def set_style(self,
                   style:"BaseStyle",
-                  states:Union[str,Sequence[str]]="all",
+                  states:str|Sequence[str]="all",
                   refresh:bool=True,
                   copy:bool=False):
         states = self.get_states_names(states)
@@ -350,7 +350,7 @@ class Element:
     def set_style_attr(self,
                         attr:str,
                         value:Any,
-                        states:Union[str,Sequence[str]]="all",
+                        states:str|Sequence[str]="all",
                         copy_style:bool=True,
                         refresh:bool=True,
                         apply_to_children:bool=False)->None:
@@ -482,7 +482,7 @@ class Element:
         dy = 0 if y is None else y-self.rect.centery
         self.move(dx, dy)
 
-    def center_on(self, what:Union[str,"Element",pygame.Rect,pygame.Surface])->"Element":
+    def center_on(self, what:str|"Element"|pygame.Rect|pygame.Surface)->"Element":
         """Centers the element on another, or on a pygame Surface or Rect.
         <what> : either a pygame Rect, a 2-tuple, a pygame Surface or a thorpy element.
         It is also possible to specify what = 'screen' as a shortcut for screen's rect.
@@ -641,10 +641,10 @@ class Element:
                         mode:str="v",
                         align:str="center",
                         gap:int=5,
-                        margins:Optional[Tuple[int]]=(5,5),
+                        margins:tuple[Number,Number]|None=(5,5),
                         offset:int=0,
-                        nx:Union[str,int]="auto",
-                        ny:Union[str,int]="auto",
+                        nx:Number|str="auto",
+                        ny:Number|str="auto",
                         grid_gaps:Tuple[int,int]=(5,5),
                         horizontal_first:bool=False,
                         englobe_children:bool=True,
@@ -1227,9 +1227,9 @@ class Element:
         return self.refresh_surfaces is self.refresh_surfaces_copy
 
     def generate_shadow(self,
-                        fast:Union[bool,str]="auto",
+                        fast:bool|str="auto",
                         shadowgen:Optional[shadows.Shadow]=None,
-                        states:Union[str,Sequence[str]]="all",
+                        states:str|Sequence[str]="all",
                         uniform:bool=False)->None:
         """Generates a shadow and binds it to the element. This function is not meant to be called within the app loop, but only at initialization.
         ***Optional arguments***

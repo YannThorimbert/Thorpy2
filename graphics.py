@@ -2,7 +2,7 @@
 Module regrouping some functions for image processing.
 Some of the functions make use of Python Imaging Library and NumPy.
 """
-from typing import Union, Sequence, cast, Any, Dict
+from typing import Sequence, cast, Any, Dict
 import math
 import numpy as np
 from PIL import Image, ImageFilter
@@ -384,7 +384,7 @@ def detect_frame(surf:pygame.Surface, vacuum:RGB_OR_RGBA=(255, 255, 255))->pygam
     return pygame.Rect(first_x, miny, last_x - first_x, maxy - miny)
 
 
-def capture_screen(surface:pygame.Surface, rect:Union[pygame.Rect,None]=None)->pygame.Surface:
+def capture_screen(surface:pygame.Surface, rect:pygame.Rect|None=None)->pygame.Surface:
     """_Returns a copy of the surface <surface>, with restriction <rect>
     (None means the whole surface)"""
     if not rect:
@@ -589,7 +589,8 @@ def draw_dashed_line(surface:pygame.Surface, color:RGB_OR_RGBA, start:Coord, end
     if current_end != b:
         func_draw(surface, color, current_end, b, thickness)
 
-def extract_frames(src:str, out_folder:Union[str,None]=None,
+def extract_frames(src:str,
+                   out_folder:str|None=None,
                    size_factor:Size=(1., 1.))->Sequence[pygame.Surface]:
     """Extract the frames of a GIF animation. Needs PIL.
     ***Mandatory arguments***
@@ -729,7 +730,7 @@ def smoothed_circle(radius:int)->pygame.Surface:
 
 @cache
 def smoothed_round_rect(n_smooth:int, color:RGB_OR_RGBA,
-                        size:Size, radius:FloatOrInt, force_radius:bool)->pygame.Surface:
+                        size:Size, radius:float|int, force_radius:bool)->pygame.Surface:
     orig_size = size
     size = (size[0]*n_smooth, size[1]*n_smooth)
     if radius == 0:
@@ -777,7 +778,7 @@ def smoothed_round_rect(n_smooth:int, color:RGB_OR_RGBA,
 
 
 # @cache
-def round_rect_aa(color:RGB_OR_RGBA, size:Size, radius:FloatOrInt,
+def round_rect_aa(color:RGB_OR_RGBA, size:Size, radius:float|int,
                   force_radius:bool=False, n_smooth:float=1.5)->pygame.Surface:
     """Returns a round rectangle.
     ***Mandatory arguments***

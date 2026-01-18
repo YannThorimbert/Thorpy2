@@ -15,7 +15,7 @@ See the most useful methods of any elements (e.g. set_size, move, etc) in the do
 import os, sys, inspect
 import pygame
 
-from typing import Optional, List, Tuple, Sequence, Union
+from typing import Optional, List, Tuple, Sequence
 
 from . import styles, loops
 from . import parameters as p
@@ -144,7 +144,7 @@ class Button(Element):
                  text:str,
                  adapt_parent:bool=True,
                  only_if_different:bool=True,
-                 max_width:Optional[int]=None)->None:
+                 max_width:int|None=None)->None:
         """Regenerate element's surfaces with new text content.
         ***Mandatory arguments***
         <text> : the new text.
@@ -601,10 +601,10 @@ class Box(Element):
                         mode:str="v",
                         align:str="center",
                         gap:int=5,
-                        margins:Optional[Tuple[int]]=None,
+                        margins:None|tuple[int,int]=None,
                         offset:int=0,
-                        nx:Union[str,int]="auto",
-                        ny:Union[str,int]="auto",
+                        nx:str|int="auto",
+                        ny:str|int="auto",
                         grid_gaps:Tuple[int,int]=(5,5),
                         horizontal_first:bool=False,
                         englobe_children:bool=True):
@@ -655,11 +655,11 @@ class TitleBox(Box):
                  text:str,
                  children:List[Element],
                  sort_immediately:bool=True,
-                 style_normal:Optional[styles.BaseStyle]=None,
+                 style_normal:None|styles.BaseStyle=None,
                  generate_surfaces:bool=True,
                  copy_normal_state:bool=True,
                  scrollbar_if_needed:bool=False,
-                 size_limit:Union[Tuple[int,int],str]="auto"):
+                 size_limit:Tuple[int,int]|str="auto"):
         Box.__init__(self, children, generate_surfaces=False, sort_immediately=False,
                      copy_normal_state=copy_normal_state, scrollbar_if_needed=scrollbar_if_needed,
                      size_limit=size_limit)
@@ -1793,7 +1793,7 @@ class Labelled(Element):
         self.sort_children("h", margins=(5,0), gap=gap, nx="auto", ny="auto", align="center")
 
 
-ColorPickerType = Union[ColorPicker, ColorPickerRGB, ColorPickerPredefined]
+ColorPickerType = ColorPicker | ColorPickerRGB | ColorPickerPredefined
 
 class LabelledColorPicker(Labelled):
     """Forms a group with a color picker, on the left side of which a label text is displayed.
@@ -1870,11 +1870,11 @@ class TogglablesPool(Element):
     def __init__(self,
                  label:str,
                  choices:Sequence[str],
-                 initial_value:Union[str,int],
+                 initial_value:str|int,
                  togglable_type:str="toggle",
                  togglable_look:str="ToggleButton",
                  all_same_width:bool=False,
-                 sort_mode:str=None):
+                 sort_mode:str|None=None):
         self.all_same_width = all_same_width
         if isinstance(initial_value, str):
             assert initial_value in choices
@@ -2065,9 +2065,9 @@ class ListView(TogglablesPool):
 
     def __init__(self,
                  items: Sequence[str],
-                 initial_value: Union[str,int],
+                 initial_value: str|int,
                  togglable_type: str = "toggle",
-                 togglable_look:Optional[str]= "_SelectButton",
+                 togglable_look:str|None= "_SelectButton",
                  label: str="",
                  all_same_width:bool=False):
         super().__init__(label, items, initial_value, togglable_type, togglable_look, all_same_width)
@@ -2364,9 +2364,9 @@ class Image(Element):
     """
 
     def __init__(self, img:pygame.Surface,
-                 style_normal:Optional[str]=None,
+                 style_normal:None|str=None,
                  generate_surfaces:bool=True,
-                 children:Optional[Element]=None,
+                 children:None|Element=None,
                  copy_normal_state:bool=True):
         # if not isinstance(img, pygame.Surface) and not isinstance(img, list[pygame.Surface]):
         #     raise Exception("The <img> argument passed to Image must be a pygame surface. Argument here is" + str(img))
@@ -2398,6 +2398,9 @@ class Image(Element):
             self.surfaces[key] = s
         self.has_surfaces_generated = True
         self.refresh_surfaces_shadow()
+
+    def set_image(self, img:pygame.Surface) -> None:
+        raise NotImplementedError
 
 class SingleStateImage(Image):
 
@@ -2480,10 +2483,10 @@ class AnimatedGif(Image):
     """
 
     def __init__(self,
-                 filename:Union[str, list[pygame.Surface]],
+                 filename:str|list[pygame.Surface],
                  frame_mod:int=2,
                  size_factor:tuple[float,float]=(1.,1.),
-                 loops:Union[int,float]=float("inf"),
+                 loops:int|float=float("inf"),
                  freeze_frame:int=0,
                  generate_surfaces:bool=True):
         style_normal = styles.MultipleImagesStyle()
@@ -2983,17 +2986,17 @@ class DiscreteLifebar(Group): #TODO: should have a corresponding style to genera
             children.append(e)
         return children
     
-    def get_slot_element_number(self, i)->Union[Image,ImageButton]:
+    def get_slot_element_number(self, i)->Image|ImageButton:
         if i >= len(self.children):
             i = len(self.children)-1
         elif i < 0:
             i = 0
         return self.children[i]
 
-    def get_last_not_empty_slot(self)->Union[Image,ImageButton]:
+    def get_last_not_empty_slot(self)->Image|ImageButton:
         return self.get_slot_element_number(self.value - 1)
     
-    def get_first_empty_slot(self)->Union[Image,ImageButton]:
+    def get_first_empty_slot(self)->Image|ImageButton:
         return self.get_slot_element_number(self.value)
 
 
@@ -3057,10 +3060,10 @@ class Lifebar(Group): #TODO : make a vertical version
                         mode:str="v",
                         align:str="left",
                         gap:int=5,
-                        margins:Optional[Tuple[int]]=None,
+                        margins:None|tuple[int,int]=None,
                         offset:int=0,
-                        nx:Union[str,int]="auto",
-                        ny:Union[str,int]="auto",
+                        nx:str|int="auto",
+                        ny:str|int="auto",
                         grid_gaps:Tuple[int,int]=(5,5),
                         horizontal_first:bool=False,
                         englobe_children:bool=True):
@@ -3161,15 +3164,15 @@ class VerticalLifebar(Lifebar):
                         mode:str="h",
                         align:str="top",
                         gap:int=5,
-                        margins:Optional[Tuple[int]]=None,
+                        margins:None|tuple[int,int]=None,
                         offset:int=0,
-                        nx:Union[str,int]="auto",
-                        ny:Union[str,int]="auto",
+                        nx:str|int="auto",
+                        ny:str|int="auto",
                         grid_gaps:Tuple[int,int]=(5,5),
                         horizontal_first:bool=True,
                         englobe_children:bool=True):
         super().sort_children(mode, align, gap, margins, offset, nx, ny, grid_gaps,
-                              horizontal_first, englobe_children, (float("inf"),float("inf")))
+                              horizontal_first, englobe_children)
         self.e_frame.set_center(self.e_rect.rect.centerx, None)
         self.life_text.center_on(self.e_frame)
         # self.e_frame.set_topleft(self.e_rect.rect.x+1,None)
@@ -3629,5 +3632,4 @@ class _ButtonColor(Button):
 
 class _SelectButton(ToggleButton):
     ...
-
 
