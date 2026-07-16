@@ -31,10 +31,11 @@ dependencies = [
     "Pillow",
 ]
 
+
 [project.urls]
 Homepage = "https://www.thorpy.org/"
-Repository = "URL_DU_DEPOT_PUBLIC"
-Issues = "URL_DU_DEPOT_PUBLIC/issues"
+Repository = "https://github.com/YannThorimbert/Thorpy2"
+Issues = "https://github.com/YannThorimbert/Thorpy2/issues"
 
 [tool.setuptools.dynamic]
 version = { attr = "thorpy.__version__" }
