@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "thorpy"
+dynamic = ["version"]
+description = "GUI library for pygame"
+readme = "README.md"
+requires-python = ">=3.10"
+
+authors = [
+    { name = "Yann Thorimbert", email = "yann.thorimbert@gmail.com" },
+]
+
+keywords = [
+    "pygame",
+    "gui",
+    "menus",
+    "buttons",
+    "widgets",
+    "user interface",
+    "toolkit",
+]
+
+dependencies = [
+    "pygame",
+    "numpy",
+    "Pillow",
+]
+
+[project.urls]
+Homepage = "https://www.thorpy.org/"
+Repository = "URL_DU_DEPOT_PUBLIC"
+Issues = "URL_DU_DEPOT_PUBLIC/issues"
+
+[tool.setuptools.dynamic]
+version = { attr = "thorpy.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["thorpy*"]
+
+[tool.setuptools.package-data]
+thorpy = [
+    "data/*",
+    "py.typed",
+]
