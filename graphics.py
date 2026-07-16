@@ -599,7 +599,6 @@ def extract_frames(src:str,
     <out_folder> : location where the frames are written to the disk.
     If None, frames are only kept in memory.
     <size_factor> : (2-tuple of floats) relative size increase of each frame compared to the original."""
-    from PIL import Image
     frame = Image.open(src)
     nframes = 0
     imgs = []

@@ -1,6 +1,5 @@
 from pygame.math import Vector2 as V2
 import pygame
-import numpy as np
 
 from typing import List
 # import thorpytypehints as ty

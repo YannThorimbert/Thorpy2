@@ -32,6 +32,7 @@ __all__ = [
     "DropDownList",
     "Image",
     "Line",
+    "Sketch",
     "Slider",
     "SliderWithText",
     "Text",
@@ -62,7 +63,9 @@ __all__ = [
     "ShowFPS",
     "TkDialog",
     "DiscreteLifebar",
-    "ListView"
+    "ListView",
+    "VerticalLifebar",
+    "SwitchButtonWithText"
 ]
 
 #Import styling functions
