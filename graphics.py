@@ -187,7 +187,7 @@ def get_alpha(color:RGB_OR_RGBA)->float:
 def color_rect(gradient_color:GradientColor, size:Size)->pygame.Surface:
     """Return a colored rect.
     <gradient_color> : a gradient color (see below).
-    <size> : 2-tuple beeing the size of the rect.<br>
+    <size> : 2-tuple being the size of the rect.<br>
     ---<br>
     gradient color can be:<br>
     *3-tuple or 4-tuple specifying the RGB or RGBA value of the color (in this case, this is a simple color);<br>

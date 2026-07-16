@@ -31,6 +31,6 @@ while playing:
     my_stuff() #do your stuff with display
     #update Thorpy elements and draw them
     updater.update(events=events,
-                   mouse_rel=mouse_rel) #if you dont give a mouse_rel, Thorpy will call pygame mouse_rel() !
+                   mouse_rel=mouse_rel) #if you dont give a mouse_rel, Thorpy will call pygame.mouse.get_rel() !
     pygame.display.flip()
 pygame.quit()

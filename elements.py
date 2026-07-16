@@ -204,7 +204,7 @@ class Group(Element):
         """Sticks the element to another.
         ***Mandatory arguments***
         <other> : another element or pygame surface.
-        <self_side> : side of the element beeing sticked. Can be 'left', 'right', 'top' or 'bottom'.
+        <self_side> : side of the element being stuck. Can be 'left', 'right', 'top' or 'bottom'.
         <other_side> : side of the other element. Can be 'left', 'right', 'top' or 'bottom'.
         ***Optional arguments***
         <delta> : 2-tuple delta (pixels) to apply after the element has been moved.
@@ -227,7 +227,7 @@ class Text(Button):
     ***Optional arguments***
     <font_size> : size of the font (integer).
     <font_color> : color of the font in (R,G,B) format.
-    <max_width> : maximum widht of the text element. To cope with tate, line breaks will be
+    <max_width> : maximum width of the text element. To cope with tate, line breaks will be
     automatically inserted if needed.
     """
     hand_cursor = False
@@ -263,7 +263,7 @@ class OutlinedText(Text):
     <font_color> : color of the font in (R,G,B) format.
     <outline_color> : color of the outline in (R,G,B) format.
     <outline_thickness> : (int) thickness of the outline in pixels.
-    <max_width> : maximum widht of the text element. To cope with tate, line breaks will be
+    <max_width> : maximum width of the text element. To cope with tate, line breaks will be
     automatically inserted if needed.
     """
 
@@ -2748,12 +2748,12 @@ class Slider(Element):
         return value
 
     def get_value(self):
-        """Returns the value of the slider in the range [0,1], 0 beeing the minimum and 1 the maximum
+        """Returns the value of the slider in the range [0,1], 0 being the minimum and 1 the maximum
         value that the slider can take."""
         return self.get_relative_value()
 
     def set_relative_value(self, value):
-        """Set the value of the slider in the range [0,1], 0 beeing the minimum and 1 the maximum
+        """Set the value of the slider in the range [0,1], 0 being the minimum and 1 the maximum
         value that the slider can take."""
         self.exact_value = value
         if self.mode == "h":

@@ -504,7 +504,7 @@ class Element:
         """Sticks the element to another.
         ***Mandatory arguments***
         <other> : another element or pygame surface.
-        <self_side> : side of the element beeing sticked. Can be 'left', 'right', 'top' or 'bottom'.
+        <self_side> : side of the element being stuck. Can be 'left', 'right', 'top' or 'bottom'.
         <other_side> : side of the other element. Can be 'left', 'right', 'top' or 'bottom'.
         ***Optional arguments***
         <delta> : 2-tuple delta (pixels) to apply after the element has been moved.
@@ -793,7 +793,7 @@ class Element:
         pass
 
     def other_is_dragged(self)->bool:
-        """Returns True if another element is beeing dragged by the user."""
+        """Returns True if another element is being dragged by the user."""
         if p.element_being_dragged:
             return not (p.element_being_dragged is self)
         return False
